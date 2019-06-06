@@ -125,7 +125,7 @@ options=(1 "Shell Configuration" off
 	 7 "Configure Graphics" off
          8 "Configure C/C++ Environment" off
          9 "Install Ranger" off
-	 10 "Install LaTeX" off)
+	10 "Install LaTeX" off)
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 clear
 for choice in $choices; do
