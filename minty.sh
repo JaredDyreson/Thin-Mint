@@ -56,6 +56,10 @@ function install_desktop_apps() {
 	sudo apt-get update && sudo apt-get install "libssl1.0.0" spotify-client -y
 }
 
+function configure_desktop_appearence() {
+
+}
+
 function install_custom_scripts() {
 	git_setup
 	cd ~ && git clone https://github.com/JaredDyreson/scripts.git
@@ -165,3 +169,22 @@ for choice in $choices; do
 
 	esac
 done
+
+# rewrite
+
+function installer(){
+	# upgrade packages (takes a while)
+	sudo apt-get update && sudo apt-get upgrade -y
+	# install vim and zsh
+	sudo apt-get install vim zsh -y
+	# install git and configure it
+	sudo apt-get install git -y
+	git config --global user.name "Jared Dyreson"
+        git config --global user.email "jared.dyreson@gmail.com"
+	# Install C++ Environment
+	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && sudo make install
+	sudo mandb
+	sudo apt-get install clang++-6.0 -y
+	# install latex
+
+}
