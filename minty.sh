@@ -17,26 +17,29 @@
 # 12. Trackpad fix (see if I can make it less sensitive because of links being opened by fingertips too much)
 # 13. Install ranger
 
+# This is split into two parts
+## 1. Get all initial programs installed that we can before we
+
 function find_program() {
 	[[ $(dpkg --list | awk '/'$1'/ {print $2}') ]] && return true || return false
 }
 
 function default_shell() {
-	[[ find_program "zsh" ]] && (echo "[+] ZSH has been installed") || (sudo apt-get update && sudo apt-get install zsh -y)
+
 }
 
 function default_editor() {
-	[[ find_program "vim" ]] && (echo "[+] vim has already been installed") || (sudo apt-get update && sudo apt-get install vim -y)
+
 	[[  "$EDITOR" !=  "vim" ]] && (sed -i "/export\ EDITOR/s/'.*'/'vim'/" "$HOME"/.zshrc) || echo "[+] vim is the default editor"
 }
 
 function git_setup() {
-	[[ find_program "git" ]] && (echo "[+] git is already installed") || (sudo apt-get update && sudo apt-get install git -y)
+
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
 }
 function key_mappings() {
-	[[ find_program "dconf" ]] && (echo "[+] dconf and it's dependenices have been installed") || (sudo apt-get update && sudo apt-get install dconf-cli -y)
+
 	git_setup
 	# map caps lock to escape permanently
 	setxkmap -option caps:swapescape
@@ -117,59 +120,6 @@ function configure_graphics() {
 }
 
 get_minty_repo
-
-dialog --version > /dev/null 2>&1 || sudo apt-get install dialog -y
-cmd=(dialog --separate-output --checklist "Select options:" 22 76 16)
-options=(1 "Shell Configuration" off    
-         2 "VIM Configuration" off
-         3 "Install dotfiles" off
-         4 "Configure Keyboard" off
-         5 "Configure Trackpad" off
-         6 "Configure Battery" off
-	 7 "Configure Graphics" off
-         8 "Configure C/C++ Environment" off
-         9 "Install Ranger" off
-	10 "Install LaTeX" off)
-choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
-clear
-for choice in $choices; do
-	case $choice in
-        	1)
-			default_shell
-		  	;;
-        	2)
-          		default_editor
-		  	;;
-        	3)
-			install_dotfiles
-			;;
-		4)
-			key_mappings
-         		 ;;
-        	5)
-          		configure_trackpad
-	        	;;
-        	6)
-	        	configure_battery
-	        	;;
-	      	7)
-			configure_graphics
-	        	;;
-		8)
-			install_clang
-			install_cpp_man_pages
-			;;
-		9)
-			sudo apt-get install ranger -y
-			;;
-		10)
-			echo "[+] This will take a long time, please be patient"
-			sudo apt-get install texlive-full pandoc -y
-			;;
-
-	esac
-done
-
 # rewrite
 
 function installer(){
