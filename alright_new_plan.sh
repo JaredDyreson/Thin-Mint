@@ -25,8 +25,8 @@ clear
 
 
 # where are we installing the bloody thing
-device="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | head -n 1)"
-
+devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
+device=$(dialog --stdout --menu "Select installation disk" 0 0 0 ${devicelist}) || exit 1
 ### Set up logging ###
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
