@@ -8,8 +8,6 @@
 
 # USER CONFIGURATION #
 
-[[ "$(ping -c 5 www.google.com | awk '/\%/ {print $0}' | sed 's/\,/\n/g' | awk 'NR==3 {print $1}' | sed 's/\%//g')" -eq 0 ]] && (echo "No connection issues") || (echo "There are some issues";exit 1) 
-
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
