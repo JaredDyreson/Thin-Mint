@@ -80,8 +80,9 @@ options  root=PARTUUID=$(blkid -s PARTUUID -o value "$part_root") rw
 EOF
 echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
 
+# THIS DOWN DOES NOT WORK 
 arch-chroot /mnt useradd -mU -s /usr/bin/zsh -G wheel "$user"
-arch-chroot /mnt chsh -s /usr/bin/zsh
+# arch-chroot /mnt chsh -s /usr/bin/zsh
 
 echo "$user:$password" | chpasswd --root /mnt
 echo "root:$password" | chpasswd --root /mnt
