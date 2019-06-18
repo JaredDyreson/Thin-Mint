@@ -49,15 +49,12 @@ part_boot="$(ls ${device}* | grep -E "^${device}p?1$")"
 part_swap="$(ls ${device}* | grep -E "^${device}p?2$")"
 part_root="$(ls ${device}* | grep -E "^${device}p?3$")"
 
-wipefs "${part_boot}"
-wipefs "${part_swap}"
-wipefs "${part_root}"
-
-mkfs.vfat -F32 "${part_boot}"
+mkfs.ext4 -F32 "${part_boot}"
 mkswap "${part_swap}"
-mkfs.f2fs -f "${part_root}"
+mkfs.ext4 -f "${part_root}"
 
 swapon "${part_swap}"
+
 mount "${part_root}" /mnt
 mkdir /mnt/boot
 mount "${part_boot}" /mnt/boot
