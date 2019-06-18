@@ -61,6 +61,7 @@ swapon "${part_swap}"
 mount "${part_root}" /mnt
 mkdir /mnt/boot
 mount "${part_boot}" /mnt/boot
+echo 'Server = http://mirrors.kernel.org/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 pacstrap /mnt base
 echo "${hostname}" > /mnt/etc/hostname
 genfstab -U /mnt >> /mnt/etc/fstab
