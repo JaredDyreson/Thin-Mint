@@ -61,12 +61,40 @@ password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
 clear
 [[ "$password" != "$password2" ]] && ( echo "Passwords did not match"; exit 1; )
 
+useradd -mU -s /usr/bin/zsh -G wheel "$user"
+echo ""$user":"$password"" | chpasswd --root /mnt
 #echo "root:$password" | chpasswd --root /mnt
 
-# Working with 
+# Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# installing git
+
+pacman -Sy --noconfirm git
+
+# internet persistance
+systemctl enable dhcpcd
+
+# installing the desktop window manager
+
+# i3 gaps
+
+pacman -Sy --noconfirm i3-gaps
+
+# cinnamon (linux mint edition)
+
+pacman -Sy --noconfirm cinnamon 
+
+# user configuration #
+
+## Terminal
+
+pacman -Sy --noconfirm rxvt-unicode
+
+
+# Final cleanup
 umount /mnt/*
+exit
 reboot
