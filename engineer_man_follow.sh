@@ -2,25 +2,25 @@
 
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
 
-timedatectl set-ntp true
+#timedatectl set-ntp true
 
 # Partitioning the drives
 
 ## EFI Partition
-(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk /dev/sda
+(#echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk /dev/sda
 
 ## Rest of the install
 
-(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk /dev/sda
+#(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk /dev/sda
 
 # Formatting the drive
 
-mkfs.vfat -F32 /dev/sda1
-mkfs.ext4 /dev/sda2
+#mkfs.vfat -F32 /dev/sda1
+#mkfs.ext4 /dev/sda2
 
 # Mounting our filesystems
 
-`cd /mnt && mkdir boot`
+#`cd /mnt && mkdir boot`
 mount /dev/sda1 /mnt/boot
 mount /dev/sda2 /mnt
 
