@@ -21,7 +21,7 @@ mkfs.ext4 /dev/sda2
 # Mounting our filesystems
 
 mount /dev/sda2 /mnt
-mkdir boot && mount /dev/sda1 /mnt/boot
+mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
 
 # Working with the mounted partitions
 
