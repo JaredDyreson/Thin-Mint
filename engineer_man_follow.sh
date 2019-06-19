@@ -28,7 +28,7 @@ mount /dev/sda2 /mnt
 
 pacstrap /mnt base base-devel
 
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt > /mnt/etc/fstab
 
 arch-chroot /mnt
 
@@ -38,14 +38,14 @@ ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
 # Get our locales
 
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
-echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Set the hostname and hostfiles
 
-echo "jared-xps" >> /etc/hostname
-echo "127.0.0.1 localhost jared-xps" >> /etc/hosts
+echo "jared-xps" > /etc/hostname
+echo "127.0.0.1 localhost jared-xps" > /etc/hosts
 
 password=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
 clear
@@ -57,7 +57,7 @@ clear
 echo "root:$password" | chpasswd --root /mnt
 
 # Working with 
-pacman -S grub
+pacman -Sy grub
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 exit
