@@ -63,7 +63,6 @@ echo "root:$password" | chpasswd --root /mnt
 pacman -Sy grub
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
-exit
 
 umount /mnt/*
 reboot
