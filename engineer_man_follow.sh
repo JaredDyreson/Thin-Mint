@@ -52,7 +52,7 @@ echo "127.0.0.1 localhost jared-xps" > /etc/hosts
 
 
 # not installed by default
-pacman -Sy dialog
+#pacman -Sy dialog
 
 password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
 [[ -z "$password" ]] && (echo "password seems to be empty";passwd)
