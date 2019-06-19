@@ -11,7 +11,7 @@ timedatectl set-ntp true
 
 ## Rest of the install
 
-(echo "n" && echo "p" && echo "2" && echo "" && echo "" && echo "w") | fdisk /dev/sda
+(echo "n" && echo "p" && echo "4" && echo "" && echo "" && echo "w") | fdisk /dev/sda
 
 # Formatting the drive
 
