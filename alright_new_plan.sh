@@ -52,40 +52,40 @@ part_root="$(ls ${device}* | grep -E "^${device}p?3$")"
 mkfs.ext4 "${part_boot}"
 mkswap "${part_swap}"
 mkfs.ext4 "${part_root}"
-
 swapon "${part_swap}"
 
 mount "${part_root}" /mnt
 mkdir /mnt/boot
 mount "${part_boot}" /mnt/boot
+
 echo 'Server = http://mirrors.kernel.org/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-pacstrap /mnt base
+
+pacstrap /mnt base base-devel vim
 echo "${hostname}" > /mnt/etc/hostname
 genfstab -U /mnt >> /mnt/etc/fstab
-
-arch-chroot /mnt bootctl install
-
-cat <<EOF > /mnt/boot/loader/loader.conf
-default arch
-EOF
-
-cat <<EOF > /mnt/boot/loader/entries/arch.conf
-title    Arch Linux
-linux    /vmlinuz-linux
-initrd   /initramfs-linux.img
-options  root=PARTUUID=$(blkid -s PARTUUID -o value "$part_root") rw
-EOF
 echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
 
-# THIS DOWN DOES NOT WORK 
-arch-chroot /mnt useradd -mU -s /usr/bin/zsh -G wheel "$user"
-# arch-chroot /mnt chsh -s /usr/bin/zsh
+arch-chroot /mnt
 
+# Configuring the user #
+
+useradd -mU -s /usr/bin/zsh -G wheel "$user"
 echo "$user:$password" | chpasswd --root /mnt
 echo "root:$password" | chpasswd --root /mnt
+
+# Misc #
 
 ln -sf /usr/share/timezone/America/Los_Angeles /etc/localtime
 hwclock --systohc
 locale-gen
+
+# For networking #
+pacman -S networkmanager
+systemctl enable NetworkManager
+
+## GRUB ##
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB --recheck
+grub-install --target=i386-pc --recheck /dev/sda
 exit
 reboot
