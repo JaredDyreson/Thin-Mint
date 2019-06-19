@@ -30,7 +30,7 @@ echo "PARTITIONS MOUNTED"
 
 echo "INSTALLING DEVELOPMENT TOOLS"
 pacstrap /mnt base base-devel
-exit 
+#exit 
 genfstab -U /mnt > /mnt/etc/fstab
 
 arch-chroot /mnt
