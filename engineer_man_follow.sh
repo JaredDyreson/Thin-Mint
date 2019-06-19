@@ -59,7 +59,7 @@ password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
 password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
 [[ -z "$password2" ]] && (echo "password seems to be empty";passwd)
 clear
-[[ "$password" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )
+#[[ "$password" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )
 
 #echo "root:$password" | chpasswd --root /mnt
 
