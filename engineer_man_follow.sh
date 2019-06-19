@@ -20,10 +20,10 @@ mkfs.ext4 /dev/sda2
 
 # Mounting our filesystems
 
+mkdir /mnt/boot
+[[ -d /mnt/boot ]] && (echo "mount is possible" ; moutn /dev/sda1 /mnt/boot)
 mount /dev/sda2 /mnt
-mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
 
-fdisk -l && exit
 # Working with the mounted partitions
 
 pacstrap /mnt base base-devel
