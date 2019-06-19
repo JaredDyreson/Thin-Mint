@@ -54,7 +54,6 @@ mkswap "${part_swap}"
 mkfs.ext4 "${part_root}"
 swapon "${part_swap}"
 
-
 pacstrap /mnt base base-devel vim
 
 arch-chroot /mnt /bin/bash
@@ -85,7 +84,8 @@ pacman -S networkmanager
 systemctl enable NetworkManager
 
 ## GRUB ##
-pacman -S grub efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB --recheck
+pacman -Sy grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/mnt/boot --bootloader-id=GRUB --recheck
+grub-mkconfig -o /mnt/boot/grub/grub.cfg
 exit
 reboot
