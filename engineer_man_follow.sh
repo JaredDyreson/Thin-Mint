@@ -7,11 +7,11 @@ timedatectl set-ntp true
 # Partitioning the drives
 
 ## EFI Partition
-(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef") | fdisk /dev/sda
+(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk /dev/sda
 
 ## Rest of the install
 
-(echo "n" && echo "p" && echo "4" && echo "" && echo "" && echo "w") | fdisk /dev/sda
+(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk /dev/sda
 
 # Formatting the drive
 
