@@ -21,7 +21,7 @@ mkfs.ext4 /dev/sda2
 # Mounting our filesystems
 
 `cd /mnt && mkdir boot`
-[[ -d /mnt/boot ]] && (echo "mount is possible" ; mount /dev/sda1 /mnt/boot)
+mount /dev/sda1 /mnt/boot
 mount /dev/sda2 /mnt
 
 # Working with the mounted partitions
