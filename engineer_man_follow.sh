@@ -24,10 +24,13 @@ mkfs.ext4 /dev/sda2
 mount /dev/sda1 /mnt/boot
 mount /dev/sda2 /mnt
 
+echo "PARTITIONS MOUNTED"
+
 # Working with the mounted partitions
 
+echo "INSTALLING DEVELOPMENT TOOLS"
 pacstrap /mnt base base-devel
-
+exit 
 genfstab -U /mnt > /mnt/etc/fstab
 
 arch-chroot /mnt
