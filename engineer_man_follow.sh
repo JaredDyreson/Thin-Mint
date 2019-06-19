@@ -52,7 +52,7 @@ echo "127.0.0.1 localhost jared-xps" > /etc/hosts
 
 
 # not installed by default
-#pacman -Sy dialog
+pacman -Sy --noconfirm dialog
 
 password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
 [[ -z "$password" ]] && (echo "password seems to be empty";passwd)
@@ -64,7 +64,7 @@ clear
 #echo "root:$password" | chpasswd --root /mnt
 
 # Working with 
-pacman -Sy grub
+pacman -Sy --noconfirm grub efibootmgr
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 
