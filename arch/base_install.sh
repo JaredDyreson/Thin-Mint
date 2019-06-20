@@ -6,9 +6,8 @@ function install_git_package() {
 	for repo in "$@"; do
 		[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
 		go_here="$(basename "$repo" | sed 's/\.git//g')"
-		git clone "$repo" && cd "$go_here"
-		runuser -l jared -c 'makepkg -si --noconfirm'
-		cd "$waypoint" && rm -rf "$go_here"
+		#git clone "$repo" && cd "$go_here"
+		runuser -l jared -c 'cd /home/jared && git clone '$1' && cd '$go_here' && makepkg -si --noconfirm && cd .. && rm -rf '$go_here''
 	done
 }
 
@@ -71,9 +70,10 @@ password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
 clear
 [[ "$password" != "$password2" ]] && ( echo "Passwords did not match"; exit 1; )
 
-useradd -mU -s /usr/bin/zsh -G wheel "$user"
+useradd -mU -s /bin/bash -G wheel "$user"
+echo ""$user" ALL=(ALL) ALL" >> /etc/sudoers
 echo ""$user":"$password"" | chpasswd --root /mnt
-#echo "root:$password" | chpasswd --root /mnt
+echo "root:$password" | chpasswd --root /mnt
 
 # Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw
@@ -99,7 +99,7 @@ pacman -Sy --noconfirm cinnamon lightdm lightdm-gtk-greeter
 install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git
 systemctl enable lightdm.service
 systemctl start lightdm.service
-sudo sed -i 's/greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 
 
 # user configuration #
