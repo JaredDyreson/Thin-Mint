@@ -11,19 +11,21 @@ function install_git_package() {
 	waypoint="$(pwd)"
 	for repo in "$@"; do
 		[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
-		go_here="$(basename "$repo" | sed 's/\.git//g')"
-		git clone "$repo" && cd "$go_here"
-		runuser -l jared -c 'makepkg -si --noconfirm'
-		cd "$waypoint" && rm -rf "$go_here"
+		sudo -u builduser bash -c 'cd /tmp && git clone '$1' build_me && cd build_me && make -si --noconfirm && cd .. && rm -rf build_me'
 	done
 }
-# Get our users (me basically not as root)
+
+# making a builder account so we can run makepkg as "root"
+
+pacman -S --needed --noconfirm sudo # Install sudo
+useradd builduser -m # Create the builduser
+passwd -d builduser # Delete the buildusers password
+printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser passwordless sudo
 
 # install yay first
 
-sudo pacman -Sy --noconfirm git
-
-git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
+install_git_package https://aur.archlinux.org/yay.git  
+# git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
 
 # Make it look like Linux Mint
 
@@ -34,23 +36,22 @@ git config --global user.email "jared.dyreson@gmail.com"
 cd /tmp && git clone https://github.com/JaredDyreson/dotfiles.git
 mkdir build && cd build
 
-install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 
 # Install the Display Manager and theme
 
-#sudo pacman -Sy --noconfirm lightdm lightdm-gtk-greeter
-#install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git
-#systemctl enable lightdm.service
-#systemctl start lightdm.service
-
-sudo sed -i 's/greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
+sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+systemctl enable lightdm.service
+systemctl start lightdm.service
 
 # Get our icon theme
+
+install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 
 git clone https://github.com/daniruiz/flat-remix
 git clone https://github.com/daniruiz/flat-remix-gtk
 
-mkdir -p /home/jared/.icons && mkdir -p /home/jared/.themes
+mkdir -p /home/jared/{.icons,.themes}
 cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/jared/.themes/
 
 rm -rf flat*
@@ -60,6 +61,9 @@ rm -rf flat*
 mkdir -p /home/jared/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
 
 cd /home/jared/Projects
+cat /tmp/dotfiles/desktop_env/manifest | while read line; do
+	git clone "$line"
+done
 
 # Use dotfiles
 
@@ -148,3 +152,8 @@ cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./confi
 # Java Environment
 
 pacman -Sy --noconfirm jre-openjdk
+
+# Delete builduser
+
+userdel builduser
+sed -i 's/builduser.*//' /etc/sudoers

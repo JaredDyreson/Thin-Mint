@@ -61,19 +61,20 @@ echo "127.0.0.1 localhost jared-xps" > /etc/hosts
 
 
 # not installed by default
-pacman -Sy --noconfirm dialog
+#pacman -Sy --noconfirm dialog
 
-password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
-[[ -z "$password" ]] && (echo "password seems to be empty";passwd)
-password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
-[[ -z "$password2" ]] && (echo "password seems to be empty";passwd)
-clear
-[[ "$password" != "$password2" ]] && ( echo "Passwords did not match"; exit 1; )
+#password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
+#[[ -z "$password" ]] && (echo "password seems to be empty";passwd)
+#password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
+#[[ -z "$password2" ]] && (echo "password seems to be empty";passwd)
+#clear
+#[[ "$password" != "$password2" ]] && ( echo "Passwords did not match"; exit 1; )
 
-useradd -mU -s /bin/bash -G wheel "$user"
+pacman -Sy --noconfirm zsh
+useradd -mU -s /bin/zsh -G wheel "$user"
 echo ""$user" ALL=(ALL) ALL" >> /etc/sudoers
-echo ""$user":"$password"" | chpasswd --root /mnt
-echo "root:$password" | chpasswd --root /mnt
+#echo ""$user":"$password"" | chpasswd --root /mnt
+#echo "root:$password" | chpasswd --root /mnt
 
 # Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw
@@ -87,27 +88,13 @@ pacman -Sy --noconfirm git
 # internet persistance
 systemctl enable dhcpcd
 
-# installing the desktop window manager
+# Desktop environment
 
-# i3 gaps
+#curl -sL "" | bash
 
-# pacman -Sy --noconfirm i3-gaps
+# Hardware Configuration
 
-# cinnamon (linux mint edition)
-
-pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
-# install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git
-systemctl enable lightdm.service
-systemctl start lightdm.service
-sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
-
-
-# user configuration #
-
-## Terminal
-
-# pacman -Sy --noconfirm rxvt-unicode
-
+#curl -sL "" | bash
 
 # Final cleanup
 umount /mnt/*
