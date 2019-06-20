@@ -17,6 +17,8 @@ function install_git_package() {
 		cd "$waypoint" && rm -rf "$go_here"
 	done
 }
+# Get our users (me basically not as root)
+
 # install yay first
 
 sudo pacman -Sy --noconfirm git
@@ -83,6 +85,7 @@ echo "setxkbmap -option caps:swapescape" >> /home/jared/.xinitrc
 ## OH MY ZSH
 
 pacman -Sy --noconfirm zsh
+useradd -mU -s /bin/zsh -G wheel
 curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g' >> omzinstaller
 [[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller && ./omzinstaller --unattended
 

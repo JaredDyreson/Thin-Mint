@@ -95,11 +95,11 @@ systemctl enable dhcpcd
 
 # cinnamon (linux mint edition)
 
-# pacman -Sy --noconfirm cinnamon lightdm lightdm-gtk-greeter
+pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
 # install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git
-# systemctl enable lightdm.service
-# systemctl start lightdm.service
-# sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+systemctl enable lightdm.service
+systemctl start lightdm.service
+sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 
 
 # user configuration #
