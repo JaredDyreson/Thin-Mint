@@ -7,6 +7,16 @@ function make_root() {
 	echo "$1 ALL=(ALL) ALL"  >> /etc/sudoers
 }
 
+function install_git_package() {
+	waypoint="$(pwd)"
+	for repo in "$@"; do
+		[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
+		go_here="$(basename "$repo" | sed 's/\.git//g')"
+		git clone "$repo" && cd "$go_here"
+		runuser -l jared -c 'makepkg -si --noconfirm'
+		cd "$waypoint" && rm -rf "$go_here"
+	done
+}
 # install yay first
 
 sudo pacman -Sy --noconfirm git
@@ -15,26 +25,21 @@ git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm
 
 # Make it look like Linux Mint
 
-cd /tmp && mkdir build && cd build
+`cd /home/jared && git clone https://github.com/JaredDyreson/scripts.git`
+git config --global user.name "Jared Dyreson"
+git config --global user.email "jared.dyreson@gmail.com"
 
-git clone https://aur.archlinux.org/mint-x-icons.git
-git clone https://aur.archlinux.org/mint-y-icons.git
-git clone https://aur.archlinux.org/mint-themes.git
+cd /tmp && git clone https://github.com/JaredDyreson/dotfiles.git
+mkdir build && cd build
 
-cd mint-x-icons && makepkg -si --noconfirm 
-cd ../mint-y-icons && makepkg -si --noconfirm
-cd ../mint-themes && makepkg -si --noconfirm
-
-sudo rm -rf mint* && cd ..
+install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 
 # Install the Display Manager and theme
 
-sudo pacman -Sy --noconfirm lightdm lightdm-gtk-greeter
-git clone https://aur.archlinux.org/lightdm-slick-greeter.git
-cd lightdm-slick-greeter && makepkg -si --noconfirm
-cd ..
-systemctl enable lightdm.service
-systemctl start lightdm.service
+#sudo pacman -Sy --noconfirm lightdm lightdm-gtk-greeter
+#install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git
+#systemctl enable lightdm.service
+#systemctl start lightdm.service
 
 sudo sed -i 's/greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 
@@ -43,23 +48,100 @@ sudo sed -i 's/greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/l
 git clone https://github.com/daniruiz/flat-remix
 git clone https://github.com/daniruiz/flat-remix-gtk
 
-mkdir -p ~/.icons && mkdir -p ~/.themes
-cp -r flat-remix/Flat-Remix* ~/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* ~/.themes/
+mkdir -p /home/jared/.icons && mkdir -p /home/jared/.themes
+cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/jared/.themes/
 
 rm -rf flat*
 
-# Set the themes
+# Get all of the folders we need
 
-# Check original script for sed command to do this (check for file appearence before testing)
+mkdir -p /home/jared/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
 
+cd /home/jared/Projects
 
-# install some applications for the desktop
+# Use dotfiles
 
-yay -S --noconfirm discord
+## File manager
+pacman -Sy --noconfirm ranger
+cp -ar /tmp/dotfiles/ranger/* /home/jared/.config/ranger/
 
+## URXVT
+
+pacman -Sy rxvt-unicode xorg-xrdb
+cp -ar /tmp/dotfiles/terminal/Xresources /home/jared/.Xresources
+xrdb /home/jared/.Xresources
+
+## Cinnamon Settings
+dconf load /org/cinnamon < /tmp/dotfiles/desktop_env/settings
+
+## Remapping ESC to CAPS!
+pacman -Sy --noconfirm xorg-setxkmap
+echo "setxkbmap -option caps:swapescape" >> /home/jared/.xinitrc
 
 # Configuring the terminal 
 
 ## OH MY ZSH
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+pacman -Sy --noconfirm zsh
+curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g' >> omzinstaller
+[[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller && ./omzinstaller --unattended
+
+## Shell things (update zshrc and make vim the default editor)
+pacman -Sy --noconfirm vim
+cp -ar /tmp/dotfiles/shell/zshrc /home/jared/.zshrc
+cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
+[[  "$EDITOR" !=  "vim" ]] && (sed -i "/export\ EDITOR/s/'.*'/'vim'/" "$HOME"/.zshrc)
+
+## Scripts and git configuration
+
+
+# Applications
+
+## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC
+
+pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57
+
+## Discord
+
+yay -S --noconfirm discord
+
+## Etcher, USB Formater (directly from Mint)
+
+install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
+
+## Image viewer and xreader (Also from Mint), as well as gimp
+
+install_git_package https://aur.archlinux.org/pix.git 
+pacman -Sy --noconfirm xreader gimp imagemagick
+
+## Markdown Client (Mostly for looks)
+
+wget -qO package "https://github.com/notable/notable/releases/download/v1.5.1/Notable-1.5.1.pkg" && pacman -S package && rm -rf package
+
+## Calculator and other production needs
+
+pacman -Sy --noconfirm gnome-calculator libreoffice-still
+
+## System Monitoring
+
+pacman -Sy --noconfirm htop gnome-bluetooth
+
+## LaTeX Environment
+
+# pacman -Sy --noconfirm texlive-most
+
+# C++ Environment
+
+## Clang
+
+pacman -Sy --noconfirm clang
+
+## std::man pages
+
+pacman -Sy --noconfirm most
+cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && sudo make install && sudo mandb && cd .. && rm -rf stdman
+
+
+# Java Environment
+
+pacman -Sy --noconfirm jre-openjdk
