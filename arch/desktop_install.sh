@@ -49,17 +49,17 @@ systemctl enable lightdm.service
 
 # Get our icon theme
 
-install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
+#install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 
-git clone https://github.com/daniruiz/flat-remix
-git clone https://github.com/daniruiz/flat-remix-gtk
+#git clone https://github.com/daniruiz/flat-remix
+#git clone https://github.com/daniruiz/flat-remix-gtk
 
-mkdir -p /home/jared/{.icons,.themes}
-cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/jared/.themes/
+#mkdir -p /home/jared/{.icons,.themes}
+#cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/jared/.themes/
 
-rm -rf flat*
+#rm -rf flat*
 
-exit
+#exit
 # Get all of the folders we need
 
 mkdir -p /home/jared/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
@@ -80,7 +80,7 @@ cp -ar /tmp/dotfiles/ranger/* /home/jared/.config/ranger/
 pacman -Sy rxvt-unicode xorg-xrdb
 cp -ar /tmp/dotfiles/terminal/Xresources /home/jared/.Xresources
 xrdb /home/jared/.Xresources
-
+exit
 ## Cinnamon Settings
 dconf load /org/cinnamon < /tmp/dotfiles/desktop_env/settings
 
