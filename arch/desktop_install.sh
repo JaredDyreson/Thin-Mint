@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+
+
+# TODO
+# rewrite entire script, adding and deleting things
+
+
+
+
 # this is important if you want to install packages after you install (DUH!)
 
 function make_root() {
@@ -24,7 +32,7 @@ exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
 
 sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
-pacman -S --needed --noconfirm sudo # Install sudo
+sudo pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
 printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser passwordless sudo
@@ -32,8 +40,15 @@ printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser p
 # install yay first
 
 #install_git_package https://aur.archlinux.org/yay.git
-useradd -mU -s /bin/zsh -G wheel jared
+useradd -m -g users -G wheel,storage,power -s /bin/zsh jared
 printf 'jared ALL=(ALL) ALL\n' | tee -a /etc/sudoers.d
+
+clear
+
+echo "[+] PASSWORD TIME BABY"
+passwd jared
+su - jared
+
 
 # Make it look like Linux Mint
 
@@ -42,10 +57,26 @@ cd /tmp
 [[ -d dotfiles ]] && rm -rf dotfiles
 git clone https://github.com/JaredDyreson/dotfiles.git
 
+# Configuring the terminal 
+
+## OH MY ZSH
+
+sudo pacman -Sy --noconfirm zsh
+curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
+[[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller
+echo "Y" | ./omzinstaller
+
+
+## Shell things (update zshrc and make vim the default editor)
+sudo pacman -Sy --noconfirm vim
+cp -ar /tmp/dotfiles/shell/zshrc /home/jared/.zshrc
+cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
+[[  "$EDITOR" !=  "vim" ]] && (sed -i "/export\ EDITOR/s/'.*'/'vim'/" /home/jared/.zshrc)
+
 # Install the Display Manager and theme
 
-pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
-sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+sudo pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
+sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf
 systemctl enable lightdm.service
 
 # Get our icon theme
@@ -72,34 +103,20 @@ done
 # Use dotfiles
 
 ## File manager
-pacman -Sy --noconfirm ranger
+sudo pacman -Sy --noconfirm ranger
 cp -ar /tmp/dotfiles/ranger/* /home/jared/.config/ranger/
 
 ## URXVT
-pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
+sudo pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
 cp -ar /tmp/dotfiles/terminal/Xresources /home/jared/.Xresources
 
 ## Cinnamon Settings
 dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
 
 ## Remapping ESC to CAPS!
-pacman -Sy --noconfirm xorg-setxkmap
+sudo pacman -Sy --noconfirm xorg-setxkmap
 echo "setxkbmap -option caps:swapescape" >> /home/jared/.xinitrc
 
-# Configuring the terminal 
-
-## OH MY ZSH
-
-pacman -Sy --noconfirm zsh
-useradd -mU -s /bin/zsh -G wheel
-curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g' >> omzinstaller
-[[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller && ./omzinstaller --unattended
-
-## Shell things (update zshrc and make vim the default editor)
-pacman -Sy --noconfirm vim
-cp -ar /tmp/dotfiles/shell/zshrc /home/jared/.zshrc
-cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
-[[  "$EDITOR" !=  "vim" ]] && (sed -i "/export\ EDITOR/s/'.*'/'vim'/" /home/jared/.zshrc)
 
 ## Scripts and git configuration
 
@@ -108,7 +125,7 @@ cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
 
 ## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC, Firefox
 
-pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57 firefox
+sudo pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57 firefox
 
 ## Discord
 
@@ -121,7 +138,7 @@ install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.arch
 ## Image viewer and xreader (Also from Mint), as well as gimp
 
 install_git_package https://aur.archlinux.org/pix.git 
-pacman -Sy --noconfirm xreader gimp imagemagick
+sudo pacman -Sy --noconfirm xreader gimp imagemagick
 
 ## Markdown Client (Mostly for looks)
 
@@ -129,11 +146,11 @@ pacman -Sy --noconfirm xreader gimp imagemagick
 
 ## Calculator and other production needs
 
-pacman -Sy --noconfirm gnome-calculator libreoffice-still
+sudo pacman -Sy --noconfirm gnome-calculator libreoffice-still
 
 ## System Monitoring
 
-pacman -Sy --noconfirm htop gnome-bluetooth
+sudo pacman -Sy --noconfirm htop gnome-bluetooth
 
 ## LaTeX Environment
 
@@ -143,17 +160,17 @@ pacman -Sy --noconfirm htop gnome-bluetooth
 
 ## Clang
 
-pacman -Sy --noconfirm clang
+sudo pacman -Sy --noconfirm clang
 
 ## std::man pages
 
-pacman -Sy --noconfirm most
+sudo pacman -Sy --noconfirm most
 cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && sudo make install && sudo mandb && cd .. && rm -rf stdman
 
 
 # Java Environment
 
-pacman -Sy --noconfirm jre-openjdk
+sudo pacman -Sy --noconfirm jre-openjdk
 
 # Delete builduser
 
