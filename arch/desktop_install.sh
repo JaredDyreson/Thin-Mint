@@ -31,7 +31,7 @@ printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser p
 
 # install yay first
 
-install_git_package https://aur.archlinux.org/yay.git
+#install_git_package https://aur.archlinux.org/yay.git
 useradd -mU -s /bin/zsh -G wheel jared
 printf 'jared ALL=(ALL) ALL\n' | tee -a /etc/sudoers.d
 
