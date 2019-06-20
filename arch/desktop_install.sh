@@ -42,7 +42,7 @@ mkdir build && cd build
 pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
 sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 systemctl enable lightdm.service
-systemctl start lightdm.service
+#systemctl start lightdm.service
 
 # Get our icon theme
 
