@@ -62,7 +62,7 @@ systemctl enable lightdm.service
 #exit
 # Get all of the folders we need
 
-mkdir -p /home/jared/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
+mkdir -p /home/jared/{.config,Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
 
 cd /home/jared/Projects
 cat /tmp/dotfiles/desktop_env/manifest | while read line; do
@@ -76,8 +76,7 @@ pacman -Sy --noconfirm ranger
 cp -ar /tmp/dotfiles/ranger/* /home/jared/.config/ranger/
 
 ## URXVT
-
-pacman -Sy rxvt-unicode xorg-xrdb
+pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
 cp -ar /tmp/dotfiles/terminal/Xresources /home/jared/.Xresources
 xrdb /home/jared/.Xresources
 exit
