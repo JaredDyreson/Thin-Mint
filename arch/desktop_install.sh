@@ -19,6 +19,7 @@ function install_git_package() {
 
 # making a builder account so we can run makepkg as "root"
 
+sed -i 's/builduser.*//g' /etc/sudoers
 pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
@@ -26,7 +27,8 @@ printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser p
 
 # install yay first
 
-install_git_package https://aur.archlinux.org/yay.git  
+install_git_package https://aur.archlinux.org/yay.git
+exit
 # git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
 
 # Make it look like Linux Mint
@@ -158,4 +160,3 @@ pacman -Sy --noconfirm jre-openjdk
 # Delete builduser
 
 userdel builduser
-sed -i 's/builduser.*//' /etc/sudoers
