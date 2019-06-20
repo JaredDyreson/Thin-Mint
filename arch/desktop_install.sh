@@ -19,7 +19,7 @@ function install_git_package() {
 
 # making a builder account so we can run makepkg as "root"
 
-sed -i 's/builduser.*//g' /etc/sudoers
+sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
 pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
@@ -28,18 +28,13 @@ printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser p
 # install yay first
 
 install_git_package https://aur.archlinux.org/yay.git
-exit
-# git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
+useradd -mU -s /bin/zsh -G wheel jared
+printf 'jared ALL=(ALL) ALL\n' | tee -a /etc/sudoers.d
 
 # Make it look like Linux Mint
 
-`cd /home/jared && git clone https://github.com/JaredDyreson/scripts.git`
-git config --global user.name "Jared Dyreson"
-git config --global user.email "jared.dyreson@gmail.com"
 
 cd /tmp && git clone https://github.com/JaredDyreson/dotfiles.git
-mkdir build && cd build
-
 
 # Install the Display Manager and theme
 
@@ -60,6 +55,7 @@ cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Re
 
 rm -rf flat*
 
+exit
 # Get all of the folders we need
 
 mkdir -p /home/jared/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
@@ -160,3 +156,7 @@ pacman -Sy --noconfirm jre-openjdk
 # Delete builduser
 
 userdel builduser
+git config --global user.name "Jared Dyreson"
+git config --global user.email "jared.dyreson@gmail.com"
+`cd /home/jared && git clone https://github.com/JaredDyreson/scripts.git`
+
