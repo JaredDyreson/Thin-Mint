@@ -106,9 +106,9 @@ cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
 
 # Applications
 
-## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC
+## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC, Firefox
 
-pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57
+pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57 firefox
 
 ## Discord
 
