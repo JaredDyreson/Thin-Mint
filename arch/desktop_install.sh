@@ -12,7 +12,7 @@ function install_git_package() {
 	for repo in "$@"; do
 		#[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
 		go_here="$(basename "$repo" | sed 's/\.git//g')"
-		sudo -u builduser bash -c 'cd /tmp && git clone '$1' && cd '$go_here' && makepkg -si --noconfirm && cd '$waypoint''
+		sudo -u builduser bash -c 'cd /tmp && git clone '$repo' && cd '$go_here' && makepkg -si --noconfirm && cd '$waypoint''
 		rm -rf /tmp/"$go_here"
 	done
 }
