@@ -10,7 +10,7 @@ function make_root() {
 function install_git_package() {
 	waypoint="$(pwd)"
 	for repo in "$@"; do
-		[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
+		#[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
 		sudo -u builduser bash -c 'cd /tmp && git clone '$1' build_me && cd build_me && make -si --noconfirm && cd .. && rm -rf build_me'
 	done
 }
