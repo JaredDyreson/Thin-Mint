@@ -18,17 +18,6 @@ function make_root() {
 	echo "$1 ALL=(ALL) ALL"  | tee -a /etc/sudoers
 }
 
-function install_git_package() {
-	waypoint="$HOME"
-	for repo in "$@"; do
-		#[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
-		go_here="$(basename "$repo" | sed 's/\.git//g')"
-		sudo -u builduser bash -c 'cd /tmp && git clone '$repo' && cd '$go_here' && makepkg -si --noconfirm && cd '$waypoint''
-		rm -rf /tmp/"$go_here"
-	done
-}
-
-
 function password_manager(){
 	[[ -z "$1" ]] && return
 	password_one=""
@@ -42,14 +31,14 @@ function password_manager(){
 		[[ "$password" != "$password2" ]] && ( echo "Passwords did not match";)	
 	done
 	echo "$1:$password_one" | chpasswd "$1"
-	export $pass=$password_one
+	echo "$password_one" >> /home/"$1"/pass
 }
 
 function create_user() {
 	[[ -z "$1" ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/bash "$1" 
 }
-echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
+
 
 # making a builder account so we can run makepkg as "root"
 
@@ -66,13 +55,14 @@ install_git_package https://aur.archlinux.org/yay.git
 # Make me a user
 user="jared"
 create_user "$user"
+pass="$(head -n 1 /home/"$user"/pass)"
 make_root "$user"
 
 clear
 
-echo "[+] PASSWORD TIME BABY"
 password_manager "$user"
 su - "$user"
+echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 
 # Make it look like Linux Mint
@@ -202,4 +192,4 @@ git config --global user.email "jared.dyreson@gmail.com"
 # change back to zsh shell
 usermod -s /bin/zsh "$user"
 systemctl start lightdm.service
-
+rm -rf /home/"$user"/pass
