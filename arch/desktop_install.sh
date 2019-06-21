@@ -5,14 +5,16 @@
 # TODO
 # rewrite entire script, adding and deleting things
 
+### Set up logging ###
+exec 1> >(tee "stdout.log")
+exec 2> >(tee "stderr.log")
 
 
-
-# this is important if you want to install packages after you install (DUH!)
+# HELPER FUNCTIONS #
 
 function make_root() {
 	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
-	echo "$1 ALL=(ALL) ALL"  >> /etc/sudoers
+	echo "$1 ALL=(ALL) ALL"  | tee -a etc/sudoers
 }
 
 function install_git_package() {
@@ -25,29 +27,50 @@ function install_git_package() {
 	done
 }
 
-# making a builder account so we can run makepkg as "root"
 
-### Set up logging ###
-exec 1> >(tee "stdout.log")
-exec 2> >(tee "stderr.log")
+function password_manager(){
+	[[ -z "$1" ]] && return
+	password_one=""
+	password_two="different"
+	while [[ "$password_one" != "$password_two" || -z "$password_one" || -z "$password_two" ]]; do
+		password_one=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
+		clear
+		[[ -z "$password_one" ]] && (echo "Password cannot be nothing")
+		password_two=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
+		clear
+		[[ "$password" != "$password2" ]] && ( echo "Passwords did not match";)	
+	done
+	echo "$1:$password_one" | chpasswd "$1"
+}
+
+function create_user() {
+	[[ -z "$1" ]] && exit
+	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1" 
+}
+
+# making a builder account so we can run makepkg as "root"
 
 sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
 sudo pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
-printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers # Allow the builduser passwordless sudo
+make_root builduser
 
-# install yay first
+# install yay first (so we can install "unofficial" packages using pacman)
 
-#install_git_package https://aur.archlinux.org/yay.git
-useradd -m -g users -G wheel,storage,power -s /bin/zsh jared
-printf 'jared ALL=(ALL) ALL\n' | tee -a /etc/sudoers.d
+install_git_package https://aur.archlinux.org/yay.git
+sudo pacman -Sy --noconfirm zsh
+
+# Make me a user
+user="jared"
+create_user "$user"
+make_root "$user"
 
 clear
 
 echo "[+] PASSWORD TIME BABY"
-passwd jared
-su - jared
+password_manager "$user"
+su - "$user"
 
 
 # Make it look like Linux Mint
@@ -61,21 +84,20 @@ git clone https://github.com/JaredDyreson/dotfiles.git
 
 ## OH MY ZSH
 
-sudo pacman -Sy --noconfirm zsh
 curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
 [[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller
 echo "Y" | ./omzinstaller
+cp -ar /tmp/dotfiles/shell/zshrc ~/.zshrc
 
 
-## Shell things (update zshrc and make vim the default editor)
+## VIM
 sudo pacman -Sy --noconfirm vim
-cp -ar /tmp/dotfiles/shell/zshrc /home/jared/.zshrc
-cp -ar /tmp/dotfiles/shell/vimrc /home/jared/.vimrc
-[[  "$EDITOR" !=  "vim" ]] && (sed -i "/export\ EDITOR/s/'.*'/'vim'/" /home/jared/.zshrc)
+cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
 
-# Install the Display Manager and theme
+# Install the Display Manager and Desktop Environmnet
 
 sudo pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
+install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git 
 sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf
 systemctl enable lightdm.service
 
@@ -86,16 +108,16 @@ install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archl
 git clone https://github.com/daniruiz/flat-remix
 git clone https://github.com/daniruiz/flat-remix-gtk
 
-mkdir -p /home/jared/{.icons,.themes}
-cp -r flat-remix/Flat-Remix* /home/jared/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/jared/.themes/
+mkdir -p /home/"$user"/{.icons,.themes}
+cp -r flat-remix/Flat-Remix* /home/"$user"/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/"$user"/.themes/
 
 rm -rf flat*
 
 # Get all of the folders we need
 
-mkdir -p /home/jared/{.config/ranger,Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
+mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
 
-cd /home/jared/Projects
+cd /home/"$user"/Projects
 cat /tmp/dotfiles/repo_list/manifest | while read line; do
 	git clone "$line"
 done
@@ -104,22 +126,22 @@ done
 
 ## File manager
 sudo pacman -Sy --noconfirm ranger
-cp -ar /tmp/dotfiles/ranger/* /home/jared/.config/ranger/
+## we want to allow for ranger to create the necessary intial configuration files
+ranger & disown
+sleep 10
+pkill ranger
+cp -ar /tmp/dotfiles/ranger/* ~/.config/ranger/
 
 ## URXVT
 sudo pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
-cp -ar /tmp/dotfiles/terminal/Xresources /home/jared/.Xresources
+cp -ar /tmp/dotfiles/terminal/Xresources ~/.Xresources
 
 ## Cinnamon Settings
 dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
 
 ## Remapping ESC to CAPS!
-sudo pacman -Sy --noconfirm xorg-setxkmap
-echo "setxkbmap -option caps:swapescape" >> /home/jared/.xinitrc
-
-
-## Scripts and git configuration
-
+# sudo pacman -Sy --noconfirm xorg-setxkmap
+# echo "setxkbmap -option caps:swapescape" >> /home/"$user"/.xinitrc
 
 # Applications
 
@@ -177,6 +199,6 @@ sudo pacman -Sy --noconfirm jre-openjdk
 userdel builduser
 git config --global user.name "Jared Dyreson"
 git config --global user.email "jared.dyreson@gmail.com"
-`cd /home/jared && git clone https://github.com/JaredDyreson/scripts.git`
+`cd /home/"$user" && git clone https://github.com/JaredDyreson/scripts.git`
 systemctl start lightdm.service
 
