@@ -41,7 +41,7 @@ function create_user() {
 
 
 # making a builder account so we can run makepkg as "root"
-
+[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
 sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
 pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
@@ -59,13 +59,13 @@ chmod +x /tmp/install_git_package
 # Make me a user
 user="jared"
 create_user "$user"
-pass="$(head -n 1 /home/"$user"/pass)"
 make_root "$user"
 
 clear
 
 password_manager "$user"
 su - "$user"
+pass="$(head -n 1 ~/pass)"
 echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 
@@ -104,16 +104,16 @@ systemctl enable lightdm.service
 git clone https://github.com/daniruiz/flat-remix
 git clone https://github.com/daniruiz/flat-remix-gtk
 
-mkdir -p /home/"$user"/{.icons,.themes}
-cp -r flat-remix/Flat-Remix* /home/"$user"/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* /home/"$user"/.themes/
+mkdir -p ~/{.icons,.themes}
+cp -r flat-remix/Flat-Remix* ~/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* ~/.themes/
 
 rm -rf flat*
 
 # Get all of the folders we need
 
-mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
+mkdir -p ~/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
 
-cd /home/"$user"/Projects
+cd ~/Projects
 cat /tmp/dotfiles/repo_lists/manifest | while read line; do
 	git clone "$line"
 done
@@ -192,8 +192,8 @@ echo "$pass" | sudo -S pacman -Sy --noconfirm jre-openjdk jdk-openjdk openjdk-do
 userdel builduser
 git config --global user.name "Jared Dyreson"
 git config --global user.email "jared.dyreson@gmail.com"
-`cd /home/"$user" && git clone https://github.com/JaredDyreson/scripts.git`
+`cd ~ && git clone https://github.com/JaredDyreson/scripts.git`
 # change back to zsh shell
+rm -rf ~/pass
 usermod -s /bin/zsh "$user"
 systemctl start lightdm.service
-rm -rf /home/"$user"/pass
