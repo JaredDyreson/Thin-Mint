@@ -14,7 +14,7 @@ exec 2> >(tee "stderr.log")
 
 function make_root() {
 	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
-	echo "$1 ALL=(ALL) ALL"  | tee -a etc/sudoers
+	echo "$1 ALL=(ALL) ALL"  | tee -a /etc/sudoers
 }
 
 function install_git_package() {
