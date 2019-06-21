@@ -194,6 +194,13 @@ function programming_environments() {
 		rm -rf /tmp/*
 	done
 }
+export -f terminal_configuration
+export -f desktop_manager
+export -f theme_manager
+export -f application_installer
+export -f dot_file_installer
+export -f home_directory_structure
+export -f programming_environments
 
 initial_configuration
 
