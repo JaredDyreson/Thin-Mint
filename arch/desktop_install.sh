@@ -4,6 +4,7 @@
 
 # TODO
 # rewrite entire script, adding and deleting things
+# mitigate most of these to functions so it is neater
 
 ### Set up logging ###
 exec 1> >(tee "stdout.log")
