@@ -18,7 +18,7 @@ function make_root() {
 }
 
 function install_git_package() {
-	waypoint="$(pwd)"
+	waypoint="$HOME"
 	for repo in "$@"; do
 		#[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
 		go_here="$(basename "$repo" | sed 's/\.git//g')"
@@ -41,18 +41,19 @@ function password_manager(){
 		[[ "$password" != "$password2" ]] && ( echo "Passwords did not match";)	
 	done
 	echo "$1:$password_one" | chpasswd "$1"
+	export $pass=$password_one
 }
 
 function create_user() {
 	[[ -z "$1" ]] && exit
-	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1" 
+	useradd -m -g users -G wheel,storage,power -s /bin/bash "$1" 
 }
-sudo pacman -Sy --noconfirm zsh
+echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 # making a builder account so we can run makepkg as "root"
 
 sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
-sudo pacman -S --needed --noconfirm sudo # Install sudo
+pacman -S --needed --noconfirm sudo # Install sudo
 useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
 make_root builduser
@@ -91,12 +92,12 @@ cp -ar /tmp/dotfiles/shell/zshrc ~/.zshrc
 
 
 ## VIM
-sudo pacman -Sy --noconfirm vim
+echo "$pass" | sudo -S pacman -Sy --noconfirm vim
 cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
 
 # Install the Display Manager and Desktop Environmnet
 
-sudo pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
+echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
 install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git 
 sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf
 systemctl enable lightdm.service
@@ -115,17 +116,17 @@ rm -rf flat*
 
 # Get all of the folders we need
 
-mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures,Projects,Video}
+mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
 
 cd /home/"$user"/Projects
-cat /tmp/dotfiles/repo_list/manifest | while read line; do
+cat /tmp/dotfiles/repo_lists/manifest | while read line; do
 	git clone "$line"
 done
 
 # Use dotfiles
 
 ## File manager
-sudo pacman -Sy --noconfirm ranger
+echo "$pass" | sudo -S pacman -Sy --noconfirm ranger
 ## we want to allow for ranger to create the necessary intial configuration files
 ranger & disown
 sleep 10
@@ -133,10 +134,11 @@ pkill ranger
 cp -ar /tmp/dotfiles/ranger/* ~/.config/ranger/
 
 ## URXVT
-sudo pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
+echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
 cp -ar /tmp/dotfiles/terminal/Xresources ~/.Xresources
 
 ## Cinnamon Settings
+cp -ar /tmp/dotfiles/wallpaper/* ~/Pictures/Wallpapers/
 dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
 
 ## Remapping ESC to CAPS!
@@ -147,7 +149,7 @@ dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
 
 ## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC, Firefox
 
-sudo pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57 firefox
+echo "$pass" | sudo -S pacman -Sy --noconfirm vmware-workstation spotify vlc zenity ffmpeg-compat-57 firefox
 
 ## Discord
 
@@ -155,24 +157,20 @@ yay -S --noconfirm discord
 
 ## Etcher, USB Formater (directly from Mint)
 
-install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
+# install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
 
 ## Image viewer and xreader (Also from Mint), as well as gimp
 
 install_git_package https://aur.archlinux.org/pix.git 
-sudo pacman -Sy --noconfirm xreader gimp imagemagick
-
-## Markdown Client (Mostly for looks)
-
-#wget -qO package "https://github.com/notable/notable/releases/download/v1.5.1/Notable-1.5.1.pkg" && pacman -S package && rm -rf package
+echo "$pass" | sudo -S pacman -Sy --noconfirm xreader gimp imagemagick
 
 ## Calculator and other production needs
 
-sudo pacman -Sy --noconfirm gnome-calculator libreoffice-still
+echo "$pass" | sudo -S pacman -Sy --noconfirm gnome-calculator libreoffice-still
 
 ## System Monitoring
 
-sudo pacman -Sy --noconfirm htop gnome-bluetooth
+echo "$pass" | sudo -S pacman -Sy --noconfirm htop gnome-bluetooth
 
 ## LaTeX Environment
 
@@ -182,17 +180,17 @@ sudo pacman -Sy --noconfirm htop gnome-bluetooth
 
 ## Clang
 
-sudo pacman -Sy --noconfirm clang
+echo "$pass" | sudo -S pacman -Sy --noconfirm clang
 
 ## std::man pages
 
-sudo pacman -Sy --noconfirm most
-cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && sudo make install && sudo mandb && cd .. && rm -rf stdman
+echo "$pass" | sudo -S pacman -Sy --noconfirm most
+cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && echo "$pass" | sudo -S make install && echo "$pass" | sudo -S mandb && cd .. && rm -rf stdman
 
 
 # Java Environment
 
-sudo pacman -Sy --noconfirm jre-openjdk
+echo "$pass" | sudo -S pacman -Sy --noconfirm jre-openjdk jdk-openjdk openjdk-doc
 
 # Delete builduser
 
@@ -200,5 +198,7 @@ userdel builduser
 git config --global user.name "Jared Dyreson"
 git config --global user.email "jared.dyreson@gmail.com"
 `cd /home/"$user" && git clone https://github.com/JaredDyreson/scripts.git`
+# change back to zsh shell
+usermod -s /bin/zsh "$user"
 systemctl start lightdm.service
 
