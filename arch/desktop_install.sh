@@ -47,6 +47,7 @@ function create_user() {
 	[[ -z "$1" ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1" 
 }
+sudo pacman -Sy --noconfirm zsh
 
 # making a builder account so we can run makepkg as "root"
 
@@ -59,7 +60,6 @@ make_root builduser
 # install yay first (so we can install "unofficial" packages using pacman)
 
 install_git_package https://aur.archlinux.org/yay.git
-sudo pacman -Sy --noconfirm zsh
 
 # Make me a user
 user="jared"
