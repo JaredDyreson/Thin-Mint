@@ -48,9 +48,13 @@ useradd builduser -m # Create the builduser
 passwd -d builduser # Delete the buildusers password
 make_root builduser
 
+# import our install_git_repo script
+
+curl -sL https://git.io/fjVha >> /tmp/install_git_package
+chmod +x /tmp/install_git_package
 # install yay first (so we can install "unofficial" packages using pacman)
 
-install_git_package https://aur.archlinux.org/yay.git
+/tmp/install_git_package https://aur.archlinux.org/yay.git
 
 # Make me a user
 user="jared"
@@ -89,13 +93,13 @@ cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
 # Install the Display Manager and Desktop Environmnet
 
 echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
-install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git 
+/tmp/install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git 
 sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf
 systemctl enable lightdm.service
 
 # Get our icon theme
 
-install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
+/tmp/install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 
 git clone https://github.com/daniruiz/flat-remix
 git clone https://github.com/daniruiz/flat-remix-gtk
@@ -148,11 +152,11 @@ yay -S --noconfirm discord
 
 ## Etcher, USB Formater (directly from Mint)
 
-# install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
+# /tmp/install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
 
 ## Image viewer and xreader (Also from Mint), as well as gimp
 
-install_git_package https://aur.archlinux.org/pix.git 
+/tmp/install_git_package https://aur.archlinux.org/pix.git 
 echo "$pass" | sudo -S pacman -Sy --noconfirm xreader gimp imagemagick
 
 ## Calculator and other production needs
