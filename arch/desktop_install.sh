@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-
-
 # TODO
 # rewrite entire script, adding and deleting things
 # mitigate most of these to functions so it is neater
@@ -38,6 +36,20 @@ function create_user() {
 	[[ -z "$1" ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/bash "$1" 
 }
+
+initial_configuration
+
+# Make me a user
+user="jared"
+create_user "$user"
+make_root "$user"
+
+clear
+
+password_manager "$user"
+su - "$user"
+pass="$(head -n 1 ~/pass)"
+echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 # CONSOLODATION FUNCTIONS #
 
@@ -194,27 +206,6 @@ function programming_environments() {
 		rm -rf /tmp/*
 	done
 }
-export -f terminal_configuration
-export -f desktop_manager
-export -f theme_manager
-export -f application_installer
-export -f dot_file_installer
-export -f home_directory_structure
-export -f programming_environments
-
-initial_configuration
-
-# Make me a user
-user="jared"
-create_user "$user"
-make_root "$user"
-
-clear
-
-password_manager "$user"
-su - "$user"
-pass="$(head -n 1 ~/pass)"
-echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 # Make it look like Linux Mint
 
