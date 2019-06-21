@@ -247,4 +247,4 @@ userdel builduser
 # change back to zsh shell
 rm -rf ~/pass
 usermod -s /bin/zsh "$user"
-rm -rf /tmp/*
+echo "$pass" | sudo -S rm -rf /tmp/*
