@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 # Cinnamon Desktop Environment script written by Jared Dyreson, all rights reserved
-
+# Some helpful links
+# Fixing ZSH Icons: https://unix.stackexchange.com/questions/429946/zsh-icons-broke-in-urxvt
+# Font Settings for Panel: https://forums.linuxmint.com/viewtopic.php?t=106758
+#	/usr/share/cinnamon/theme/cinnamon.css
 ### Set up logging ###
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
@@ -76,23 +79,28 @@ function terminal_configuration(){
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
 	[[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller
 	echo "Y" | ./omzinstaller
+	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder ~/.oh-my-zsh/custom/plugins/reminder
 	cp -ar /tmp/dotfiles/shell/zshrc ~/.zshrc
 
 	## VIM
-	echo "$pass" | sudo -S pacman -Sy --noconfirm vim
+	echo "$pass" | sudo -S pacman -Sy --noconfirm vim cmake
+	echo "$pass" | yay -Sy --noconfirm vundle
 	cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
+	vim +PluginInstall +qall
+	python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
+
 	
 	## Ranger
 	echo "$pass" | sudo -S pacman -Sy --noconfirm ranger
 
 	## URXVT	
-	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb
+	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
 
 }
 
 function desktop_manager(){
 	echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
-	echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/lightdm-slick-greeter.git 
+	echo "$pass" | yay -Sy --noconfirm lightdm-slick-greeter
 	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 	systemctl enable lightdm.service
 }
@@ -100,7 +108,6 @@ function desktop_manager(){
 function theme_manager() {
 	# Get our icon theme
 	cd /tmp
-#	echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
 	echo "$pass" | yay -Sy --noconfirm mint-x-icons mint-y-icons mint-themes
 	git clone https://github.com/daniruiz/flat-remix
 	git clone https://github.com/daniruiz/flat-remix-gtk
@@ -121,7 +128,7 @@ function dot_file_installer() {
 
 	## Cinnamon Settings
 	cp -ar /tmp/dotfiles/wallpaper/* ~/Pictures/Wallpapers/
-	dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
+	dconf load / < /tmp/dotfiles/desktop_env/arch_cinnamon_settings
 
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
@@ -145,15 +152,20 @@ function application_installer() {
 
 	## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC, Firefox
 
-	echo "$pass" | sudo -S pacman -Sy --noconfirm vmware-workstation vlc zenity ffmpeg-compat-57 firefox
-	echo "$pass" | yay -Sy --noconfirm spotify
+	echo "$pass" | sudo -S pacman -Sy --noconfirm vlc zenity firefox
+	echo "$pass" | yay -Sy --noconfirm spotify vmware-workstation ffmpeg-compat-57 shutter
+
+	## Firefox Configuration (Extensions and profile are copied over)
+
+	#./brew pull firefox_configuration.tar
+	#tar -xvf /tmp/dotfiles/firefox/firefox_configuration.tar -C ~/.mozilla
 	## Discord
 
 	yay -S --noconfirm discord
 
 	## Etcher, USB Formater (directly from Mint)
 
-	# echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
+	echo "$pass" | yay -Sy --noconfirm balena-etcher mintstick
 
 	## Image viewer and xreader (Also from Mint), as well as gimp
 
@@ -170,6 +182,7 @@ function application_installer() {
 	
 	# archive manager
 	echo "$pass" | sudo -S pacman -Sy --noconfirm file-roller
+	echo "$pass" | sudo -S find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
 
 }
 
@@ -197,7 +210,7 @@ function programming_environments() {
 	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
 		sudo pip install --upgrade "$line"
 		sudo pip3 install --upgrade "$line"
-		rm -rf /tmp/*
+		echo "$pass" | sudo -S rm -rf /tmp/*
 	done
 }
 
@@ -240,7 +253,6 @@ programming_environments
 userdel builduser
 # change back to zsh shell
 rm -rf ~/pass
-echo "$pass" | sudo -S find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
 usermod -s /bin/zsh "$user"
-echo "$pass" | sudo -S rm -rf /tmp/*
+#echo "$pass" | sudo -S rm -rf /tmp/*
 reboot
