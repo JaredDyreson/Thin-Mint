@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# TODO
-# rewrite entire script, adding and deleting things
-# mitigate most of these to functions so it is neater
+# Cinnamon Desktop Environment script written by Jared Dyreson, all rights reserved
 
 ### Set up logging ###
 exec 1> >(tee "stdout.log")
@@ -37,6 +35,21 @@ function create_user() {
 	useradd -m -g users -G wheel,storage,power -s /bin/bash "$1" 
 }
 
+function initial_configuration(){
+	# making a builder account so we can run makepkg as "root"
+	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
+	sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
+	pacman -S --needed --noconfirm sudo git dialog # Install sudo
+	useradd builduser -m # Create the builduser
+	passwd -d builduser # Delete the buildusers password
+	make_root builduser
+
+	cd /tmp
+	[[ -d dotfiles ]] && rm -rf dotfiles
+	git clone https://github.com/JaredDyreson/dotfiles.git
+
+}
+
 initial_configuration
 
 # Make me a user
@@ -47,30 +60,13 @@ make_root "$user"
 clear
 
 password_manager "$user"
+echo "root:`head -n 1 /home/"$user"/pass`" | chpasswd root
 su - "$user"
 pass="$(head -n 1 ~/pass)"
 echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
 
 # CONSOLODATION FUNCTIONS #
 
-function initial_configuration(){
-	# making a builder account so we can run makepkg as "root"
-	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
-	sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
-	pacman -S --needed --noconfirm sudo # Install sudo
-	useradd builduser -m # Create the builduser
-	passwd -d builduser # Delete the buildusers password
-	make_root builduser
-
-	# import our install_git_repo script
-
-	curl -sL https://git.io/fjVha >> /tmp/install_git_package
-	chmod +x /tmp/install_git_package
-	cd /tmp
-	[[ -d dotfiles ]] && rm -rf dotfiles
-	git clone https://github.com/JaredDyreson/dotfiles.git
-
-}
 
 
 function terminal_configuration(){
@@ -94,17 +90,17 @@ function terminal_configuration(){
 }
 
 function desktop_manager(){
-	echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon
-	/tmp//tmp/install_git_package https://aur.archlinux.org/lightdm-slick-greeter.git 
-	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf
+	echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
+	echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/lightdm-slick-greeter.git 
+	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 	systemctl enable lightdm.service
 }
 
 function theme_manager() {
 	# Get our icon theme
 	cd /tmp
-	/tmp/install_git_package https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
-
+#	echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/mint-x-icons.git https://aur.archlinux.org/mint-y-icons.git https://aur.archlinux.org/mint-themes.git
+	echo "$pass" | yay -Sy --noconfirm mint-x-icons mint-y-icons mint-themes
 	git clone https://github.com/daniruiz/flat-remix
 	git clone https://github.com/daniruiz/flat-remix-gtk
 
@@ -116,7 +112,7 @@ function theme_manager() {
 
 function dot_file_installer() {
 	## File manager [Ranger]
-	mkidr ~/.config/ranger 
+	mkdir ~/.config/ranger 
 	cp -ar /tmp/dotfiles/ranger/* ~/.config/ranger/
 
 	## URXVT
@@ -126,9 +122,6 @@ function dot_file_installer() {
 	cp -ar /tmp/dotfiles/wallpaper/* ~/Pictures/Wallpapers/
 	dconf load /org/cinnamon/ < /tmp/dotfiles/desktop_env/settings
 
-	## Remapping ESC to CAPS!
-	# sudo pacman -Sy --noconfirm xorg-setxkmap
-	# echo "setxkbmap -option caps:swapescape" >> /home/"$user"/.xinitrc
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
 	`cd ~ && git clone https://github.com/JaredDyreson/scripts.git`
@@ -143,28 +136,28 @@ function home_directory_structure() {
 	done
 }
 function application_installer() {
+
+	### install yay first (so we can install "unofficial" packages using pacman)
+
+	git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
+	
 	# Applications
 
 	## VMWare, Spotfiy (zenity and ffmpeg-compat-57 for media playback), VLC, Firefox
 
 	echo "$pass" | sudo -S pacman -Sy --noconfirm vmware-workstation vlc zenity ffmpeg-compat-57 firefox
-	/tmp/install_git_package https://aur.archlinux.org/spotify.git
-
-	### install yay first (so we can install "unofficial" packages using pacman)
-
-	/tmp/install_git_package https://aur.archlinux.org/yay.git
-
+	echo "$pass" | yay -Sy --noconfirm spotify
 	## Discord
 
 	yay -S --noconfirm discord
 
 	## Etcher, USB Formater (directly from Mint)
 
-	# /tmp/install_git_package https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
+	# echo "$pass" | yay -Sy --noconfirm https://aur.archlinux.org/balena-etcher.git https://aur.archlinux.org/mintstick.git
 
 	## Image viewer and xreader (Also from Mint), as well as gimp
 
-	/tmp/install_git_package https://aur.archlinux.org/pix.git 
+	echo "$pass" | yay -Sy --noconfirm pix 
 	echo "$pass" | sudo -S pacman -Sy --noconfirm xreader gimp imagemagick
 
 	## Calculator and other production needs
@@ -174,7 +167,9 @@ function application_installer() {
 	## System Monitoring
 
 	echo "$pass" | sudo -S pacman -Sy --noconfirm htop gnome-bluetooth
-
+	
+	# archive manager
+	echo "$pass" | sudo -S pacman -Sy --noconfirm file-roller
 
 }
 
@@ -198,7 +193,6 @@ function programming_environments() {
 	# Python
 
 	## so we don't have to fix starbucks_automa
-	/tmp/install_git_package https://aur.archlinux.org/python35.git
 	echo "$pass" | sudo -S pacman -Sy --noconfirm python-pip 
 	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
 		sudo pip install --upgrade "$line"
@@ -246,5 +240,6 @@ programming_environments
 userdel builduser
 # change back to zsh shell
 rm -rf ~/pass
+echo "$pass" | sudo -S find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
 usermod -s /bin/zsh "$user"
 echo "$pass" | sudo -S rm -rf /tmp/*

@@ -55,46 +55,17 @@ locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Set the hostname and hostfiles
-
-echo "jared-xps" > /etc/hostname
-echo "127.0.0.1 localhost jared-xps" > /etc/hosts
-
-
-# not installed by default
-#pacman -Sy --noconfirm dialog
-
-#password=`dialog --stdout --passwordbox "Enter admin password" 0 0`
-#[[ -z "$password" ]] && (echo "password seems to be empty";passwd)
-#password2=`dialog --stdout --passwordbox "Enter admin password again" 0 0`
-#[[ -z "$password2" ]] && (echo "password seems to be empty";passwd)
-#clear
-#[[ "$password" != "$password2" ]] && ( echo "Passwords did not match"; exit 1; )
-
-pacman -Sy --noconfirm zsh
-useradd -mU -s /bin/zsh -G wheel "$user"
-echo ""$user" ALL=(ALL) ALL" >> /etc/sudoers
-#echo ""$user":"$password"" | chpasswd --root /mnt
-#echo "root:$password" | chpasswd --root /mnt
+hostnamed="jared-xps"
+echo "$hostnamed" > /etc/hostname
+echo "127.0.0.1 localhost $hostnamed" > /etc/hosts
 
 # Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# installing git
-
-pacman -Sy --noconfirm git
-
 # internet persistance
 systemctl enable dhcpcd
-
-# Desktop environment
-
-#curl -sL "" | bash
-
-# Hardware Configuration
-
-#curl -sL "" | bash
 
 # Final cleanup
 umount /mnt/*
