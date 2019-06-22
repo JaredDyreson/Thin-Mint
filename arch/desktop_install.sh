@@ -42,7 +42,7 @@ function initial_configuration(){
 	# making a builder account so we can run makepkg as "root"
 	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
 	sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
-	pacman -S --needed --noconfirm sudo git dialog # Install sudo
+	pacman -S --needed --noconfirm sudo git dialog python # Install sudo
 	useradd builduser -m # Create the builduser
 	passwd -d builduser # Delete the buildusers password
 	make_root builduser
@@ -87,7 +87,7 @@ function terminal_configuration(){
 	echo "$pass" | yay -Sy --noconfirm vundle
 	cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
 	vim +PluginInstall +qall
-	python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
+	/usr/bin/python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
 
 	
 	## Ranger
