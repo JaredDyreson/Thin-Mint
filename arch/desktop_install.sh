@@ -64,6 +64,7 @@ echo "root:`head -n 1 /home/"$user"/pass`" | chpasswd root
 su - "$user"
 pass="$(head -n 1 ~/pass)"
 echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
+git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
 
 # CONSOLODATION FUNCTIONS #
 
@@ -139,7 +140,6 @@ function application_installer() {
 
 	### install yay first (so we can install "unofficial" packages using pacman)
 
-	git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
 	
 	# Applications
 
@@ -243,3 +243,4 @@ rm -rf ~/pass
 echo "$pass" | sudo -S find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
 usermod -s /bin/zsh "$user"
 echo "$pass" | sudo -S rm -rf /tmp/*
+reboot
