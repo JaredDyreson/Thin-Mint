@@ -30,7 +30,7 @@ function password_manager(){
 function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && return true || return false }
 
 function create_user() {
-	[[ -z "$1" || check_user "$1" ]] && exit
+	[[ -z "$1" || `check_user "$1"` ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1"
 	password_manager "$1"
 	mkdir -p ~/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
