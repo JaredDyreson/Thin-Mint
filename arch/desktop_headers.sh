@@ -68,15 +68,75 @@ function terminal_configuration() {
 	echo "$pass" | sudo -S pacman -Sy --noconfirm vim cmake
 	echo "$pass" | yay -Sy --noconfirm vundle
 	cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
-	vim +PluginInstall +qall
+	vim -u +PluginInstall +qall
 	/usr/bin/python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
 	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
-
 }
 
-# sets user and pass
+function desktop_manager{
+	echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
+	echo "$pass" | yay -Sy --noconfirm lightdm-slick-greeter
+	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+	systemctl enable lightdm.service
+}
+
+
+function theme_manager() {
+	cd /tmp
+	echo "$pass" | yay -Sy --noconfirm mint-x-icons mint-y-icons mint-themes
+	git clone https://github.com/daniruiz/flat-remix
+	git clone https://github.com/daniruiz/flat-remix-gtk
+	mkdir -p ~/{.icons,.themes}
+	cp -r flat-remix/Flat-Remix* ~/.icons/ && cp -r flat-remix-gtk/Flat-Remix-GTK* ~/.themes/
+	rm -rf flat*
+}
+
+function dot_file_installer() {
+	mkdir ~/.config/ranger 
+	cp -ar /tmp/dotfiles/ranger/* ~/.config/ranger/
+	cp -ar /tmp/dotfiles/terminal/Xresources ~/.Xresources
+	cp -ar /tmp/dotfiles/wallpaper/* ~/Pictures/Wallpapers/
+	dconf load / < /tmp/dotfiles/desktop_env/arch_cinnamon_settings
+	git config --global user.name "Jared Dyreson"
+	git config --global user.email "jared.dyreson@gmail.com"
+	`cd ~ && git clone https://github.com/JaredDyreson/scripts.git`
+}
+
+function application_installer() {
+	echo "$pass" | sudo -S pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
+	echo "$pass" | yay -Sy --noconfirm spotify vmware-workstation ffmpeg-compat-57 shutter discord balena-etcher mintstick pix
+	echo "$pass" | sudo -S find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
+}
+
+
+function programming_environments{
+	echo "$pass" | sudo -S pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip
+
+	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && echo "$pass" | sudo -S make install && echo "$pass" | sudo -S mandb && cd .. && rm -rf stdman
+
+	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
+		sudo pip install --upgrade "$line"
+		sudo pip3 install --upgrade "$line"
+	done
+
+}
+function clean_up(){
+	userdel builduser
+	rm -rf ~/pass
+	usermod -s /bin/zsh "$user"
+	reboot
+}
+
+### Set up logging ###
+exec 1> >(tee "stdout.log")
+exec 2> >(tee "stderr.log")
+
 initial_configuration jared
-echo "User: $user"
-echo "Password: $pass"
-sleep 10
 terminal_configuration
+desktop_manager
+theme_manager
+home_directory_structure
+dot_file_installer
+application_installer
+programming_environments
+clean_up
