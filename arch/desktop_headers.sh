@@ -95,7 +95,7 @@ function dot_file_installer() {
 function application_installer() {
 	pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
 	# vmware-workstation
-	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
+	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'vmware-workstation' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
 	done
@@ -104,7 +104,7 @@ function application_installer() {
 
 
 function programming_environments(){
-	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip # texlive-most
+	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
 	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
 		sudo pip install --upgrade "$line"
