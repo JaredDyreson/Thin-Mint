@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Header files for desktop_installer_main.sh #
+# Header files for desktop_installer_main.sh 
 
-## Functions that are used for creating a user space ##
+## Functions that are used for creating a user space 
 
 function make_root() {
 	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
@@ -10,7 +10,7 @@ function make_root() {
 }
 
 function password_manager(){
-	# REFACTOR #
+	# REFACTOR 
 	[[ -z "$1" ]] && return
 	password_one=""
 	password_two="different"
@@ -27,7 +27,7 @@ function password_manager(){
 	export pass="$password_one"
 }
 
-function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && return 1 || return 0 }
+function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && (return 1) || (return 0) }
 
 function create_user() {
 	[[ -z "$1" || `check_user "$1"` ]] && exit
@@ -57,7 +57,7 @@ function initial_configuration(){
 }
 
 
-## Functions that are used for the installation of the actual desktop environment ##
+## Functions that are used for the installation of the actual desktop environment 
 
 function terminal_configuration() {
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
