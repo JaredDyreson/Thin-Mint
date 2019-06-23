@@ -25,9 +25,10 @@ function create_user() {
 	[[ -z "$1" || `check_user "$1"` ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1"
 	password_manager "$1"
-	mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
+	mkdir -p /home/"$1"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
 	cat /tmp/dotfiles/manifest_lists/repo_manifest | while read line; do
-		git clone "$line" /home/"$user"/Projects/"$line"
+		[[ $(echo "$line" | grep 'university') ]] && break
+		git clone "$line" /home/"$1"/Projects/"$(basename "$line" | sed 's/\.git//g')"
 	done
 }
 
@@ -73,8 +74,8 @@ function desktop_manager(){
 
 
 function theme_manager() {
-	themes=('mint-x-icons' 'mint-y-icons' 'mint-themes')
-	for theme in "$themes"; do
+	declare -a themes=('mint-x-icons' 'mint-y-icons' 'mint-themes')
+	for theme in "${themes[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$theme""
 	done
 	mkdir -p /home/"$user"/{.icons,.themes}
@@ -95,8 +96,8 @@ function dot_file_installer() {
 
 function application_installer() {
 	pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
-	yay_applications=('spotify' 'vmware-workstation' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
-	for application in "$yay_applications"; do
+	declare -a yay_applications=('spotify' 'vmware-workstation' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
+	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
 	done
 	find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
@@ -119,7 +120,6 @@ exec 2> >(tee "stderr.log")
 initial_configuration jared
 desktop_manager
 theme_manager
-home_directory_structure
 dot_file_installer
 application_installer
 programming_environments
