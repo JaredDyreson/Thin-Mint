@@ -68,8 +68,8 @@ function terminal_configuration() {
 	echo "$pass" | sudo -S pacman -Sy --noconfirm vim cmake
 	echo "$pass" | yay -Sy --noconfirm vundle
 	cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
-	vim -u +PluginInstall +qall
-	/usr/bin/python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
+	#vim -u +PluginInstall +qall
+	#/usr/bin/python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
 	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
 }
 
