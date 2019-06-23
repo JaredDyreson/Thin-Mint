@@ -14,9 +14,9 @@ function password_manager(){
 		passtwo=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
 		clear
 	done
-	echo "$1:$password_one" | chpasswd "$1"
-	echo "root:$password_one" | chpasswd root
-	export pass="$password_one"
+	echo "$1:$passone" | chpasswd "$1"
+	echo "root:$passone" | chpasswd root
+	export pass="$passone"
 }
 
 function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && (return 1) || (return 0) }
