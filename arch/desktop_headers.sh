@@ -27,7 +27,7 @@ function password_manager(){
 	export pass="$password_one"
 }
 
-function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && return true || return false }
+function check_user() { [[ $(awk -F: '{print $1}' /etc/passwd | grep "$1") ]] && return 1 || return 0 }
 
 function create_user() {
 	[[ -z "$1" || `check_user "$1"` ]] && exit
