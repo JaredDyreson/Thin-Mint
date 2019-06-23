@@ -25,7 +25,7 @@ function create_user() {
 	[[ -z "$1" || `check_user "$1"` ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1"
 	password_manager "$1"
-	mkdir -p /home/"$1"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
+	sudo -u "$1" bash -c "mkdir -p /home/"$1"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}"
 	cat /tmp/dotfiles/manifest_lists/repo_manifest | while read line; do
 		[[ $(echo "$line" | grep 'university') ]] && break
 		git clone "$line" /home/"$1"/Projects/"$(basename "$line" | sed 's/\.git//g')"
@@ -52,14 +52,12 @@ function initial_configuration(){
 ## Functions that are used for the installation of the actual desktop environment 
 
 function terminal_configuration() {
-	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
-	chmod +x ./omzinstaller
-	echo "Y" | ./omzinstaller
+	sudo -u "$user" bash -c "cp -ar /tmp/dotfiles/shell/zshrc /home/"$user"/.zshrc"
+	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder
-	cp -ar /tmp/dotfiles/shell/zshrc /home/"$user"/.zshrc
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
-	cp -ar /tmp/dotfiles/shell/vimrc /home/"$user"/.vimrc
+	sudo -u "$user" bash -c "cp -ar /tmp/dotfiles/shell/vimrc /home/"$user"/.vimrc"
 	vim +silent +PluginInstall +qall
 	/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
 	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
@@ -78,17 +76,17 @@ function theme_manager() {
 	for theme in "${themes[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$theme""
 	done
-	mkdir -p /home/"$user"/{.icons,.themes}
+	sudo -u "$user" bash -c "mkdir -p /home/"$user"/{.icons,.themes}"
 	git clone https://github.com/daniruiz/flat-remix /home/"$user"/.icons/
 	git clone https://github.com/daniruiz/flat-remix-gtk /home/"$user"/.themes/
 }
 
 function dot_file_installer() {
-	mkdir /home/"$user"/.config/ranger 
-	cp -ar /tmp/dotfiles/ranger/* /home/"$user"/.config/ranger/
-	cp -ar /tmp/dotfiles/terminal/Xresources /home/"$user"/.Xresources
-	cp -ar /tmp/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/
-	dconf load / < /tmp/dotfiles/desktop_env/arch_cinnamon_settings
+	mkdir -p /home/"$user"/.config/ranger 
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/ranger/* /home/"$user"/.config/ranger/"
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
+	dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_cinnamon_settings
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
 	`git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts`
@@ -96,7 +94,8 @@ function dot_file_installer() {
 
 function application_installer() {
 	pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
-	declare -a yay_applications=('spotify' 'vmware-workstation' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
+	# vmware-workstation
+	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
 	done
@@ -105,11 +104,10 @@ function application_installer() {
 
 
 function programming_environments(){
-	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip
+	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip # texlive-most
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
 	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
 		sudo pip install --upgrade "$line"
-		sudo pip3 install --upgrade "$line"
 	done
 }
 
