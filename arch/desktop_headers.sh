@@ -132,11 +132,12 @@ exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
 
 initial_configuration jared
-terminal_configuration
 desktop_manager
 theme_manager
 home_directory_structure
 dot_file_installer
 application_installer
 programming_environments
-clean_up
+terminal_configuration
+userdel builduser
+reboot
