@@ -42,18 +42,17 @@ function create_user() {
 
 
 function initial_configuration(){
-	[[ check_user "$1" ]] && (echo "Cannot process, $1 is already a user";return)
+	[[ `check_user "$1"` ]] && (echo "Cannot process, $1 is already a user";return)
 	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
 	sed -i 's/builduser.*//g;s/'$1'.*//g' /etc/sudoers
 	pacman -S --needed --noconfirm sudo git dialog python zsh
-	[[ check_user builduser ]] || (useradd builduser -m && passwd -d builduser && make_root builduser)
+	[[ `check_user builduser` ]] || (useradd builduser -m && passwd -d builduser && make_root builduser)
 	[[ -d /tmp/dotfiles ]] && rm -rf /tmp/dotfiles
 	git clone https://github.com/JaredDyreson/dotfiles.git /tmp/dotfiles
 	u="$1"
 	create_user "$u"
 	make_root "$u"
-	su - builduser
-	git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
+	su -c "git clone https://aur.archlinux.org/yay.git /home/builduser/yay && cd /home/builduser/yay && makepkg -si --noconfirm && cd .. && rm -rf yay"
 	export user="$u"	
 }
 
@@ -76,7 +75,7 @@ function terminal_configuration() {
 }
 
 # sets user and pass
-initial_configuration
+initial_configuration jared
 echo "User: $user"
 echo "Password: $pass"
 
