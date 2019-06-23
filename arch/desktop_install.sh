@@ -5,6 +5,7 @@
 # Fixing ZSH Icons: https://unix.stackexchange.com/questions/429946/zsh-icons-broke-in-urxvt
 # Font Settings for Panel: https://forums.linuxmint.com/viewtopic.php?t=106758
 #	/usr/share/cinnamon/theme/cinnamon.css
+
 ### Set up logging ###
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
@@ -12,53 +13,11 @@ exec 2> >(tee "stderr.log")
 
 # HELPER FUNCTIONS #
 
-function make_root() {
-	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
-	echo "$1 ALL=(ALL) ALL"  | tee -a /etc/sudoers
-}
 
-function password_manager(){
-	[[ -z "$1" ]] && return
-	password_one=""
-	password_two="different"
-	while [[ "$password_one" != "$password_two" || -z "$password_one" || -z "$password_two" ]]; do
-		password_one=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
-		clear
-		[[ -z "$password_one" ]] && (echo "Password cannot be nothing")
-		password_two=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
-		clear
-		[[ "$password" != "$password2" ]] && ( echo "Passwords did not match";)	
-	done
-	echo "$1:$password_one" | chpasswd "$1"
-	echo "$password_one" >> /home/"$1"/pass
-}
-
-function create_user() {
-	[[ -z "$1" ]] && exit
-	useradd -m -g users -G wheel,storage,power -s /bin/bash "$1" 
-}
-
-function initial_configuration(){
-	# making a builder account so we can run makepkg as "root"
-	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
-	sed -i 's/builduser.*//g;s/jared.*//g' /etc/sudoers
-	pacman -S --needed --noconfirm sudo git dialog python # Install sudo
-	useradd builduser -m # Create the builduser
-	passwd -d builduser # Delete the buildusers password
-	make_root builduser
-
-	cd /tmp
-	[[ -d dotfiles ]] && rm -rf dotfiles
-	git clone https://github.com/JaredDyreson/dotfiles.git
-
-}
 
 initial_configuration
 
 # Make me a user
-user="jared"
-create_user "$user"
-make_root "$user"
 
 clear
 
@@ -67,35 +26,12 @@ echo "root:`head -n 1 /home/"$user"/pass`" | chpasswd root
 su - "$user"
 pass="$(head -n 1 ~/pass)"
 echo "$pass" | sudo -S pacman -Sy --noconfirm zsh
-git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd .. && rm -rf yay
 
 # CONSOLODATION FUNCTIONS #
 
 
 
 function terminal_configuration(){
-	## OH MY ZSH
-
-	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh  >> omzinstaller
-	[[ -s "./omzinstaller" ]] && chmod +x ./omzinstaller
-	echo "Y" | ./omzinstaller
-	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder ~/.oh-my-zsh/custom/plugins/reminder
-	cp -ar /tmp/dotfiles/shell/zshrc ~/.zshrc
-
-	## VIM
-	echo "$pass" | sudo -S pacman -Sy --noconfirm vim cmake
-	echo "$pass" | yay -Sy --noconfirm vundle
-	cp -ar /tmp/dotfiles/shell/vimrc ~/.vimrc
-	vim +PluginInstall +qall
-	/usr/bin/python ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
-
-	
-	## Ranger
-	echo "$pass" | sudo -S pacman -Sy --noconfirm ranger
-
-	## URXVT	
-	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
-
 }
 
 function desktop_manager(){
@@ -136,13 +72,6 @@ function dot_file_installer() {
 
 }
 
-function home_directory_structure() {
-	mkdir -p ~/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}
-	cd ~/Projects
-	cat /tmp/dotfiles/manifest_lists/repo_manifest | while read line; do
-		git clone "$line"
-	done
-}
 function application_installer() {
 
 	### install yay first (so we can install "unofficial" packages using pacman)
@@ -214,45 +143,57 @@ function programming_environments() {
 	done
 }
 
-# Make it look like Linux Mint
+function clean_up(){
+	userdel builduser
+	rm -rf ~/pass
+	usermod -s /bin/zsh "$user"
+	reboot
+}
 
-## Terminal
+function main() {
+	terminal_configuration
+	desktop_manager
+	theme_manager
+	home_directory_structure
+	dot_file_installer
+	application_installer
+	# pacman -Sy --noconfirm texlive-most
+	programming_environments
+	clean_up
 
-terminal_configuration
-
-## Install the Display Manager and Desktop Environmnet
-
-desktop_manager
-
-## Theme it up
-
-theme_manager
-
-## Get all of the folders we need
-
-home_directory_structure
-
-## Config files
-
-dot_file_installer
-
-## Applications
-
-application_installer
-
-## LaTeX Environment
-
-# pacman -Sy --noconfirm texlive-most
-
-# Programming
-
-programming_environments
-
-# Clean up
-
-userdel builduser
-# change back to zsh shell
-rm -rf ~/pass
-usermod -s /bin/zsh "$user"
-#echo "$pass" | sudo -S rm -rf /tmp/*
-reboot
+}
+case "${@:2}" in
+	--all)
+		main
+		;;
+	--init)
+		initial_configuration
+		;;
+	--create-user)
+		create_user_space
+		;;
+	--term-config)
+		terminal_configuration
+		;;
+	--desktop-config)
+		desktop_manager
+		;;
+	--theme-config)
+		theme_manager
+		;;
+	--home-struct)
+		home_directory_structure
+		;;
+	--application-config)
+		application_installer
+		;;
+	--programming-config)
+		programming_environments
+		;;
+	--clean-up)
+		cleanup
+		;;
+	--help)
+		echo "[-] Print help message"
+		;;
+esac
