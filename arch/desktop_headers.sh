@@ -52,7 +52,7 @@ function initial_configuration(){
 	u="$1"
 	create_user "$u"
 	make_root "$u"
-	su -c "git clone https://aur.archlinux.org/yay.git /home/builduser/yay && cd /home/builduser/yay && makepkg -si --noconfirm && cd .. && rm -rf yay"
+	sudo -u builduser bash -c "git clone https://aur.archlinux.org/yay.git /home/builduser/yay && cd /home/builduser/yay && makepkg -si --noconfirm && cd .. && rm -rf yay"
 	export user="$u"	
 }
 
@@ -78,4 +78,5 @@ function terminal_configuration() {
 initial_configuration jared
 echo "User: $user"
 echo "Password: $pass"
-
+sleep 10
+terminal_configuration
