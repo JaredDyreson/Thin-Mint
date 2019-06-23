@@ -73,7 +73,7 @@ function terminal_configuration() {
 	echo "$pass" | sudo -S pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
 }
 
-function desktop_manager{
+function desktop_manager(){
 	echo "$pass" | sudo -S pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
 	echo "$pass" | yay -Sy --noconfirm lightdm-slick-greeter
 	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
@@ -109,7 +109,7 @@ function application_installer() {
 }
 
 
-function programming_environments{
+function programming_environments(){
 	echo "$pass" | sudo -S pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip
 
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && echo "$pass" | sudo -S make install && echo "$pass" | sudo -S mandb && cd .. && rm -rf stdman
