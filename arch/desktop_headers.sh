@@ -80,14 +80,13 @@ function theme_manager() {
 }
 
 function dot_file_installer() {
-	mkdir -p /home/"$user"/.config/ranger 
+	sudo -u "$user" bash -c "mkdir -p /home/"$user"/.config/ranger"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/ranger/* /home/"$user"/.config/ranger/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
-	dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_cinnamon_settings
+	dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
-	`git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts`
 }
 
 function application_installer() {
@@ -119,6 +118,7 @@ theme_manager
 dot_file_installer
 application_installer
 programming_environments
+git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
 terminal_configuration
 userdel -rf builduser
 reboot
