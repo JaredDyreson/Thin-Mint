@@ -113,12 +113,12 @@ exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
 
 initial_configuration jared
-desktop_manager
-theme_manager
-dot_file_installer
-application_installer
-programming_environments
-git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
-terminal_configuration
-userdel -rf builduser
-reboot
+#desktop_manager
+#theme_manager
+#dot_file_installer
+#application_installer
+#programming_environments
+#git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
+#terminal_configuration
+#userdel -rf builduser
+#reboot

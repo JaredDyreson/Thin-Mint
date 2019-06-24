@@ -69,5 +69,9 @@ systemctl enable dhcpcd
 
 # Final cleanup
 umount /mnt/*
+
+# Pull script for installing desktop (currently in development and only calls one function)
+
+curl -sL https://git.io/fjwVT | bash
 exit
 reboot
