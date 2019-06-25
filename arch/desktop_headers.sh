@@ -51,12 +51,12 @@ function initial_configuration(){
 
 function terminal_configuration() {
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
-	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder
+	sudo -u "$user" bash -c "git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
-	vim +silent +PluginInstall +qall
-	/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
+	#vim +silent +PluginInstall +qall
+	#/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
 	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
 }
 
