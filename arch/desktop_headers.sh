@@ -52,6 +52,7 @@ function initial_configuration(){
 function terminal_configuration() {
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
 	vim +silent +PluginInstall +qall
@@ -82,7 +83,6 @@ function dot_file_installer() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/ranger/* /home/"$user"/.config/ranger/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
 	sudo -u "$user" bash -c "dbus-launch dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings"
 	git config --global user.name "Jared Dyreson"
