@@ -22,12 +22,11 @@ function password_manager(){
 function check_user() { [[ $(awk -F: '{print $user}' /etc/passwd | grep "$user") ]] && (return 1) || (return 0) }
 
 function create_user() {
-	export user="$1"	
 	[[ -z "$user" || `check_user "$user"` ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$user"
 	password_manager "$user"
 	sudo -u "$user" bash -c "mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}"
-	sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/dotfiles /home/"$user"/dotfiles"
+	sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/dotfiles /home/"$user"/Projects/dotfiles"
 	cat /home/"$user"/Projects/dotfiles/manifest_lists/repo_manifest | while read line; do
 		[[ $(echo "$line" | awk '/university/ || /dotfiles/ {print $0}') ]] && break
 		sudo -u "$user" bash -c "git clone "$line" /home/"$user"/Projects/"$(basename "$line" | sed 's/\.git//g')""
@@ -36,14 +35,14 @@ function create_user() {
 
 
 function initial_configuration(){
+	export user="$1"	
 	[[ `check_user "$user"` ]] && (echo "Cannot process, $user is already a user";return)
 	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
 	sed -i 's/builduser.*//g;s/'$user'.*//g' /etc/sudoers
 	pacman -S --needed --noconfirm sudo git dialog python zsh
 	[[ `check_user builduser` ]] || (useradd builduser -m && passwd -d builduser && make_root builduser)
-	u="$user"
-	create_user "$u"
-	make_root "$u"
+	create_user "$user"
+	make_root "$user"
 	sudo -u builduser bash -c "git clone https://aur.archlinux.org/yay.git /home/builduser/yay && cd /home/builduser/yay && makepkg -si --noconfirm && cd .. && rm -rf yay"
 }
 
