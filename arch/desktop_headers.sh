@@ -40,7 +40,7 @@ function initial_configuration(){
 	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
 	sed -i 's/builduser.*//g;s/'$user'.*//g' /etc/sudoers
 	pacman -S --needed --noconfirm sudo git dialog python zsh
-	[[ `check_user builduser` ]] || (useradd builduser -m && passwd -d builduser && make_root builduser)
+	[[ `check_user builduser` ]] || (useradd -s /bin/bash builduser -m && passwd -d builduser && make_root builduser)
 	create_user "$user"
 	make_root "$user"
 	sudo -u builduser bash -c "git clone https://aur.archlinux.org/yay.git /home/builduser/yay && cd /home/builduser/yay && makepkg -si --noconfirm && cd .. && rm -rf yay"
@@ -62,7 +62,7 @@ function terminal_configuration() {
 function desktop_manager(){
 	pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
 	sudo -u builduser bash -c "yay -Sy --noconfirm lightdm-slick-greeter"
-	sudo sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+	sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 	systemctl enable lightdm.service
 }
 

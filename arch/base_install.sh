@@ -67,11 +67,12 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # internet persistance
 systemctl enable dhcpcd
 
-# Final cleanup
-umount /mnt/*
 
 # Pull script for installing desktop (currently in development and only calls one function)
 
 curl -sL https://git.io/fjwVT | bash
+
+# Final cleanup
+umount /mnt/*
 exit
 reboot
