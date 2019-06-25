@@ -26,8 +26,9 @@ function create_user() {
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$1"
 	password_manager "$1"
 	sudo -u "$1" bash -c "mkdir -p /home/"$1"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}"
-	cat /tmp/dotfiles/manifest_lists/repo_manifest | while read line; do
-		[[ $(echo "$line" | grep 'university') ]] && break
+	sudo -u "$1" bash -c "git clone https://github.com/JaredDyreson/dotfiles /home/"$user"/dotfiles"
+	cat /home/"$user"/Projects/dotfiles/manifest_lists/repo_manifest | while read line; do
+		[[ $(echo "$line" | awk '/university/ || /dotfiles/ {print $0}') ]] && break
 		sudo -u "$1" bash -c "git clone "$line" /home/"$1"/Projects/"$(basename "$line" | sed 's/\.git//g')""
 	done
 }
