@@ -84,7 +84,7 @@ function dot_file_installer() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
-	dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings
+	sudo -u "$user" bash -c "dbus-launch dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings"
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
 }
