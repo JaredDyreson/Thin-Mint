@@ -10,22 +10,22 @@ function install_git_package() {
 		runuser -l jared -c 'cd /home/jared && git clone '$1' && cd '$go_here' && makepkg -si --noconfirm && cd .. && rm -rf '$go_here''
 	done
 }
-
+boot_drive="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 timedatectl set-ntp true
 
 # Partitioning the drives
 
 ## EFI Partition
-(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk /dev/sda
+(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk "$boot_drive" 
 
 ## Rest of the install
 
-(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk /dev/sda
+(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk "$boot_drive" 
 
 # Formatting the drive
-
-mkfs.vfat -F32 /dev/sda1
-mkfs.ext4 /dev/sda2
+partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}' | grep "$boot_drive")"
+mkfs.vfat -F32 "$(sed -n '1p' <<< "$boot_drive")" 
+mkfs.ext4 "$(sed -n '2p' <<< "$boot_drive")" 
 
 # Mounting our filesystems
 
@@ -60,7 +60,7 @@ echo "$hostnamed" > /etc/hostname
 echo "127.0.0.1 localhost $hostnamed" > /etc/hosts
 
 # Working with GRUB
-pacman -Sy --noconfirm grub efibootmgr ipw2200-fw
+pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 
@@ -70,7 +70,7 @@ systemctl enable dhcpcd
 
 # Pull script for installing desktop (currently in development and only calls one function)
 
-curl -sL https://git.io/fjwVT | bash
+#curl -sL https://git.io/fjwVT | bash
 
 # Final cleanup
 umount /mnt/*

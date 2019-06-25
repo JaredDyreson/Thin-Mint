@@ -66,6 +66,8 @@ function desktop_manager(){
 	sudo -u builduser bash -c "yay -Sy --noconfirm lightdm-slick-greeter"
 	sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 	systemctl enable lightdm.service
+	cp -ar /home/"$user"/Projects/dotfiles/desktop_env/slick-greeter.conf /etc/lightdm/
+	cp -ar --no-preserve=mode /home/"$user"/Projects/dotfiles/wallpaper/* /etc/lightdm/
 }
 
 
@@ -120,6 +122,6 @@ dot_file_installer
 application_installer
 programming_environments
 terminal_configuration
-git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
+sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
 userdel -rf builduser
 reboot
