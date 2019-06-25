@@ -51,12 +51,10 @@ function initial_configuration(){
 ## Functions that are used for the installation of the actual desktop environment 
 
 function terminal_configuration() {
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
 	vim +silent +PluginInstall +qall
 	/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
 	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
@@ -85,6 +83,8 @@ function dot_file_installer() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/ranger/* /home/"$user"/.config/ranger/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
 	dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings
 	git config --global user.name "Jared Dyreson"
 	git config --global user.email "jared.dyreson@gmail.com"
