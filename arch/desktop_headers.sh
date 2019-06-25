@@ -50,6 +50,7 @@ function initial_configuration(){
 ## Functions that are used for the installation of the actual desktop environment 
 
 function terminal_configuration() {
+	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	sudo -u "$user" bash -c "git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
@@ -116,9 +117,9 @@ initial_configuration jared
 desktop_manager
 theme_manager
 dot_file_installer
-#application_installer
-#programming_environments
-#git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
+application_installer
+programming_environments
 terminal_configuration
-#userdel -rf builduser
+git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
+userdel -rf builduser
 reboot
