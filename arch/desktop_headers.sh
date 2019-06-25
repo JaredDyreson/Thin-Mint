@@ -2,7 +2,7 @@
 
 function make_root() {
 	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
-	echo "$user ALL=(ALL) ALL"  | tee -a /etc/sudoers
+	echo "$1 ALL=(ALL) ALL"  | tee -a /etc/sudoers
 }
 
 function password_manager(){
@@ -19,7 +19,7 @@ function password_manager(){
 	export pass="$passone"
 }
 
-function check_user() { [[ $(awk -F: '{print $user}' /etc/passwd | grep "$user") ]] && (return 1) || (return 0) }
+function check_user() { [[ $(awk -F: '{print $user}' /etc/passwd | grep "$1") ]] && (return 1) || (return 0) }
 
 function create_user() {
 	[[ -z "$user" || `check_user "$user"` ]] && exit
@@ -27,9 +27,9 @@ function create_user() {
 	password_manager "$user"
 	sudo -u "$user" bash -c "mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}"
 	sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/dotfiles /home/"$user"/Projects/dotfiles"
-	cat /home/"$user"/Projects/dotfiles/manifest_lists/repo_manifest | while read line; do
-		[[ $(echo "$line" | awk '/university/ || /dotfiles/ {print $0}') ]] && break
-		sudo -u "$user" bash -c "git clone "$line" /home/"$user"/Projects/"$(basename "$line" | sed 's/\.git//g')""
+	cat /home/"$user"/Projects/dotfiles/manifest_lists/repo_manifest | while read repo; do
+		[[ $(echo "$repo" | awk '/university/ || /dotfiles/ {print $0}') ]] && break
+		sudo -u "$user" bash -c "git clone "$repo" /home/"$user"/Projects/"$(basename "$repo" | sed 's/\.git//g')""
 	done
 }
 
@@ -103,8 +103,8 @@ function application_installer() {
 function programming_environments(){
 	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
-	cat /tmp/dotfiles/manifest_lists/python_packages | while read line; do
-		sudo pip install --upgrade "$line"
+	cat /tmp/dotfiles/manifest_lists/python_packages | while read package; do
+		sudo pip install --upgrade "$package"
 	done
 }
 
@@ -119,6 +119,6 @@ dot_file_installer
 #application_installer
 #programming_environments
 #git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts
-#terminal_configuration
+terminal_configuration
 #userdel -rf builduser
 reboot
