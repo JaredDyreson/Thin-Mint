@@ -28,7 +28,8 @@ Make sure the builduser is present and removes any potential roadblocks the scri
 ### terminal_configuration
 
 Configure the terminal to prettify zsh and vim. We also install our terminal emulator of choice, `urxvt`, along with the proper fonts.
-[Output](assets/terminal_output)
+
+![alt text](assets/terminal_output)
 
 # External Links
 
