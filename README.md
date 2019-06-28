@@ -62,6 +62,16 @@ The Dell XPS 15 has some quirks that need to be addressed such as the power hung
 https://git.io/fjoik
 ```
 
+## Main
+
+This script will automatically call each individual script through cURL. These scripts were meant to be modular in order to help increase readability and usage.
+
+### Running this portion
+
+```bash
+curl -sL https://git.io/fjoiG
+```
+
 # External Links
 
 A much more in depth look can be found on my blog [here](https://JaredDyreson.github.io).
