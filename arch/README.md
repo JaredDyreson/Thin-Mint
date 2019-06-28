@@ -39,7 +39,7 @@ Here we are installing the next layer which is the graphical environment. Here w
 ### Running this portion
 
 ```bash
-curl -sL https://git.io/fjVKo | bash
+curl -sL https://git.io/fjwVT | bash
 ```
 
 ## Hardware Configuration
@@ -49,9 +49,9 @@ The Dell XPS 15 has some quirks that need to be addressed such as the power hung
 - Setting up a service that tells the kernel to not load the graphics card at start up so we don't have to do it every time
 - Power saving help from tlp
 
-## Running Tests
+### Running this portion
 
-### Code
 ```bash
-curl -sL https://git.io/fjwVT | bash
+
+
 ```
