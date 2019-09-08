@@ -75,3 +75,7 @@ curl -sL https://git.io/fjoiG
 # External Links
 
 A much more in depth look can be found on my blog [here](https://JaredDyreson.github.io).
+
+# Things to add
+
+- [ZSH Syntax Highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md)
