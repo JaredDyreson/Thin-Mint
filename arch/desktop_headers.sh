@@ -58,7 +58,7 @@ function terminal_configuration() {
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
 	#vim +silent +PluginInstall +qall
 	#/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
-	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger
+	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger zsh-syntax-highlighting
 }
 
 function desktop_manager(){
