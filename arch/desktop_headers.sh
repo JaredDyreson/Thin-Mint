@@ -111,6 +111,16 @@ function programming_environments(){
 	done
 }
 
+
+function update_kernel(){
+	pacman -Sy --noconfirm linux-hardened
+
+}
+
+function game_installers(){
+	pacman -Sy --noconfirm minecraft-launcher steam steamcmd
+}
+
 # Set up logging 
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
@@ -123,5 +133,7 @@ application_installer
 programming_environments
 terminal_configuration
 sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
+update_kernel
+# game_installers
 userdel -rf builduser
 reboot
