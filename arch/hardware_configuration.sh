@@ -40,3 +40,10 @@ sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"quiet splash modprobe.blacklist=nouv
 update-grub
 reboot
 
+
+# if the device is the desktop
+
+function disable_pc_speaker(){
+	rmmod pcspkr
+	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
+}
