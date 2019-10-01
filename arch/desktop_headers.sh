@@ -95,7 +95,7 @@ function dot_file_installer() {
 function application_installer() {
 	pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
 	# vmware-workstation
-	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'vmware-workstation' 'discord' 'balena-etcher' 'mintstick' 'pix')
+	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
 	done
@@ -119,6 +119,10 @@ function update_kernel(){
 
 function game_installers(){
 	pacman -Sy --noconfirm minecraft-launcher steam steamcmd
+}
+
+function system_utilities(){
+	pacman -Sy --noconfirm wget pdfgrep
 }
 
 # Set up logging 
