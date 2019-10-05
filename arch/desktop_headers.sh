@@ -122,7 +122,7 @@ function game_installers(){
 }
 
 function system_utilities(){
-	pacman -Sy --noconfirm wget pdfgrep
+	pacman -Sy --noconfirm wget pdfgrep libimobiledevice
 }
 
 # Set up logging 
