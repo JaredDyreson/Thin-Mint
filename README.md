@@ -84,3 +84,6 @@ A much more in depth look can be found on my blog [here](https://JaredDyreson.gi
 # Things to add
 
 - Kernel updater script
+- Integrate note taking and vim setup
+    - [Initial inspiration to take notes in vim](https://www.youtube.com/watch?v=wh_WGWii7UE)
+    - [Channel where I pulled most of my vim inspiration from along with file system navigation](https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA)
