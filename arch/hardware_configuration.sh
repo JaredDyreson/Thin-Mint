@@ -36,7 +36,7 @@ echo '_SB.PCI0.PEG0.PEGP._OFF' | sudo tee /proc/acpi/call
 echo acpi_call > /etc/modules-load.d/acpi_call.conf
 cp -ar /home/"$user"/Projects/dotfiles/graphics/dgpu-off.service /usr/lib/systemd/user/
 sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
-sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"quiet splash modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
+sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
 update-grub
 reboot
 
