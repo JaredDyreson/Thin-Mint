@@ -9,6 +9,16 @@ For all intents and purposes, we will be using version `4.15.0-64-generic`.
 Previous versions of the kernel completely break the sleep wake functionality.
 This has lead to several times finding my laptop cooking in my bag because it does not hibernate, which is really, really bad.
 
+Running this on the desktop test environment should include the following steps before proceeding
+
+```bash
+rmmod tg3
+modprobe broadcom
+modprobe tg3
+```
+
+Thank you to [this](https://bbs.archlinux.org/viewtopic.php?id=110026) Arch forum thread!
+
 
 # Installation Process
 
@@ -23,7 +33,7 @@ This portion of the installation is concerned with installing a bare Arch Linux 
 - Tell fstab where all of the drives are
 - Setting the correct timezone
 - Only using English locales
-- Setting hostname and the ability to ping yourself ;P
+- Setting hostname and the ability to ping yourself
 - Installing GRUB
 - Internet persistence using dhcpcd
 - Unmounting and rebooting
@@ -64,7 +74,7 @@ The Dell XPS 15 has some quirks that need to be addressed such as the power hung
 ### Running this portion
 
 ```bash
-https://git.io/fjoik
+curl -sL https://git.io/fjoik | bash
 ```
 
 ## Main
@@ -74,7 +84,7 @@ This script will automatically call each individual script through cURL. These s
 ### Running this portion
 
 ```bash
-curl -sL https://git.io/fjoiG
+curl -sL https://git.io/fjoiG | bash
 ```
 
 # External Links
