@@ -13,6 +13,12 @@ MEMTOTAL="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   o # clear the in memory partition table
+  d
+  1
+  d
+  2
+  d
+  3
   n # new partition
   p # primary
   1 # first one
@@ -53,7 +59,7 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-mkdir -p /mnt/boot
+sudo mkdir -p /mnt/boot
 mount "$filesystem" /mnt
 mount "$efi" /mnt/boot
 
