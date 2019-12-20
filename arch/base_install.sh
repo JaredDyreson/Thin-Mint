@@ -53,8 +53,6 @@ mount "$primary" /mnt
 
 pacstrap /mnt base base-devel
 
-exit
-
 genfstab -U /mnt > /mnt/etc/fstab
 
 arch-chroot /mnt
@@ -81,7 +79,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
 systemctl enable dhcpcd
-
 
 ## Pull script for installing desktop (currently in development and only calls one function)
 
