@@ -24,38 +24,34 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   n # new partition
   p # primary
   2 # second one
-   
 
+  +5GB # swap size
+   # default
+  t # change parition type
+  2 # select the second partition
+  82 # swap identifier
+  n # new partition
+  p # primary
+  3 # third partition
+   # default
+   # default
   w
-  q
 EOF
-
-  #+5GB
-  #t
-  #2
-  #82 # swap parition
-  #n
-  #p
-   ## default 
-   ## default
-   ## default
-  #w
-  #q
-exit
 
 # Formatting the drive
 
-partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}')"
-boot=`sed -n '1p' <<< "$partitions"`
-primary=`sed -n '2p' <<< "$partitions"`
-mkfs.vfat -F32 "$boot"
-mkfs.ext4 "$primary"
+efi=""$TGTDEV"1"
+swap=""$TGTDEV"2"
+filesystem=""$TGTDEV"3"
+
+mkfs.vfat -F32 "$efi"
+mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
 mkdir -p /mnt/boot
-mount "$boot" /mnt/boot
-mount "$primary" /mnt
+mount "$efi" /mnt/boot
+mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
 
@@ -90,7 +86,7 @@ systemctl enable dhcpcd
 
 ## Pull script for installing desktop (currently in development and only calls one function)
 
-curl -sL https://git.io/fjwVT | bash
+#curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
 exit
