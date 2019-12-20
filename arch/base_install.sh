@@ -3,6 +3,7 @@
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+MEMTOTAL="$(awk '/MemTotal/ {print $2}')"
 
 `timedatectl set-ntp true`
 
@@ -39,20 +40,10 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   o # clear the in memory partition table
   n
   p
-
-
-  +100M
-  a
-  t
-  ef
+  1
+  "$MEMTOTAL"
   w
-  n
-  p
-
-
-
-  w
-
+  q
 EOF
 
 exit
