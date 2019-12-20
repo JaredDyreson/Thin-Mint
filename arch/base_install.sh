@@ -74,7 +74,7 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
-grub-install /dev/sda
+grub-install "$TGTDEV"
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
@@ -85,6 +85,6 @@ systemctl enable dhcpcd
 ##curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
-umount /mnt/*
 exit
+umount /mnt/
 reboot
