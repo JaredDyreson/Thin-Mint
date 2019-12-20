@@ -48,11 +48,12 @@ mkfs.ext4 "$primary"
 mkdir -p /mnt/boot
 mount "$boot" /mnt/boot
 mount "$primary" /mnt
-exit
 
 ## Working with the mounted partitions
 
 pacstrap /mnt base base-devel
+
+exit
 
 genfstab -U /mnt > /mnt/etc/fstab
 
