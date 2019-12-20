@@ -24,7 +24,6 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   n # new partition
   p # primary
   2 # second one
-   # default
   +5GB
   t
   2
