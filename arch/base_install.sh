@@ -45,6 +45,7 @@ mkfs.ext4 "$primary"
 
 ## Mounting our filesystems
 
+mkdir -p /mnt/boot
 mount "$boot" /mnt/boot
 mount "$primary" /mnt
 
