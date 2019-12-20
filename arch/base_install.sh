@@ -82,7 +82,7 @@ systemctl enable dhcpcd
 
 ## Pull script for installing desktop (currently in development and only calls one function)
 
-##curl -sL https://git.io/fjwVT | bash
+curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
 exit
