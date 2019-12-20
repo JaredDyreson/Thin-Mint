@@ -62,10 +62,11 @@ mkfs.ext4 "$filesystem"
 sudo mkdir -p /mnt/boot
 mount "$efi" /mnt/boot
 mount "$filesystem" /mnt
-
+# here is the issue right now
+exit
 ## Working with the mounted partitions
 
-pacstrap /mnt base base-devel
+pacstrap /mnt base 
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
