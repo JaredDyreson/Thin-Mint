@@ -1,78 +1,92 @@
 #!/bin/sh
 
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
-function install_git_package() {
-	waypoint="$(pwd)"
-	for repo in "$@"; do
-		[[ "$(curl -Is git clone "$repo" 2> /dev/null | head -n 1 | grep -i "ok")" || -z "$repo" ]] || (echo "Link cannot be reached, cowardly refusing" && break)
-		go_here="$(basename "$repo" | sed 's/\.git//g')"
-		#git clone "$repo" && cd "$go_here"
-		runuser -l jared -c 'cd /home/jared && git clone '$1' && cd '$go_here' && makepkg -si --noconfirm && cd .. && rm -rf '$go_here''
-	done
-}
+
 boot_drive="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
-timedatectl set-ntp true
+
+`timedatectl set-ntp true`
 
 # Partitioning the drives
 
-## EFI Partition
-(echo "n" && echo "p" && echo "" && echo "" && echo "1002048" && echo "a" && echo "t" && echo "ef" && echo "w") | fdisk "$boot_drive" 
+# link to this code -> https://superuser.com/questions/332252/how-to-create-and-format-a-partition-using-a-bash-script
 
-## Rest of the install
-
-(echo "n" && echo "p" && echo "" && echo "" && echo "" && echo "w") | fdisk "$boot_drive" 
+# to create the partitions programatically (rather than manually)
+# we're going to simulate the manual input to fdisk
+# The sed script strips off all the comments so that we can 
+# document what we're doing in-line with the actual commands
+# Note that a blank line (commented as "defualt" will send a empty
+# line terminated with a newline to take the fdisk default.
+sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${TGTDEV}
+  o # clear the in memory partition table
+  n # new partition
+  p # primary partition
+  1 # partition number 1
+    # default - start at beginning of disk 
+  +100M # 100 MB boot parttion
+  n # new partition
+  p # primary partition
+  2 # partion number 2
+    # default, start immediately after preceding partition
+    # default, extend partition to end of disk
+  a # make a partition bootable
+  1 # bootable partition is partition 1 -- /dev/sda1
+  p # print the in-memory partition table
+  w # write the partition table
+  q # and we're done
+EOF
 
 # Formatting the drive
-partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}' | grep "$boot_drive")"
-mkfs.vfat -F32 "$(sed -n '1p' <<< "$boot_drive")" 
-mkfs.ext4 "$(sed -n '2p' <<< "$boot_drive")" 
 
-# Mounting our filesystems
+#partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}' | grep "$boot_drive")"
+#mkfs.vfat -F32 "$(sed -n '1p' <<< "$boot_drive")" 
+#mkfs.ext4 "$(sed -n '2p' <<< "$boot_drive")" 
 
-`cd /mnt && mkdir boot`
-mount /dev/sda1 /mnt/boot
-mount /dev/sda2 /mnt
+## Mounting our filesystems
 
-echo "PARTITIONS MOUNTED"
+#`cd /mnt && mkdir boot`
+#mount /dev/sda1 /mnt/boot
+#mount /dev/sda2 /mnt
 
-# Working with the mounted partitions
+#echo "PARTITIONS MOUNTED"
 
-echo "INSTALLING DEVELOPMENT TOOLS"
-pacstrap /mnt base base-devel
-#exit 
-genfstab -U /mnt > /mnt/etc/fstab
+## Working with the mounted partitions
 
-arch-chroot /mnt
+#echo "INSTALLING DEVELOPMENT TOOLS"
+#pacstrap /mnt base base-devel
+##exit 
+#genfstab -U /mnt > /mnt/etc/fstab
 
-# Set the correct time zone
+#arch-chroot /mnt
 
-ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+## Set the correct time zone
 
-# Get our locales
+#ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
+## Get our locales
 
-# Set the hostname and hostfiles
-hostnamed="jared-xps"
-echo "$hostnamed" > /etc/hostname
-echo "127.0.0.1 localhost $hostnamed" > /etc/hosts
+#echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+#locale-gen
+#echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-# Working with GRUB
-pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
-grub-install /dev/sda
-grub-mkconfig -o /boot/grub/grub.cfg
+## Set the hostname and hostfiles
+#hostnamed="jared-xps"
+#echo "$hostnamed" > /etc/hostname
+#echo "127.0.0.1 localhost $hostnamed" > /etc/hosts
 
-# internet persistance
-systemctl enable dhcpcd
+## Working with GRUB
+#pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
+#grub-install /dev/sda
+#grub-mkconfig -o /boot/grub/grub.cfg
+
+## internet persistance
+#systemctl enable dhcpcd
 
 
-# Pull script for installing desktop (currently in development and only calls one function)
+## Pull script for installing desktop (currently in development and only calls one function)
 
-#curl -sL https://git.io/fjwVT | bash
+##curl -sL https://git.io/fjwVT | bash
 
-# Final cleanup
-umount /mnt/*
-exit
-reboot
+## Final cleanup
+#umount /mnt/*
+#exit
+#reboot
