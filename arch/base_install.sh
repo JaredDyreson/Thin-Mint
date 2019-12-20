@@ -44,20 +44,24 @@ efi=""$TGTDEV"1"
 swap=""$TGTDEV"2"
 filesystem=""$TGTDEV"3"
 
+#mkfs.vfat -F32 "$efi"
+
 mkfs.vfat -F32 "$efi"
+mkswap "$swap"
+swapon "$swap"
 mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
 mkdir -p /mnt/boot
-mount "$efi" /mnt/boot
 mount "$filesystem" /mnt
+mount "$efi" /mnt/boot
 
 ## Working with the mounted partitions
 
 pacstrap /mnt base base-devel
 
-genfstab -U /mnt > /mnt/etc/fstab
+genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt
 
@@ -90,5 +94,6 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 exit
+umount /mnt/boot
 umount /mnt/
 reboot
