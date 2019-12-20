@@ -35,11 +35,11 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   q # and we're done
 EOF
 
+exit
+
 # Formatting the drive
 
 partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}')"
-sfdisk -l
-exit
 boot=`sed -n '1p' <<< "$partitions"`
 primary=`sed -n '2p' <<< "$partitions"`
 mkfs.vfat -F32 "$boot"
