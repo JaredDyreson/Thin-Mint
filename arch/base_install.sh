@@ -37,11 +37,11 @@ TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   o # clear the in memory partition table
-  n # new partition
-  p # primary partition
-    # partition number 1
-    # default - start at beginning of disk 
-  +100M # 100 MB boot parttion
+  n
+  p
+
+
+  +100M
   a
   t
   ef
@@ -52,7 +52,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
 
 
   w
-  q
+
 EOF
 
 exit
