@@ -37,49 +37,47 @@ EOF
 
 # Formatting the drive
 
-#partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}' | grep "$boot_drive")"
-#mkfs.vfat -F32 "$(sed -n '1p' <<< "$boot_drive")" 
-#mkfs.ext4 "$(sed -n '2p' <<< "$boot_drive")" 
+partitions="$(sudo sfdisk -l | awk '/^\/dev/ {print $1}')"
+boot=`sed -n '1p' <<< "$partitions"`
+primary=`sed -n '2p' <<< "$partitions"`
+mkfs.vfat -F32 "$boot"
+mkfs.ext4 "$primary"
 
 ## Mounting our filesystems
 
-#`cd /mnt && mkdir boot`
-#mount /dev/sda1 /mnt/boot
-#mount /dev/sda2 /mnt
-
-#echo "PARTITIONS MOUNTED"
+mount "$boot" /mnt/boot
+mount "$primary" /mnt
 
 ## Working with the mounted partitions
 
-#echo "INSTALLING DEVELOPMENT TOOLS"
-#pacstrap /mnt base base-devel
-##exit 
-#genfstab -U /mnt > /mnt/etc/fstab
+pacstrap /mnt base base-devel
 
-#arch-chroot /mnt
+genfstab -U /mnt > /mnt/etc/fstab
+
+arch-chroot /mnt
 
 ## Set the correct time zone
 
-#ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
 ## Get our locales
 
-#echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-#locale-gen
-#echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 ## Set the hostname and hostfiles
-#hostnamed="jared-xps"
-#echo "$hostnamed" > /etc/hostname
-#echo "127.0.0.1 localhost $hostnamed" > /etc/hosts
+hostname="jared-xps"
+echo "$hostname" > /etc/hostname
+echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
-#pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
-#grub-install /dev/sda
-#grub-mkconfig -o /boot/grub/grub.cfg
+pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
-#systemctl enable dhcpcd
+systemctl enable dhcpcd
 
 
 ## Pull script for installing desktop (currently in development and only calls one function)
@@ -87,6 +85,6 @@ EOF
 ##curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
-#umount /mnt/*
-#exit
-#reboot
+umount /mnt/*
+exit
+reboot
