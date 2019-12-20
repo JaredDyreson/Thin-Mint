@@ -3,7 +3,7 @@
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
-MEMTOTAL="$(awk '/MemTotal/ {print $2}')"
+MEMTOTAL="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
 
 `timedatectl set-ntp true`
 
