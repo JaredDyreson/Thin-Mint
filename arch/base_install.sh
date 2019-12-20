@@ -25,7 +25,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   p # primary
   2 # second one
    # default
-  "$MEMTOTAL" 
+  +5GB
   t
   2
   82 # swap parition
