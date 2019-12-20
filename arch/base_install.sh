@@ -2,7 +2,7 @@
 
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
 
-boot_drive="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 
 `timedatectl set-ntp true`
 
@@ -16,7 +16,7 @@ boot_drive="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail 
 # document what we're doing in-line with the actual commands
 # Note that a blank line (commented as "defualt" will send a empty
 # line terminated with a newline to take the fdisk default.
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${TGTDEV}
+sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   o # clear the in memory partition table
   n # new partition
   p # primary partition
