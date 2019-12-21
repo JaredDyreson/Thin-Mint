@@ -85,7 +85,7 @@ echo "$hostname" > /etc/hostname
 echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
-pacman -Sy --noconfirm grub grub-install efibootmgr ipw2200-fw lshw intel-ucode
+pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode
 grub-install "$TGTDEV"
 grub-mkconfig -o /boot/grub/grub.cfg
 
