@@ -57,8 +57,8 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot
-mount "$efi" /mnt/boot
+sudo mkdir -p /mnt/boot/efi
+mount "$efi" /mnt/boot/efi
 mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
@@ -85,8 +85,8 @@ echo "$hostname" > /etc/hostname
 echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
-pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw
-grub-install "$TGTDEV"
+pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode
+grub-install --bootloader-id=Arch_Linux --efi-directory=/boot/efi --recheck --target=x86_64-efi
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
@@ -98,6 +98,6 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 exit
-umount /mnt/boot
+umount /mnt/boot/efi
 umount /mnt/
 reboot
