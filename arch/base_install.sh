@@ -61,9 +61,11 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot/efi
+sudo mkdir -p /mnt/boot
 mount "$efi" /mnt/boot
 mount "$filesystem" /mnt
+
+exit
 
 ## Working with the mounted partitions
 
