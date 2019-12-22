@@ -5,7 +5,16 @@
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 MEMTOTAL="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
 
+efi=""$TGTDEV"1"
+swap=""$TGTDEV"2"
+filesystem=""$TGTDEV"3"
+
+echo "[+] EFI: $efi"
+echo "[+] Swap: $swap"
+echo "[+] Filesystem: $filesystem"
 `timedatectl set-ntp true`
+
+exit
 
 # Partitioning the drives
 
@@ -46,9 +55,6 @@ EOF
 
 # Formatting the drive
 
-efi=""$TGTDEV"1"
-swap=""$TGTDEV"2"
-filesystem=""$TGTDEV"3"
 
 mkfs.vfat -F32 "$efi"
 mkswap "$swap"
@@ -87,8 +93,8 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode
 grub-mkconfig -o /boot/grub/grub.cfg
-echo "[+] Target device: ${TGTDEV}"
-grub-install "${TGTDEV}"
+echo "[+] Target device: $TGTDEV"
+grub-install "$TGTDEV"
 
 ## internet persistance
 systemctl enable dhcpcd
