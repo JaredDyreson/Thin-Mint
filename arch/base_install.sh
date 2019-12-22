@@ -67,7 +67,7 @@ mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
 
-pacstrap /mnt base 
+pacstrap /mnt base base-devel
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
