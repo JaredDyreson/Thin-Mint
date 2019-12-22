@@ -65,8 +65,6 @@ sudo mkdir -p /mnt/boot
 mount "$efi" /mnt/boot
 mount "$filesystem" /mnt
 
-exit
-
 ## Working with the mounted partitions
 
 pacstrap /mnt base 
@@ -110,6 +108,6 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 exit
-umount /mnt/boot
 umount /mnt/
+umount /mnt/boot
 #reboot
