@@ -14,8 +14,6 @@ echo "[+] Swap: $swap"
 echo "[+] Filesystem: $filesystem"
 `timedatectl set-ntp true`
 
-exit
-
 # Partitioning the drives
 
 # link to this code -> https://superuser.com/questions/332252/how-to-create-and-format-a-partition-using-a-bash-script
@@ -75,7 +73,13 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt
 
+# we need to re run this because we change our shell
+
+TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+
 ## Set the correct time zone
+
+hwclock --systohc --utc
 
 ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 
@@ -91,7 +95,7 @@ echo "$hostname" > /etc/hostname
 echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
-pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode
+pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
 grub-mkconfig -o /boot/grub/grub.cfg
 echo "[+] Target device: $TGTDEV"
 grub-install "$TGTDEV"
