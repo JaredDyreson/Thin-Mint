@@ -96,7 +96,8 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
-grub-install "$TGTDEV"
+#grub-install "$TGTDEV"
+grub-install --target=x86_64-efi –efi-directory=/boot –bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
