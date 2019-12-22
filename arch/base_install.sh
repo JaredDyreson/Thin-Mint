@@ -108,7 +108,7 @@ systemctl enable dhcpcd
 #curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
-exit
-umount /mnt/
-umount /mnt/boot
+#exit
+#umount /mnt/
+#umount /mnt/boot
 #reboot
