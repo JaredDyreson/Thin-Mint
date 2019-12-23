@@ -69,9 +69,9 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-mount -o ssd,discard,noatime,compress=lzo "$filesystem" /mnt
+mount "$filesystem" /mnt
 sudo mkdir -p /mnt/boot
-mount -o noatime "$efi" /mnt/boot
+mount "$efi" /mnt/boot
 
 ## Working with the mounted partitions
 
