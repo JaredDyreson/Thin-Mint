@@ -62,21 +62,22 @@ EOF
 
 # Formatting the drive
 
-mkfs.vfat -F32 "$efi"
+mkfs.vfat -F32 -n "$efi"
 mkswap "$swap"
 swapon "$swap"
 mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot/efi
-mount "$filesystem" /mnt
+mount -o ssd,discard,noatime,compress=lzo "$filesystem" /mnt
+sudo mkdir -p /mnt/boot
+mount -o noatime "$efi" /mnt/boot
 
 ## Working with the mounted partitions
 
-pacstrap /mnt base base-devel
+pacstrap /mnt base base-devel grub-efi-x86_64 efibootmgr ipw2200-fw lshw intel-ucode os-prober
 
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -pU /mnt >> /mnt/etc/fstab
 
 # THIS IS THE BREAK POINT FOR FOLLOW ALONG
 
@@ -107,9 +108,9 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 
-pacman -Sy --noconfirm grub-efi-x86_64 efibootmgr ipw2200-fw lshw intel-ucode os-prober
-grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
-grub-mkconfig -o /mnt/boot/grub/grub.cfg
+mount ""$TGTDEV"1" /mnt/boot
+grub-install
+grub-mkconfig -o /boot/grub/grub.cfg
 
 #if [[ "$(efibootmgr | grep "are not supported")" ]]; then
         #echo "no UEFI"
@@ -128,4 +129,3 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 exit
-umount /mnt
