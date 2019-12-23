@@ -83,6 +83,7 @@ echo "$hostname" > /etc/hostname
 echo -e "127.0.0.1\t\tlocalhost" >> /etc/hosts
 echo -e "::1\t\tlocalhost" >> /etc/hosts
 echo -e "127.0.0.1\t\t"$hostname".localdomain"  $hostname"" >> /etc/hosts
+
 systemctl enable dhcpcd
 
 pacman -Sy --noconfirm grub efibootmgr dosfstools os-prober mtools

@@ -129,15 +129,15 @@ function system_utilities(){
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
 
-#initial_configuration jared
+initial_configuration jared
 desktop_manager
-#theme_manager
-#dot_file_installer
-#application_installer
-#programming_environments
-#terminal_configuration
-#sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
-#update_kernel
-## game_installers
-#userdel -rf builduser
-#reboot
+theme_manager
+dot_file_installer
+application_installer
+programming_environments
+terminal_configuration
+sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
+update_kernel
+# game_installers
+userdel -rf builduser
+reboot
