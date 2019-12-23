@@ -5,6 +5,7 @@
 # AUTHOR: Jared Dyreson, CSUF 2021
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+WIRELESS_CARD_NAME="$(sudo lshw -class network | awk '/logical name/ {print $3}' 2> /dev/null)"
 #PARTITION_TABLE="$(lsblk -plnx type -o name,type | awk '/part/ {print $1}' | sort)"
 #counter=1
 #echo "$PARTITION_TABLE" | while read partition; do
@@ -68,7 +69,7 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot/EFI
+sudo mkdir -p /mnt/boot/efi
 mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
@@ -103,8 +104,8 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
-mount "$efi" /boot/EFI
-grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+mount "$efi" /boot/efi
+grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
@@ -115,7 +116,7 @@ systemctl enable dhcpcd
 #curl -sL https://git.io/fjwVT | bash
 
 ## Final cleanup
-#exit
-#umount -a
-#umount /mnt/boot
-#reboot
+exit
+umount -a
+umount /mnt/boot
+reboot
