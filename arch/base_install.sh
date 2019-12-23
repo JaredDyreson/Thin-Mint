@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
-
-# article that helped install GRUB -> 
-# https://www.tecmint.com/arch-linux-installation-and-configuration-guide/
+# installer script for Arch Linux
+# task: setup partitions, install base packages and install a bootloader (GRUB)
+# AUTHOR: Jared Dyreson, CSUF 2021
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 #PARTITION_TABLE="$(lsblk -plnx type -o name,type | awk '/part/ {print $1}' | sort)"
@@ -23,14 +22,9 @@ efi=""$TGTDEV"1"
 swap=""$TGTDEV"2"
 filesystem=""$TGTDEV"3"
 
-echo "[+] EFI: $efi"
-echo "[+] Swap: $swap"
-echo "[+] Filesystem: $filesystem"
 `timedatectl set-ntp true`
 
 # Partitioning the drives
-
-# link to this code -> https://superuser.com/questions/332252/how-to-create-and-format-a-partition-using-a-bash-script
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   o # clear the in memory partition table
@@ -66,7 +60,6 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
 EOF
 
 # Formatting the drive
-
 
 mkfs.vfat -F32 "$efi"
 mkswap "$swap"
