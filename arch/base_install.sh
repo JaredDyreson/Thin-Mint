@@ -63,9 +63,6 @@ mkdir /mnt/home
 mount "$efi" /mnt/boot
 mount "$home_dir" /mnt/home
 
-fdisk -l 
-exit
-
 pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs netctl device-mapper cryptsetup vim man-db man-pages inetutils dhcpcd s-nail intel-ucode
 
 genfstab -U /mnt >> /mnt/etc/fstab
