@@ -4,10 +4,7 @@
 # task: setup partitions, install base packages and install a bootloader (GRUB)
 # AUTHOR: Jared Dyreson, CSUF 2021
 
-function testing() {
-
 hostname="jared-xps"
-
 timedatectl set-ntp true
 
 # Partition names
@@ -23,7 +20,6 @@ swap=""$TGTDEV"2"
 filesystem=""$TGTDEV"3"
 
 # action of partitioning
-
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   g # GPT partition table
@@ -50,9 +46,6 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   24
   w
 EOF
-
-fdisk -l
-sleep 30
 
 mkfs.vfat "$efi"
 mkswap "$swap"
@@ -83,18 +76,17 @@ echo -e "127.0.0.1\t\tlocalhost" >> /etc/hosts
 echo -e "::1\t\tlocalhost" >> /etc/hosts
 echo -e "127.0.0.1\t\t"$hostname".localdomain\t\t"$hostname"" >> /etc/hosts
 
+exit
+
 bootctl --path=/boot install
 UUID_BOOT="$(blkid | grep ""$TGTDEV"3" | awk '{print $2}' | grep -o '".*"' | sed 's/"//g')"
 echo "default arch-*" > /boot/loader/loader.conf
+
 echo -e "title\tArch Linux" >> /boot/loader/entries/arch.conf
 echo -e "linux\t/vmlinuz-linux" >> /boot/loader/entries/arch.conf
 echo -e "initrd\t/intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo -e "initrd\t/initramfs-linux.img" >> /boot/loader/entries/arch.conf
 echo -e "options\troot=UUID=$UUID_BOOT rw" >> /boot/loader/entries/arch.conf
-}
-
-testing
-
 
 #TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 ##WIRELESS_CARD_NAME="$(sudo lshw -class network | awk '/logical name/ {print $3}' 2> /dev/null)"
