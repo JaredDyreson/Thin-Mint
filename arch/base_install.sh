@@ -4,7 +4,6 @@
 # task: setup partitions, install base packages and install a bootloader (GRUB)
 # AUTHOR: Jared Dyreson, CSUF 2021
 
-hostname="jared-xps"
 timedatectl set-ntp true
 
 # Partition names
@@ -71,25 +70,22 @@ echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
+hostname="jared-xps"
 echo "$hostname" > /etc/hostname
 
 echo -e "127.0.0.1\t\tlocalhost" >> /etc/hosts
 echo -e "::1\t\tlocalhost" >> /etc/hosts
 echo -e "127.0.0.1\t\t"$hostname".localdomain\t\t"$hostname"" >> /etc/hosts
 
+pacman -Sy --noconfirm grub efibootmgr dosfstools os-prober mtools
+grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot
+grub-mkconfig -o /boot/grub/grub.cfg
+mkinitcpio -p linux
 exit
-exit
+umount /mnt/boot
+umount /mnt
 
-
-bootctl --path=/boot install
-UUID_BOOT="$(blkid | grep ""$TGTDEV"3" | awk '{print $2}' | grep -o '".*"' | sed 's/"//g')"
-echo "default arch-*" > /boot/loader/loader.conf
-
-echo -e "title\tArch Linux" >> /boot/loader/entries/arch.conf
-echo -e "linux\t/vmlinuz-linux" >> /boot/loader/entries/arch.conf
-echo -e "initrd\t/intel-ucode.img" >> /boot/loader/entries/arch.conf
-echo -e "initrd\t/initramfs-linux.img" >> /boot/loader/entries/arch.conf
-echo -e "options\troot=UUID=$UUID_BOOT rw" >> /boot/loader/entries/arch.conf
+#reboot
 
 #TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 ##WIRELESS_CARD_NAME="$(sudo lshw -class network | awk '/logical name/ {print $3}' 2> /dev/null)"
