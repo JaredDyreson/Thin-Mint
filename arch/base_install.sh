@@ -27,6 +27,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   1
    
   +512M
+  a
   n
   2
 
