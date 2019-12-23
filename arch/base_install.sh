@@ -47,7 +47,7 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   w
 EOF
 
-mkfs.vfat "$efi"
+mkfs.vfat -F32 "$efi"
 mkswap "$swap"
 swapon "$swap"
 mkfs.ext4 "$filesystem"
@@ -77,6 +77,8 @@ echo -e "::1\t\tlocalhost" >> /etc/hosts
 echo -e "127.0.0.1\t\t"$hostname".localdomain\t\t"$hostname"" >> /etc/hosts
 
 exit
+exit
+
 
 bootctl --path=/boot install
 UUID_BOOT="$(blkid | grep ""$TGTDEV"3" | awk '{print $2}' | grep -o '".*"' | sed 's/"//g')"
