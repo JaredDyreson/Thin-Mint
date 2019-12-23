@@ -81,7 +81,6 @@ genfstab -pU /mnt >> /mnt/etc/fstab
 
 # THIS IS THE BREAK POINT FOR FOLLOW ALONG
 
-exit
 arch-chroot /mnt
 
 # we need to re run this because we change our shell
