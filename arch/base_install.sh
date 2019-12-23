@@ -5,7 +5,7 @@
 # AUTHOR: Jared Dyreson, CSUF 2021
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
-WIRELESS_CARD_NAME="$(sudo lshw -class network | awk '/logical name/ {print $3}' 2> /dev/null)"
+#WIRELESS_CARD_NAME="$(sudo lshw -class network | awk '/logical name/ {print $3}' 2> /dev/null)"
 #PARTITION_TABLE="$(lsblk -plnx type -o name,type | awk '/part/ {print $1}' | sort)"
 #counter=1
 #echo "$PARTITION_TABLE" | while read partition; do
@@ -69,7 +69,7 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot/efi
+sudo mkdir -p /mnt/boot/
 mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
@@ -103,9 +103,17 @@ echo "$hostname" > /etc/hostname
 echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
+
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
-mount "$efi" /boot/efi
-grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
+
+if [[ "$(efibootmgr | grep "are not supported")" ]]; then
+        echo "no UEFI"
+else
+        echo "efi supported"
+        mount "$efi" /boot/efi
+        grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
+fi
+
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
