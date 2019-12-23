@@ -110,7 +110,7 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
-mount "$efi" 
+mount "$efi" /boot/EFI
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
