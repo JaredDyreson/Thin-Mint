@@ -2,7 +2,21 @@
 
 # Very helpful video --> https://www.youtube.com/watch?v=UzESH4KK8qs&t=2294s
 
+# article that helped install GRUB -> 
+# https://www.tecmint.com/arch-linux-installation-and-configuration-guide/
+
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+#PARTITION_TABLE="$(lsblk -plnx type -o name,type | awk '/part/ {print $1}' | sort)"
+#counter=1
+#echo "$PARTITION_TABLE" | while read partition; do
+        #sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
+        #o
+        #d
+        #'$counter'
+#EOF
+#counter=$((counter+1))
+#done
+
 MEMTOTAL="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
 
 efi=""$TGTDEV"1"
@@ -61,8 +75,7 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot
-mount "$efi" /mnt/boot
+sudo mkdir -p /mnt/boot/EFI
 mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
@@ -90,14 +103,15 @@ locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 ## Set the hostname and hostfiles
+
 hostname="jared-xps"
 echo "$hostname" > /etc/hostname
 echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
-grub-install "$TGTDEV"
-
+mount "$efi" 
+grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
@@ -109,6 +123,6 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 #exit
-#umount /mnt/
+#umount -a
 #umount /mnt/boot
 #reboot
