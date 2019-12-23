@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# installer script for Arch Linux
+# installer script for Arch Linux (1/3)
 # task: setup partitions, install base packages and install a bootloader (GRUB)
 # AUTHOR: Jared Dyreson, CSUF 2021
 
@@ -69,7 +69,7 @@ mkfs.ext4 "$filesystem"
 
 ## Mounting our filesystems
 
-sudo mkdir -p /mnt/boot/
+sudo mkdir -p /mnt/boot/efi
 mount "$filesystem" /mnt
 
 ## Working with the mounted partitions
@@ -78,6 +78,9 @@ pacstrap /mnt base base-devel
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
+# THIS IS THE BREAK POINT FOR FOLLOW ALONG
+
+exit
 arch-chroot /mnt
 
 # we need to re run this because we change our shell
@@ -104,17 +107,17 @@ echo "127.0.0.1 localhost $hostname" > /etc/hosts
 
 ## Working with GRUB
 
-pacman -Sy --noconfirm grub efibootmgr ipw2200-fw lshw intel-ucode os-prober
+pacman -Sy --noconfirm grub-efi-x86_64 efibootmgr ipw2200-fw lshw intel-ucode os-prober
+grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
+grub-mkconfig -o /mnt/boot/grub/grub.cfg
 
-if [[ "$(efibootmgr | grep "are not supported")" ]]; then
-        echo "no UEFI"
-else
-        echo "efi supported"
-        mount "$efi" /boot/efi
-        grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
-fi
+#if [[ "$(efibootmgr | grep "are not supported")" ]]; then
+        #echo "no UEFI"
+#else
+        ##mount "$efi" /mnt/boot/efi
+        ##grub-install --boot-directory=/mnt/boot --bootloader-id=arch_grub  --target=x86_64-efi --efi-directory=/mnt/boot/efi  
+#fi
 
-grub-mkconfig -o /boot/grub/grub.cfg
 
 ## internet persistance
 systemctl enable dhcpcd
@@ -125,6 +128,4 @@ systemctl enable dhcpcd
 
 ## Final cleanup
 exit
-umount -a
-umount /mnt/boot
-reboot
+umount /mnt
