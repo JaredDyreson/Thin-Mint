@@ -137,7 +137,5 @@ application_installer
 programming_environments
 terminal_configuration
 sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
-update_kernel
 # game_installers
 userdel -rf builduser
-reboot
