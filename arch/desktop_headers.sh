@@ -27,10 +27,7 @@ function create_user() {
 	password_manager "$user"
 	sudo -u "$user" bash -c "mkdir -p /home/"$user"/{Applications,archives,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Video}"
 	sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/dotfiles /home/"$user"/Projects/dotfiles"
-	cat /home/"$user"/Projects/dotfiles/manifest_lists/repo_manifest | while read repo; do
-		[[ $(echo "$repo" | awk '/university/ || /dotfiles/ {print $0}') ]] && break
-		sudo -u "$user" bash -c "git clone "$repo" /home/"$user"/Projects/"$(basename "$repo" | sed 's/\.git//g')""
-	done
+	sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/university /home/"$user"/Projects/university"
 }
 
 
@@ -53,11 +50,9 @@ function terminal_configuration() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	sudo -u "$user" bash -c "git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder"
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
-	#vim +silent +PluginInstall +qall
-	#/usr/bin/python /home/"$user"/.vim/bundle/YouCompleteMe/install.py --clang-completer
+        vim +silent +PluginInstall +qall
 	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger zsh-syntax-highlighting
 }
 
@@ -104,22 +99,13 @@ function application_installer() {
 
 
 function programming_environments(){
-	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most
+	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
-	cat /tmp/dotfiles/manifest_lists/python_packages | while read package; do
-		sudo pip install --upgrade "$package"
+	cat /home/jared/Projects/dotfiles/manifest_lists/python_packages | while read package; do
+		sudo pip3.8 install --upgrade "$package"
 	done
 }
 
-
-function update_kernel(){
-	pacman -Sy --noconfirm linux-hardened
-
-}
-
-function game_installers(){
-	pacman -Sy --noconfirm minecraft-launcher steam steamcmd
-}
 
 function system_utilities(){
 	pacman -Sy --noconfirm wget pdfgrep libimobiledevice
