@@ -97,3 +97,12 @@ A much more in depth look can be found on my blog [here](https://JaredDyreson.gi
 - Integrate note taking and vim setup
     - [Initial inspiration to take notes in vim](https://www.youtube.com/watch?v=wh_WGWii7UE)
     - [Channel where I pulled most of my vim inspiration from along with file system navigation](https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA)
+
+# Things to check for when the new install goes through
+
+- can I compile LaTeX docs
+- does Vim work well
+- does firefox work when the configuration folder is copied over
+- can I take shutter screenshots
+- fix the ZSH by reinstalling oh-my-zsh and zsh-syntax-highlighting
+  

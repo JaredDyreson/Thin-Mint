@@ -89,7 +89,6 @@ function dot_file_installer() {
 
 function application_installer() {
 	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller 
-	# vmware-workstation
 	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
@@ -104,6 +103,7 @@ function programming_environments(){
 	cat /home/jared/Projects/dotfiles/manifest_lists/python_packages | while read package; do
 		sudo pip3.8 install --upgrade "$package"
 	done
+        sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
 }
 
 
@@ -122,6 +122,5 @@ dot_file_installer
 application_installer
 programming_environments
 terminal_configuration
-sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
 # game_installers
 userdel -rf builduser
