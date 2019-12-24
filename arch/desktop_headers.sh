@@ -93,7 +93,7 @@ function dot_file_installer() {
 }
 
 function application_installer() {
-	pacman -Sy --noconfirm vlc zenity firefox htop gnome-bluetooth file-roller 
+	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller 
 	# vmware-workstation
 	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
