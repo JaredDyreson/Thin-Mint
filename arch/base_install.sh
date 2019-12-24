@@ -90,7 +90,7 @@ pacman -Sy --noconfirm grub efibootmgr dosfstools os-prober mtools
 grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 mkinitcpio -p linux
-curl -sL https://git.io/fjwVT | bash
+#curl -sL https://git.io/fjwVT | bash
 exit
 umount /mnt/boot
 umount /mnt
