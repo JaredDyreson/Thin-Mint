@@ -22,6 +22,12 @@ home_dir=""$TGTDEV"4"
 # action of partitioning
 
 sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
+  d
+  1
+  d
+  2
+  d
+  3
   g # GPT partition table
   n
   1
@@ -48,8 +54,10 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "${TGTDEV}"
   t
   3
   24
-  w
+  p
 EOF
+exit
+# add w back to see if it worked
 
 mkfs.vfat -F32 "$efi"
 mkswap "$swap"
