@@ -34,15 +34,15 @@ echo "[+] Enabling TLP Services"
 
 ### This should be done at the very end!
 
+pacman -Sy --noconfirm linux-headers
 pacman -Sy --noconfirm acpi acpi_call-dkms
+modprobe acpi_call
 echo '_SB.PCI0.PEG0.PEGP._OFF' | sudo tee /proc/acpi/call
 echo acpi_call > /etc/modules-load.d/acpi_call.conf
 cp -ar /home/"$user"/Projects/dotfiles/graphics/dgpu-off.service /usr/lib/systemd/user/
 sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
 sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
-update-grub
-[[ -f "/tmp/nvidia-off" ]] && echo "Worked!" || echo "Did not work"
-#reboot
+grub-mkconfig -o /boot/grub/grub.cfg
 
 
 # if the device is the desktop
