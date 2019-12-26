@@ -6,7 +6,7 @@
 
 [[ "$(sudo lshw -C system | awk '/product/ {$1="";print $0}' | grep -i "xps")" || $(sudo lshw -C system | awk '/description/ {$1="";print $0}' | grep -i "notebook") ]] || (echo "Not the laptop, exiting";exit) && (echo "We can proceed")
 
-
+sleep 10
 
 ## Trackpad
 
@@ -18,6 +18,8 @@ find /usr/share/X11/xorg.conf.d/ -type f -iname '*libinput.conf' | while read fi
 done
 sudo gpasswd -a "$user" input
 libinput-gestures-setup autostart
+echo "[+] Libinput gestures service started"
+sleep 10
 cp /home/"$user"/Projects/dotfiles/trackpad/libinput-gestures.conf /home/"$user"/.config/libinput-gestures.conf
 
 
@@ -26,6 +28,7 @@ cp /home/"$user"/Projects/dotfiles/trackpad/libinput-gestures.conf /home/"$user"
 pacman -Sy --noconfirm tlp nvme-cli
 sudo systemctl enable tlp.service
 sudo systemctl enable tlp-sleep.service
+echo "[+] Enabling TLP Services"
 
 ## Configure Graphics Card
 
@@ -38,7 +41,8 @@ cp -ar /home/"$user"/Projects/dotfiles/graphics/dgpu-off.service /usr/lib/system
 sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
 sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
 update-grub
-reboot
+[[ -f "/tmp/nvidia-off" ]] && echo "Worked!" || echo "Did not work"
+#reboot
 
 
 # if the device is the desktop
