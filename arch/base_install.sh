@@ -87,6 +87,14 @@ echo -e "127.0.0.1\t\t"$hostname".localdomain"  $hostname"" >> /etc/hosts
 systemctl enable dhcpcd
 
 pacman -Sy --noconfirm grub efibootmgr dosfstools os-prober mtools
+
+if [[ "$(efibootmgr | grep "are not supported")" ]]; then
+        
+        echo "[+] installing BIOS version of GRUB"
+else
+        echo "[+] installing EFI version of GRUB"
+fi
+
 grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 mkinitcpio -p linux

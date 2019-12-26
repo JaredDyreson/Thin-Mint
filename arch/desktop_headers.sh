@@ -88,7 +88,7 @@ function dot_file_installer() {
 }
 
 function application_installer() {
-	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller 
+	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader
 	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
@@ -104,6 +104,7 @@ function programming_environments(){
 		sudo pip3.8 install --upgrade "$package"
 	done
         sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
+        yay -Sy --noconfirm pyton35
 }
 
 

@@ -105,4 +105,7 @@ A much more in depth look can be found on my blog [here](https://JaredDyreson.gi
 - does firefox work when the configuration folder is copied over
 - can I take shutter screenshots
 - fix the ZSH by reinstalling oh-my-zsh and zsh-syntax-highlighting
+- make sure starbucksautoma works, you have three weeks to figure it out
+- make sure csuf_printer is working
+- install virtualbox separately
   
