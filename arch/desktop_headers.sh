@@ -87,7 +87,7 @@ function dot_file_installer() {
 }
 
 function application_installer() {
-	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader
+	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox
 	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
@@ -99,8 +99,8 @@ function application_installer() {
 function programming_environments(){
 	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc pdfgrep wget
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
-        sudo -u "$user" bash -c "git clone https://github.com/jareddyreson/scripts.git /home/"$user"/scripts"
-        sudo -u "$user" bash -c "git clone https://github.com/jareddyreson/starbucks_automa_production.git /tmp"
+        sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
+        sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/starbucks_automa_production.git /tmp"
         pip3.8 install --upgrade google_auth_oauthlib google-api-python-client termcolor selenium
         
 }
