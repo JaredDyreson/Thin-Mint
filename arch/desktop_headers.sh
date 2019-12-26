@@ -48,7 +48,7 @@ function initial_configuration(){
 
 function terminal_configuration() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
-	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
+	#curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	sudo -u "$user" bash -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git"
         # echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
 	pacman -Sy --noconfirm vim cmake
@@ -97,18 +97,12 @@ function application_installer() {
 
 
 function programming_environments(){
-	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc
+	pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc pdfgrep wget
 	cd /tmp && git clone https://github.com/jeaye/stdman.git && cd stdman && ./configure && make install && mandb && cd .. && rm -rf stdman
-	cat /home/jared/Projects/dotfiles/manifest_lists/python_packages | while read package; do
-		sudo pip3.8 install --upgrade "$package"
-	done
-        sudo -u "$user" bash -c "git clone https://github.com/JaredDyreson/scripts.git /home/"$user"/scripts"
-        yay -Sy --noconfirm pyton35
-}
-
-
-function system_utilities(){
-	pacman -Sy --noconfirm wget pdfgrep libimobiledevice
+        sudo -u "$user" bash -c "git clone https://github.com/jareddyreson/scripts.git /home/"$user"/scripts"
+        sudo -u "$user" bash -c "git clone https://github.com/jareddyreson/starbucks_automa_production.git /tmp"
+        pip3.8 install --upgrade google_auth_oauthlib google-api-python-client termcolor selenium
+        
 }
 
 # Set up logging 
@@ -122,5 +116,4 @@ dot_file_installer
 application_installer
 programming_environments
 terminal_configuration
-# game_installers
 userdel -rf builduser
