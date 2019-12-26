@@ -49,11 +49,12 @@ function initial_configuration(){
 function terminal_configuration() {
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
 	curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
-	sudo -u "$user" bash -c "git clone https://github.com/AlexisBRENON/oh-my-zsh-reminder /home/"$user"/.oh-my-zsh/custom/plugins/reminder"
+	sudo -u "$user" bash -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git"
+        # echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
         vim +silent +PluginInstall +qall
-	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts ranger zsh-syntax-highlighting
+	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fontsa
 }
 
 function desktop_manager(){
@@ -77,8 +78,6 @@ function theme_manager() {
 }
 
 function dot_file_installer() {
-	sudo -u "$user" bash -c "mkdir -p /home/"$user"/.config/ranger"
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/ranger/* /home/"$user"/.config/ranger/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
