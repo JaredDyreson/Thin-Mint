@@ -87,12 +87,17 @@ function dot_file_installer() {
 }
 
 function application_installer() {
-	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox
+	pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox gedit
 	declare -a yay_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
 	for application in "${yay_applications[@]}"; do
 		sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
 	done
 	find /usr/share/applications/ -type f \(-name "*java*" -o -name "*avahi*" \) -exec rm -rf {} \;
+        if [[ -d /run/media/"$user"/External ]]; then
+                cp -ar --no-preserve=mode /run/media/"$user"/External/firefox_data/* ~/.mozilla/
+                chown -R "$user":users ~/.mozilla
+        fi
+        
 }
 
 
@@ -109,9 +114,14 @@ function programming_environments(){
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
 
+# we can get user
 initial_configuration jared
+# our desktop is up and running
 desktop_manager
+# we have the correct theme set
 theme_manager
+
+# this is the problem
 dot_file_installer
 application_installer
 programming_environments

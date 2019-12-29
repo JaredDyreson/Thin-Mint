@@ -43,11 +43,3 @@ cp -ar /home/jared/Projects/dotfiles/graphics/dgpu-off.service /usr/lib/systemd/
 sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
 sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
-
-
-# if the device is the desktop
-
-function disable_pc_speaker(){
-	rmmod pcspkr
-	echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
-}
