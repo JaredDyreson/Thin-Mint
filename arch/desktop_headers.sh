@@ -54,7 +54,7 @@ function terminal_configuration() {
 	pacman -Sy --noconfirm vim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
         vim +silent +PluginInstall +qall
-	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fontsa
+	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
 }
 
 function desktop_manager(){
@@ -97,7 +97,7 @@ function application_installer() {
                 cp -ar --no-preserve=mode /run/media/"$user"/External/firefox_data/* ~/.mozilla/
                 chown -R "$user":users ~/.mozilla
         fi
-        
+  xdg-mime default xreader.desktop application/pdf   
 }
 
 

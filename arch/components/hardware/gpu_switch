@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+[[ -z "$@"  || "$(whoami)" != "root" ]] && exit
+
+function show(){
+  drivers="$(lspci | awk -F':' '/VGA/ {print $3}' | perl -plne 's/^\s*//;s/\s*$//;s/\s+/ /;')"
+  echo -e "[+] Current video drivers\n=========================\n"
+  echo "$drivers" | while read driver; do echo "$driver"; done
+  exit 0
+}
+
+function enable_(){
+  sudo systemctl disable /usr/lib/systemd/user/dgpu-off.service
+  # this might or might not work
+  sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"//' /etc/default/grub
+}
+
+function disable_(){
+  sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
+  sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
+}
+
+function main(){
+  [[ "$ARG" == "enable" ]] && enable_
+  [[ "$ARG" == "disable" ]] && disable_
+  [[ "$ARG" == "show" ]] && show
+}
+
+function menu(){
+  echo "**Proceeeding will require a reboot, do you want to proceed?[y|N] **"
+
+  read option
+  if [[ "$option" == "Y" || "$option" == "y" || "$option" == "yes" ]]; then
+    case "$ARG" in
+
+    enable)
+      enable_
+      ;;
+
+    disable)
+      disable_
+      ;;
+
+    *)
+      echo "Huh?"
+      ;;
+  esac
+  grub-mkconfig -o /boot/grub/grub.cfg
+  reboot
+  else
+    echo "[-] Exiting..."
+  fi
+
+}
+
+
+export ARG="$1"
+
+[[ ! -z "$FORCE_" ]] && main || menu
+
+
+# run this from a script
+# FORCE_="YES" gpu_switch <option>
