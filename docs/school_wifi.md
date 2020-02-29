@@ -21,7 +21,25 @@ chmod +x ~/Downloads/SecureW2_JoinNow.run
 
 Follow the prompt and then you're connected.
 
-If there are any issues, you can use the flags below to get some more verbose output:
+## Debugging
+
+If there are any issues, you can decompile the executable `.run` file by using `binwalk`.
+
+```bash
+sudo pacman -Sy --noconfirm binwalk
+```
+
+Decompile with the following command:
+
+```bash
+binwalk -e ~/Downloads/SecureW2_JoinNow.run
+mkdir eduroam_installer
+tar -xf ./_SecureW2_JoinNow.run.extracted/SecureW2_JoinNow.tar -C eduroam_installer
+rm -rf ./_SecureW2_JoinNow.run.extracted/
+python eduroam_installer/main.py
+```
+
+You can also use the flags below to get some more verbose output:
 
 ```
 --interpreter-detect
@@ -32,4 +50,7 @@ If there are any issues, you can use the flags below to get some more verbose ou
 --backtrace-all
 ```
 
+If
+
 **Note:** NetworkManager stores its connection in the directory: `/etc/NetworkManager/system-connections/`
+
