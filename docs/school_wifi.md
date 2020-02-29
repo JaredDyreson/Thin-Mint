@@ -6,24 +6,10 @@ First, please have `NetworkManager` installed.
 This can be done using the following command:
 
 ```bash
-sudo pacman -Sy --noconfirm networkmanager
+sudo pacman -Sy --noconfirm networkmanager xorg-xwininfo
 ```
 
-Once that's done, proceed to the applet to create a new connection to `eduroam`
-
-Make sure the configuration looks like this:
-
-![WiFi Configuration Panel](assets/wifi_panel.png)
-
-Then you're connected.
-
-**Note:** NetworkManager stores its connection in the directory: `/etc/NetworkManager/system-connections/`
-
-## Linux Mint
-
-Follow [this link](http://wireless.fullerton.edu/eduroam/) to grab the WiFi wizard.
-Click "CSUF Other", **not CSUF Student**.
-For some reason the latter is broken.
+Follow [this link](http://wireless.fullerton.edu/eduroam/) to grab the WiFi wizard and click "CSUF Student".
 
 Once that's done, change its permissions to execute and run it.
 Provide the proper credentials and it will configure itself.
@@ -33,3 +19,17 @@ chmod +x ~/Downloads/SecureW2_JoinNow.run
 ~/Downloads/SecureW2_JoinNow.run
 ```
 
+Follow the prompt and then you're connected.
+
+If there are any issues, you can use the flags below to get some more verbose output:
+
+```
+--interpreter-detect
+--verbose-detect
+--verbose-detect-external
+--verbose-detect-all
+--backtrace
+--backtrace-all
+```
+
+**Note:** NetworkManager stores its connection in the directory: `/etc/NetworkManager/system-connections/`
