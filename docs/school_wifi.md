@@ -50,7 +50,4 @@ You can also use the flags below to get some more verbose output:
 --backtrace-all
 ```
 
-If
-
 **Note:** NetworkManager stores its connection in the directory: `/etc/NetworkManager/system-connections/`
-
