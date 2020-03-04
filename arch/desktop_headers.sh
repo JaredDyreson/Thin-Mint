@@ -51,7 +51,7 @@ function terminal_configuration() {
 	#curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
 	sudo -u "$user" bash -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git"
         # echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
-	pacman -Sy --noconfirm vim cmake
+	pacman -Sy --noconfirm gvim cmake
 	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
         vim +silent +PluginInstall +qall
 	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
