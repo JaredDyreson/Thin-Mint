@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
 
+# Either enable or disable a selected GPU
+# Jared Dyreson CSUF 2021
+
+# run this from a script
+# FORCE_="YES" gpu_switch <option>
+
 [[ -z "$@"  || "$(whoami)" != "root" ]] && exit
 
+function initial_configuration(){
+  pacman -Sy --noconfirm linux-headers
+  pacman -Sy --noconfirm acpi acpi_call-dkms
+  modprobe acpi_call
+  wget -qO- "https://raw.githubusercontent.com/JaredDyreson/dotfiles/master/graphics/dgpu-off.service" > /usr/lib/systemd/user/dgpu-off.service
+}
+
 function show(){
+  pacman -Q | grep "pciutils" > /dev/null 2>&1 || sudo pacman -Sy --noconfirm pciutils
   drivers="$(lspci | awk -F':' '/VGA/ {print $3}' | perl -plne 's/^\s*//;s/\s*$//;s/\s+/ /;')"
-  echo -e "[+] Current video drivers\n=========================\n"
+  echo -e "[+] Current video drivers detected\n===================================\n"
   echo "$drivers" | while read driver; do echo "$driver"; done
   exit 0
 }
@@ -16,6 +30,7 @@ function enable_(){
 }
 
 function disable_(){
+  echo '_SB.PCI0.PEG0.PEGP._OFF' | sudo tee /proc/acpi/call
   sudo systemctl enable /usr/lib/systemd/user/dgpu-off.service
   sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/s/".*"/"modprobe.blacklist=nouveau i915.preliminary_hw_support=1 acpi_rev_override=5"/' /etc/default/grub
 }
@@ -27,22 +42,27 @@ function main(){
 }
 
 function menu(){
-  echo "**Proceeeding will require a reboot, do you want to proceed?[y|N] **"
+  printf "**Proceeeding will require a reboot, do you want to proceed?[y|N] **   "
 
   read option
   if [[ "$option" == "Y" || "$option" == "y" || "$option" == "yes" ]]; then
     case "$ARG" in
 
     enable)
+      initial_configuration
       enable_
       ;;
 
     disable)
+      initial_configuration
       disable_
+      ;;
+    show)
+      show
       ;;
 
     *)
-      echo "Huh?"
+      >&2 echo "[-] Argument of $ARG is not recognized"
       ;;
   esac
   grub-mkconfig -o /boot/grub/grub.cfg
@@ -53,11 +73,6 @@ function menu(){
 
 }
 
-
 export ARG="$1"
 
 [[ ! -z "$FORCE_" ]] && main || menu
-
-
-# run this from a script
-# FORCE_="YES" gpu_switch <option>

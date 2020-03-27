@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function err_(){
+  >&2 echo "[+] There is no username set, cowardly refusing"
+  exit 1
+}
+
+function trackpad_configuration(){
+  [[ -z ${user+x} ]] &&  err_
+  pacman -Sy --noconfirm xf86-input-libinput libinput libinput-gestures xdotool wget
+  config_name="$(find /usr/share/X11/xorg.conf.d/ -type f -iname '*libinput.conf')"
+  wget -qO- "https://raw.githubusercontent.com/JaredDyreson/dotfiles/master/trackpad/libinput.conf" > "$config_name"
+  sudo gpasswd -a "$user" input
+  libinput-gestures-setup autostart
+  echo "[+] Libinput gestures service started" && sleep 10
+  wget -qO- "https://raw.githubusercontent.com/JaredDyreson/dotfiles/master/trackpad/libinput-gestures.conf" > /home/"$user"/.config/libinput-gestures.conf
+}
+
+[[ "$(whoami)" != "root" ]] && exit || trackpad_configuration
