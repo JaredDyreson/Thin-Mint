@@ -60,7 +60,21 @@ function partition_drive(){
 EOF
 }
 
-partition_drive 4 30
+function new_(){
+  swap_size="$1"
+  root_size="$2"
+  (
+    echo -e "g\nn\n"
+    echo -e "1\n+512M\n"
+    echo -e "n\n\2\n+"$swap_size"G\n"
+    echo -e "n\n3\n+"$root_size"G\n"
+    echo -e "n\n4\n\n"
+    echo -e "t\n1\n1\nt\n2\n19\nt\n3\n24\nw"
+  ) | fdisk "$TGTDEV"
+}
+
+new_ 4 30
+exit 1
 
 # make the EFI partition, swap (enable as well), root and user partitions
 mkfs.vfat -F32 "$efi"
