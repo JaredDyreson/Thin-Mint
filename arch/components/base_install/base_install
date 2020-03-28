@@ -62,6 +62,7 @@ mount --verbose "$home_dir" /mnt/home
 
 [[ "$(grep "hypervisor" /proc/cpuinfo)" || "$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "enp*")" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
 
+arch-chroot /mnt chroot_env
 exit
 
 # install the bare minimum packages
