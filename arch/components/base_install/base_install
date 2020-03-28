@@ -72,7 +72,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # we need to lead into the chroot environment from here
 
-arch-chroot /mnt chroot_env
+arch-chroot /mnt ./chroot_env
 
 # we no longer need these components
 
