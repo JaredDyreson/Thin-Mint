@@ -62,12 +62,9 @@ mount --verbose "$home_dir" /mnt/home
 
 [[ "$(grep "hypervisor" /proc/cpuinfo)" || "$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "enp*")" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
 
-arch-chroot /mnt chroot_env
-exit
-
 # install the bare minimum packages
 
-pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs device-mapper cryptsetup vim man-db man-pages inetutils s-nail intel-ucode networkmanager networkmanager-applet
+pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs device-mapper cryptsetup vim man-db man-pages inetutils s-nail intel-ucode networkmanager
 
 # setup fstab so we know where we can boot from
 
@@ -75,9 +72,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # we need to lead into the chroot environment from here
 
-#arch-chroot /mnt chroot_env
-
-exit 1
+arch-chroot /mnt chroot_env
 
 # we no longer need these components
 
