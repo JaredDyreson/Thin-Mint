@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# installer script for Arch Linux (1/4)
+# task: setup partitions, internet, and install base packages 
+# AUTHOR: Jared Dyreson, CSUF 2021
+
+function partition(){
+  swap_size="$1"
+  root_size="$2"
+  sed -i "s/\[SWAP_SIZE\]/$1/;s/\[ROOT_SIZE\]/$2/" fdisk_script
+  cat fdisk_script | fdisk
+}
+
+function wifi_menu_configuration(){
+  wirelss_interface="$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "wlp*")"
+  systemctl enable netctl-auto@"$wirelss_interface".service
+  wifi-menu -o
+}
+
+timedatectl set-ntp true
+
+# Partition names
+
+# base disk
+
+TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
+SIZE_OF_SWAP="$(echo "$(($MEMORY_INSTALLED * 2))")"
+
+# sub partitions
+
+efi=""$TGTDEV"1"
+swap=""$TGTDEV"2"
+root=""$TGTDEV"3"
+home_dir=""$TGTDEV"4"
+
+# drop all partitions but data is still intact
+
+dd if=/dev/zero of="$TGTDEV" bs=512 count=1
+
+# action of partitioning
+
+partition "$SIZE_OF_SWAP" 50
+
+# make the EFI partition, swap (enable as well), root and user partitions
+
+mkfs.vfat -F32 "$efi"
+mkswap "$swap"
+swapon "$swap"
+mkfs.ext4 "$root"
+mkfs.ext4 "$home_dir"
+
+exit
+
+# mount and make new partitions
+mount "$root" /mnt
+mkdir /mnt/boot
+mkdir /mnt/home
+mount "$efi" /mnt/boot
+mount "$home_dir" /mnt/home
+
+# internet and check if the script is running inside a VM
+
+[[ "$(grep "hypervisor" /proc/cpuinfo)" || "$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "enp*")" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
+
+# install the bare minimum packages
+
+pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs device-mapper cryptsetup vim man-db man-pages inetutils s-nail intel-ucode networkmanager networkmanager-applet
+
+# setup fstab so we know where we can boot from
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+# we need to lead into the chroot environment from here
+
+#arch-chroot /mnt chroot_env
+
+exit 1
+
+# we no longer need these components
+
+umount /mnt/boot
+umount /mnt/home
+umount /mnt/
