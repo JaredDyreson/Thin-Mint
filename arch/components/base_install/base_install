@@ -4,11 +4,20 @@
 # task: setup partitions, internet, and install base packages 
 # AUTHOR: Jared Dyreson, CSUF 2021
 
+exec 1> >(tee "stdout.log")
+exec 2> >(tee "stderr.log")
+
+# base disk
+
+TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
+SIZE_OF_SWAP="$(echo "$(($MEMORY_INSTALLED * 2))")"
+
 function partition(){
   swap_size="$1"
   root_size="$2"
   sed -i "s/\[SWAP_SIZE\]/$1/;s/\[ROOT_SIZE\]/$2/" fdisk_script
-  cat fdisk_script | fdisk
+  sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration(){
@@ -21,11 +30,6 @@ timedatectl set-ntp true
 
 # Partition names
 
-# base disk
-
-TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
-MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
-SIZE_OF_SWAP="$(echo "$(($MEMORY_INSTALLED * 2))")"
 
 # sub partitions
 
