@@ -12,7 +12,7 @@ This has lead to several times finding my laptop cooking in my bag because it do
 Running this on the desktop test environment should include the following steps before proceeding
 
 ```bash
-rmmod tg3
+rmmod tg3 pcspkr
 modprobe broadcom
 modprobe tg3
 ```
