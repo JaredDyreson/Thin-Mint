@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # installer script for Arch Linux (1/4)
 # task: setup partitions, internet, and install base packages 
@@ -14,8 +14,6 @@ MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/m
 SIZE_OF_SWAP="$(echo "$(($MEMORY_INSTALLED * 2))")"
 
 function partition(){
-  swap_size="$1"
-  root_size="$2"
   sed -i "s/\[SWAP_SIZE\]/$1/;s/\[ROOT_SIZE\]/$2/" fdisk_script
   sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' fdisk_script | fdisk "${TGTDEV}"
 }
@@ -54,18 +52,17 @@ swapon "$swap"
 mkfs.ext4 "$root"
 mkfs.ext4 "$home_dir"
 
-exit
-
 # mount and make new partitions
-mount "$root" /mnt
-mkdir /mnt/boot
-mkdir /mnt/home
-mount "$efi" /mnt/boot
-mount "$home_dir" /mnt/home
+mount --verbose "$root" /mnt
+mkdir /mnt/{boot,home}
+mount --verbose "$efi" /mnt/boot
+mount --verbose "$home_dir" /mnt/home
 
 # internet and check if the script is running inside a VM
 
 [[ "$(grep "hypervisor" /proc/cpuinfo)" || "$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "enp*")" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
+
+exit
 
 # install the bare minimum packages
 
