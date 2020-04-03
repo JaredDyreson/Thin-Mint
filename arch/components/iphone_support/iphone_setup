@@ -13,7 +13,25 @@ function not_root_(){
   exit
 }
 
-sudo pacman -Sy ifuse usbmuxd libplist libimobiledevice
+function install_libirecovery(){
+  git clone https://github.com/libimobiledevice/libirecovery.git
+  sudo ./autogen.sh --prefix=/usr
+  sudo make && sudo make install
+}
+function install_libimobiledevice(){
+  git clone https://github.com/libimobiledevice/libimobiledevice.git
+  sudo ./autogen.sh --prefix=/usr
+  sudo make && sudo make install
+}
+
+function install_idevicerestore(){
+  git clone https://github.com/libimobiledevice/idevicerestore.git
+  sudo ./autogen.sh --prefix=/usr
+  sudo make && sudo make install
+}
+
+sudo pacman -Sy --noconfirm ifuse usbmuxd libplist libzip
+install_libirecovery && install_libimobiledevice && install_idevicerestore
 mkdir ~/iPhone
 
 echo "[+] Please consult the README for further details"

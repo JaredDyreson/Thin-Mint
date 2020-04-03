@@ -3,9 +3,7 @@
 To set up support for your iDevice, please run these commands:
 
 ```bash
-sudo pacman -Sy ifuse usbmuxd libplist libimobiledevice
-mkdir ~/iPhone
-reboot
+./iphone_support
 ```
 
 You can confirm it with typing in the following command after a reboot:
