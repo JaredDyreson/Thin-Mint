@@ -22,8 +22,22 @@ Run the following command to ensure your iDevice is paired with the computer:
 idevicepair pair
 ```
 
+## Create backups
+
+```bash
+mkdir ~/Documents/iPhoneBackups
+idevicebackup2 backup --full ~/Documents/iPhoneBackups
+```
+
+If you want the backup to be more browse-able, run the following command:
+
+```bash
+idevicebackup2 unback ~/Documents/iPhoneBackups/
+```
+
 # External Links
 
 - [Original FOSS Article](https://itsfoss.com/iphone-antergos-linux/)
 - [Github thread that helped fix lockdownd issue](https://github.com/libimobiledevice/ifuse/issues/39)
 - [Original Arch Linux Manual Page](https://wiki.archlinux.org/index.php/User:Lekensteyn/Upgrading_iOS)
+- [Browse iPhone Backup](https://santoku-linux.com/howto/mobile-forensics/howto-create-a-logical-backup-of-an-ios-device-using-libimobiledevice-on-santoku-linux/)
