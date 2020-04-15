@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+. hello
+echo "the value of a is $a"
+hello_world
+using_arguments "Hello World"
