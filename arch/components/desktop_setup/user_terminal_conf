@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Configure user applications such as the terminal, shell, etc
+
+source user_configuration
+
+function terminal_configuration(){
+  # ZSH #
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash
+    cp -ar $MINT_HOME/Projects/dotfiles/shell/zshrc $MINT_HOME/.zshrc
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $MINT_HOME/zsh-syntax-highlighting
+    
+EOF
+
+  # VIM #
+  pacman -Sy --noconfirm gvim cmake
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    git clone https://github.com/VundleVim/Vundle.vim.git "$MINT_HOME"/.vim/bundle/Vundle.vim
+    # experimental (please check logs) #
+    cp -ar $MINT_HOME/Projects/dotfiles/shell/vimrc $MINT_HOME/.vimrc
+    vim +silent +PluginInstall +qall
+EOF
+
+  # TERMINAL CONF #
+  pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+
+  cp -ar $MINT_HOME/Projects/dotfiles/terminal/Xresources $MINT_HOME/.Xresources
+EOF
+
+  # GIT CONF # 
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+
+    git config --global user.name "Jared Dyreson"
+    git config --global user.email "jared.dyreson@gmail.com"
+EOF
+}

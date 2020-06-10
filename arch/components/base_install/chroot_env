@@ -48,3 +48,11 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # compile the kernel
 
 mkinitcpio -p linux
+
+# just incase if you find yourself getting dropped into a UEFI shell for some reason, this should clear it up
+# SOURCE : https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox
+
+echo "bcfg boot add 1 fs0:/EFI/grub/grubx64.efi \"Added via script\"" >> /boot/startup.sh
+echo "exit" >> /boot/startup.sh
+mkdir /boot/EFI/BOOT
+cp -ar /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI

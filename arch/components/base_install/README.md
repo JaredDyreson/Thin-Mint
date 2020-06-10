@@ -14,3 +14,9 @@ The base disk is the first disk detected by using lsblk, for the XPS, this is go
 
 We are using dd to delete the entire partition table and new partitions will be made in their place.
 
+# Booting into UEFI Shell
+
+```nsh
+bcfg boot add 1 fs0:/EFI/grub/grubx64.efi "Added via script"
+exit
+```

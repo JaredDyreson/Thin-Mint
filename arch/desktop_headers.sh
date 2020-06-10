@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 function make_root() {
+  # DONE
 	[[ "$(whoami)" != "root" ]] && (echo "Run as root!";exit)
 	echo "$1 ALL=(ALL) ALL"  | tee -a /etc/sudoers
 }
 
 function password_manager(){
+  # DONE
 	passone=""
 	passtwo="d"
 	while [[ -z "$passone" || "$passone" != "$passtwo" ]]; do
@@ -19,9 +21,11 @@ function password_manager(){
 	export pass="$passone"
 }
 
+# REMOVED
 function check_user() { [[ $(awk -F: '{print $user}' /etc/passwd | grep "$1") ]] && (return 1) || (return 0) }
 
 function create_user() {
+# DONE
 	[[ -z "$user" || `check_user "$user"` ]] && exit
 	useradd -m -g users -G wheel,storage,power -s /bin/zsh "$user"
 	password_manager "$user"
@@ -32,6 +36,7 @@ function create_user() {
 
 
 function initial_configuration(){
+  # DONE
 	export user="$1"	
 	[[ `check_user "$user"` ]] && (echo "Cannot process, $user is already a user";return)
 	[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
@@ -46,16 +51,6 @@ function initial_configuration(){
 
 ## Functions that are used for the installation of the actual desktop environment 
 
-function terminal_configuration() {
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/zshrc /home/"$user"/.zshrc"
-	#curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash 
-	sudo -u "$user" bash -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git"
-        # echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
-	pacman -Sy --noconfirm gvim cmake
-	sudo -u builduser bash -c "yay -Sy --noconfirm vundle"
-        vim +silent +PluginInstall +qall
-	pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
-}
 
 function desktop_manager(){
 	pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
@@ -75,15 +70,8 @@ function theme_manager() {
 	sudo -u "$user" bash -c "mkdir -p /home/"$user"/{.icons,.themes}"
 	git clone https://github.com/daniruiz/flat-remix /home/"$user"/.icons/
 	git clone https://github.com/daniruiz/flat-remix-gtk /home/"$user"/.themes/
-}
-
-function dot_file_installer() {
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/terminal/Xresources /home/"$user"/.Xresources"
 	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/wallpaper/* /home/"$user"/Pictures/Wallpapers/"
-	sudo -u "$user" bash -c "cp -ar /home/"$user"/Projects/dotfiles/shell/vimrc /home/"$user"/.vimrc"
 	sudo -u "$user" bash -c "dbus-launch dconf load / < /home/"$user"/Projects/dotfiles/desktop_env/arch_linux_settings"
-	git config --global user.name "Jared Dyreson"
-	git config --global user.email "jared.dyreson@gmail.com"
 }
 
 function application_installer() {
