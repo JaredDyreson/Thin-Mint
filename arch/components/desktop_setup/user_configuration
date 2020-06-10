@@ -70,7 +70,6 @@ EOF
 function initial_configuration(){
   #[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
   #pacman -Sy --noconfirm sudo git dialog python zsh
-  [[ $(grep "^builduser" /etc/passwd) ]] || (useradd -s /bin/bash builduser -m && passwd -d builduser && make_root builduser)
   if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
     useradd -s /bin/bash builduser -m
     passwd -d builduser

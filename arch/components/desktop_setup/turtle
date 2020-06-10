@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# turtle : helper script to 
+# make sure the PKGDEST folder is created by the builduser
+
+BUILD_DEST="/home/builduser/built"
+[[ ! -d "$BUILD_DEST" ]] && mkdir "$BUILD_DEST"
+function build(){
+  [[ -z "$@" ]] && return
+  for PKG in "$@"; do
+  sudo -u jared bash << EOF
+    CURRENT=$PWD
+    git clone https://aur.archlinux.org/$PKG.git
+    cd $PKG
+    #PKGDEST="$BUILD_DEST" makepkg -s --noconfirm
+    cd $CURRENT
+EOF
+  done
+}
+
+function install(){
+  [[ -z "$@" ]] && return
+  for PKG in "$@"; do
+    [[ "$(find "$BUILD_DEST" -iname "*$PKG*" -exec stat {} \;)" ]] && echo "Successfully installed $PKG" || echo "Could not find $PKG"
+    #find "$BUILD_DEST" -iname "*$PKG*" -exec pacman -U {} \;
+  done
+}

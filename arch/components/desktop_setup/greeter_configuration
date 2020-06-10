@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+source turtle
+
+## Available functions ##
+# - build : use makepkg to build the package from PKGBUILD
+# - install : use pacman to install package manually after compilation and building
+
+build lightdm-slick-greeter
