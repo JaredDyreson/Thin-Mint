@@ -4,8 +4,8 @@
 # task: run setup inside of the arch-chroot environment
 # AUTHOR: Jared Dyreson, CSUF 2021
 
-echo "[+] HELLO FROM CHROOT"
-exit
+exec 1> >(tee "chroot_stdout.log")
+exec 2> >(tee "chroot_stderr.log")
 
 # timezone
 

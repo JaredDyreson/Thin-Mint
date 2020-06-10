@@ -3,6 +3,7 @@
 # installer script for Arch Linux (1/4)
 # task: setup partitions, internet, and install base packages 
 # AUTHOR: Jared Dyreson, CSUF 2021
+# NOTE: this has been tested and does indeed work!
 
 exec 1> >(tee "stdout.log")
 exec 2> >(tee "stderr.log")
@@ -49,14 +50,6 @@ dd if=/dev/zero of="$TGTDEV" bs=512 count=1
 # action of partitioning
 
 partition "$SIZE_OF_SWAP" 50
-
-# NOTE
-# for debugging purposes
-
-lsblk -l
-
-exit
-
 
 ##### BREAKPOINT SET HERE ############
 
