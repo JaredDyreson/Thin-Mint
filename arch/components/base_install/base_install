@@ -24,6 +24,12 @@ function wifi_menu_configuration(){
   wifi-menu -o
 }
 
+function unmount_all_partitions(){
+  umount /mnt/boot
+  umount /mnt/home
+  umount /mnt/
+}
+
 timedatectl set-ntp true
 
 # Partition names
@@ -44,6 +50,16 @@ dd if=/dev/zero of="$TGTDEV" bs=512 count=1
 
 partition "$SIZE_OF_SWAP" 50
 
+# NOTE
+# for debugging purposes
+
+lsblk -l
+
+exit
+
+
+##### BREAKPOINT SET HERE ############
+
 # make the EFI partition, swap (enable as well), root and user partitions
 
 mkfs.vfat -F32 "$efi"
@@ -53,6 +69,7 @@ mkfs.ext4 "$root"
 mkfs.ext4 "$home_dir"
 
 # mount and make new partitions
+
 mount --verbose "$root" /mnt
 mkdir /mnt/{boot,home}
 mount --verbose "$efi" /mnt/boot
@@ -71,11 +88,3 @@ pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # we need to lead into the chroot environment from here
-
-arch-chroot /mnt ./chroot_env
-
-# we no longer need these components
-
-umount /mnt/boot
-umount /mnt/home
-umount /mnt/
