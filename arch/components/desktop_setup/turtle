@@ -20,7 +20,7 @@ function build(){
     CURRENT=$PWD
     git clone https://aur.archlinux.org/$PKG.git
     cd $PKG
-    #PKGDEST="$BUILD_DEST" makepkg -s --noconfirm
+    PKGDEST="$BUILD_DEST" makepkg -s --noconfirm
     cd $CURRENT
 EOF
   done
