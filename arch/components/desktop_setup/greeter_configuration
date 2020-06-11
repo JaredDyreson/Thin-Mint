@@ -3,7 +3,16 @@
 source turtle
 
 ## Available functions ##
+
 # - build : use makepkg to build the package from PKGBUILD
 # - install : use pacman to install package manually after compilation and building
 
-build lightdm-slick-greeter
+function greeter_conf(){
+  pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
+  install lightdm-slick-greeter
+  sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+  systemctl enable lightdm.service
+  cp -ar "$MINT_HOME"/Projects/dotfiles/desktop_env/slick-greeter.conf /etc/lightdm/
+  cp -ar --no-preserve=mode "$MINT_HOME"/Projects/dotfiles/wallpaper/* /etc/lightdm/
+}
+

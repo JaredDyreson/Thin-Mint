@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Install proper themes for the Arch installation
+
+source turtle
+source user_configuration
+
+function theme_manager(){
+  install mint-x-icons mint-y-icons mint-themes
+
+  sudo -u "$MINT_USER" bash << EOF
+    mkdir -p "$MINT_HOME"/{.icons,.themes}
+    git clone https://github.com/daniruiz/flat-remix "$MINT_HOME"/.icons/
+    git clone https://github.com/daniruiz/flat-remix-gtk "$MINT_HOME"/.themes/
+    cp -ar "$MINT_HOME"/Projects/dotfiles/wallpaper/* "$MINT_HOME"/Pictures/Wallpapers/
+    dbus-launch dconf load / < "$MINT_HOME"/Projects/dotfiles/desktop_env/arch_linux_settings
+EOF
+}

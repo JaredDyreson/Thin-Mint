@@ -3,12 +3,20 @@
 # turtle : helper script to 
 # make sure the PKGDEST folder is created by the builduser
 
-BUILD_DEST="/home/builduser/built"
-[[ ! -d "$BUILD_DEST" ]] && mkdir "$BUILD_DEST"
+BUILD_USER="builduser"
+BUILD_DEST="/run/media/Packages"
+
+function usb_err_(){
+  echo "[-] USB drive is not present, stop."
+  exit
+}
+
+#[[ ! -d "$BUILD_DEST" ]] && usb_err_
+
 function build(){
   [[ -z "$@" ]] && return
   for PKG in "$@"; do
-  sudo -u jared bash << EOF
+  sudo -u "$BUILD_USER" bash << EOF
     CURRENT=$PWD
     git clone https://aur.archlinux.org/$PKG.git
     cd $PKG
@@ -25,3 +33,5 @@ function install(){
     #find "$BUILD_DEST" -iname "*$PKG*" -exec pacman -U {} \;
   done
 }
+
+build lightdm-slick-greeter

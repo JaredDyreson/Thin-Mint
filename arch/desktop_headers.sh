@@ -53,6 +53,7 @@ function initial_configuration(){
 
 
 function desktop_manager(){
+  # DONE
 	pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
 	sudo -u builduser bash -c "yay -Sy --noconfirm lightdm-slick-greeter"
 	sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf

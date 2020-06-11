@@ -13,7 +13,6 @@ USB_DEST="/run/media/packages"
 
 #[[ ! "$(grep -i "arch" /etc/os-release)" ]] && wrong_os_err_
 #[[ "$EUID" -ne 0 ]] && perm_err_
-#[[ ! -d $USB_DEST ]] && usb_err_
 
 exec 1> >(tee "desktop_stdout.log")
 exec 2> >(tee "desktop_stderr.log")
@@ -22,20 +21,4 @@ exec 2> >(tee "desktop_stderr.log")
 
 #initial_configuration
 #create_user
-
-#function usb_err_(){
-  #echo "[-] USB drive is not present, stop."
-  #exit
-#}
-
-
-#function graphical_interface_setup(){
-  ## greeter, xorg server, desktop environment 
-  #pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
-   
-#}
-
-#function migrate_built(){ 
-  #cp -ar "$MAKEPKG_DEST" "$FINAL_DEST" 
-#}
-#[[ ! -d "$MAKEPKG_DEST" ]] && mkdir "$MAKEPKG_DEST"
+#terminal_configuration
