@@ -9,7 +9,7 @@
 # MINT_PASS : password specified by password_manager
 
 MINT_USER="jared"
-MINT_HOME="tmp/$MINT_USER/home"
+MINT_HOME="/home/$MINT_USER"
 
 ## Exceptions ##
 
@@ -65,6 +65,7 @@ function create_user(){
     git clone https://github.com/JaredDyreson/university $MINT_HOME/Projects/university
     echo "$MINT_PASS"
 EOF
+  make_root "$MINT_USER"
 }
 
 function initial_configuration(){
@@ -74,16 +75,17 @@ function initial_configuration(){
     useradd -s /bin/bash builduser -m
     passwd -d builduser
     make_root builduser
+  else
+    echo "[INFO] BUILDUSER EXISTS"
   fi
   create_user
-  make_root "$MINT_USER"
 
-  sudo -u "builduser" bash << EOF
-    git clone https://aur.archlinux.org/yay.git /home/builduser/yay
-    cd /home/builduser/yay
-    makepkg -si --noconfirm
-    cd ..
-    rm -rf yay
-EOF
-  # configure makepkg.conf
+  #sudo -u "builduser" bash << EOF
+    #git clone https://aur.archlinux.org/yay.git /home/builduser/yay
+    #cd /home/builduser/yay
+    #makepkg -si --noconfirm
+    #cd ..
+    #rm -rf yay
+#EOF
+
 }

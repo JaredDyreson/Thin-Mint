@@ -9,18 +9,15 @@ source greeter_configuration
 source user_latexconf
 source programming_environment
 
-# properly dispose of stored username
-# unset MINT_PASS
-
 MAKEPKG_DEST="/root/built-packages"
 USB_DEST="/run/media/packages"
 [[ -z "$MINT_PASS" ]] && export MINT_PASS="pass"
 
-#[[ ! "$(grep -i "arch" /etc/os-release)" ]] && wrong_os_err_
-#[[ "$EUID" -ne 0 ]] && perm_err_
+[[ ! "$(grep -i "arch" /etc/os-release)" ]] && wrong_os_err_
+[[ "$EUID" -ne 0 ]] && perm_err_
 
-#exec 1> >(tee "desktop_stdout.log")
-#exec 2> >(tee "desktop_stderr.log")
+exec 1> >(tee "desktop_stdout.log")
+exec 2> >(tee "desktop_stderr.log")
 
 # main list of functions IN CORRECT ORDER
 
