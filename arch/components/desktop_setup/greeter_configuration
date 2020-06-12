@@ -8,11 +8,13 @@ source turtle
 # - install : use pacman to install package manually after compilation and building
 
 function greeter_conf(){
-  pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
   install lightdm-slick-greeter
-  sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
-  systemctl enable lightdm.service
-  cp -ar "$MINT_HOME"/Projects/dotfiles/desktop_env/slick-greeter.conf /etc/lightdm/
-  cp -ar --no-preserve=mode "$MINT_HOME"/Projects/dotfiles/wallpaper/* /etc/lightdm/
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
+    sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+    systemctl enable lightdm.service
+    cp -av "$MINT_HOME"/Projects/dotfiles/desktop_env/slick-greeter.conf /etc/lightdm/
+    cp -av --no-preserve=mode "$MINT_HOME"/Projects/dotfiles/wallpaper/* /etc/lightdm/
+EOF
 }
 

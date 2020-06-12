@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+source turtle
+source user_configuration
+
+function application_installer(){
+	#pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox gedit
+	declare -a desktop_applications=('spotify' 'ffmpeg-compat-57' 'shutter' 'discord' 'balena-etcher' 'mintstick' 'pix')
+	for application in "${desktop_applications[@]}"; do
+		#sudo -u builduser bash -c "yay -Sy --noconfirm "$application""
+    echo "$application"
+	done
+
+  #cp -arv --no-preserve=mode "$USB_BASE"/firefox_data/* "$MINT_HOME"/.mozilla/
+  #chown -R "$MINT_USER":users "$MINT_HOME"/.mozilla
+  #xdg-mime default xreader.desktop application/pdf   
+}
+
+application_installer

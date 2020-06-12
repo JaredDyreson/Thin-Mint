@@ -9,7 +9,7 @@
 # MINT_PASS : password specified by password_manager
 
 MINT_USER="jared"
-MINT_HOME="home/$MINT_USER"
+MINT_HOME="tmp/$MINT_USER/home"
 
 ## Exceptions ##
 
@@ -48,8 +48,8 @@ function password_manager(){
 		passtwo=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
 		clear
 	done
-  #echo "$MINT_USER:$passone" | chpasswd "$MINT_USER"
-  #echo "root:$passone" | chpasswd root
+  echo "$MINT_USER:$passone" | chpasswd "$MINT_USER"
+  echo "root:$passone" | chpasswd root
   export MINT_PASS="$passone"
 }
 
@@ -68,8 +68,8 @@ EOF
 }
 
 function initial_configuration(){
-  #[[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
-  #pacman -Sy --noconfirm sudo git dialog python zsh
+  [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
+  pacman -Sy --noconfirm sudo git dialog python zsh
   if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
     useradd -s /bin/bash builduser -m
     passwd -d builduser

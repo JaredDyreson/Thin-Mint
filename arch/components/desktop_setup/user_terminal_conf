@@ -8,7 +8,7 @@ function terminal_configuration(){
   # ZSH #
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
     curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash
-    cp -ar $MINT_HOME/Projects/dotfiles/shell/zshrc $MINT_HOME/.zshrc
+    cp -v $MINT_HOME/Projects/dotfiles/shell/zshrc $MINT_HOME/.zshrc
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $MINT_HOME/zsh-syntax-highlighting
     
 EOF
@@ -18,7 +18,7 @@ EOF
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
     git clone https://github.com/VundleVim/Vundle.vim.git "$MINT_HOME"/.vim/bundle/Vundle.vim
     # experimental (please check logs) #
-    cp -ar $MINT_HOME/Projects/dotfiles/shell/vimrc $MINT_HOME/.vimrc
+    cp -v $MINT_HOME/Projects/dotfiles/shell/vimrc $MINT_HOME/.vimrc
     vim +silent +PluginInstall +qall
 EOF
 
@@ -26,7 +26,8 @@ EOF
   pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
 
-  cp -ar $MINT_HOME/Projects/dotfiles/terminal/Xresources $MINT_HOME/.Xresources
+  cp -v $MINT_HOME/Projects/dotfiles/terminal/Xresources $MINT_HOME/.Xresources
+  xrdb "$MINT_HOME"/.Xresources
 EOF
 
   # GIT CONF # 

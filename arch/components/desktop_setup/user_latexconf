@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+source user_configuration
+
+function latex_install(){
+  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+  pacman -Sy --noconfirm texlive-full pandoc
+EOF
+}

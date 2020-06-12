@@ -4,7 +4,9 @@
 # make sure the PKGDEST folder is created by the builduser
 
 BUILD_USER="builduser"
-BUILD_DEST="/run/media/Packages"
+USB_BASE="/run/media"
+BUILD_DEST="$USB_BASE/Packages"
+INSTALL_SRC="$BUILD_DEST/installers"
 
 function usb_err_(){
   echo "[-] USB drive is not present, stop."
@@ -34,4 +36,3 @@ function install(){
   done
 }
 
-build lightdm-slick-greeter

@@ -6,6 +6,7 @@ source turtle
 source user_configuration
 
 function theme_manager(){
+  # WORKS, but needs to install themes and load conf file. we can test if those work later on
   install mint-x-icons mint-y-icons mint-themes
 
   sudo -u "$MINT_USER" bash << EOF
