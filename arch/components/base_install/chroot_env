@@ -55,4 +55,4 @@ mkinitcpio -p linux
 echo "bcfg boot add 1 fs0:/EFI/grub/grubx64.efi \"Added via script\"" >> /boot/startup.sh
 echo "exit" >> /boot/startup.sh
 mkdir /boot/EFI/BOOT
-cp -ar /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
+cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI

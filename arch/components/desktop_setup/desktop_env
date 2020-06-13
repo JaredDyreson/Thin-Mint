@@ -23,27 +23,28 @@ exec 2> >(tee "desktop_stderr.log")
 
 # Create structure for proper installation
 
-#initial_configuration
+initial_configuration
 
 # Create our regular user
-#create_user
+create_user
 
 # Install vim and configure all command line tools for our use
-#terminal_configuration
+terminal_configuration
 
 # Configure the launch screen for our installation
-#greeter_conf
+greeter_conf
 
 # Install proper themes and configure Desktop environment settings
 # Also install icons used from Linux Mint
 
-#theme_manager
+theme_manager
 
 # Install programming languages I use on daily basis
-# programming_env
+#programming_env
 
 # Install LaTeX, this should probably be put at the end of the script or not even apart of it because of how lengthy it is
 
 # latex_install
 
 unset MINT_PASS
+userdel -rf builduser

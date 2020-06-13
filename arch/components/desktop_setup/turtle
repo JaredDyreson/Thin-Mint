@@ -4,7 +4,7 @@
 # make sure the PKGDEST folder is created by the builduser
 
 BUILD_USER="builduser"
-USB_BASE="/run/media"
+USB_BASE="/media/jared"
 BUILD_DEST="$USB_BASE/Packages"
 INSTALL_SRC="$BUILD_DEST/installers"
 
@@ -12,8 +12,6 @@ function usb_err_(){
   echo "[-] USB drive is not present, stop."
   exit
 }
-
-#[[ ! -d "$BUILD_DEST" ]] && usb_err_
 
 function build(){
   [[ -z "$@" ]] && return
@@ -31,8 +29,8 @@ EOF
 function install(){
   [[ -z "$@" ]] && return
   for PKG in "$@"; do
+    #[[ "$(find "$BUILD_DEST" -iname "*$PKG*" -exec pacman -U --noconfirm {} \;)" ]] && echo "Successfully installed $PKG" || echo "Could not find $PKG"
     [[ "$(find "$BUILD_DEST" -iname "*$PKG*" -exec stat {} \;)" ]] && echo "Successfully installed $PKG" || echo "Could not find $PKG"
-    #find "$BUILD_DEST" -iname "*$PKG*" -exec pacman -U {} \;
   done
 }
 

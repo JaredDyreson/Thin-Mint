@@ -55,7 +55,10 @@ function password_manager(){
 
 function create_user(){
   [[ -z "${MINT_USER+x}" ]] && no_user_specified_
-  [[ "$(grep "^$MINT_USER" /etc/passwd)" ]] && return
+  if [[ "$(grep "^$MINT_USER" /etc/passwd)" ]]; then
+    echo "[INFO] $MINT_USER exists"
+    return
+  fi
   useradd -m -g users -G wheel,storage,power -s /bin/zsh "$MINT_USER"
   password_manager
 
@@ -80,12 +83,12 @@ function initial_configuration(){
   fi
   create_user
 
-  #sudo -u "builduser" bash << EOF
-    #git clone https://aur.archlinux.org/yay.git /home/builduser/yay
-    #cd /home/builduser/yay
-    #makepkg -si --noconfirm
-    #cd ..
-    #rm -rf yay
-#EOF
+  sudo -u "builduser" bash << EOF
+    git clone https://aur.archlinux.org/yay.git /home/builduser/yay
+    cd /home/builduser/yay
+    makepkg -si --noconfirm
+    cd ..
+    rm -rf yay
+EOF
 
 }

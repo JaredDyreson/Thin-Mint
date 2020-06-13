@@ -27,6 +27,7 @@ EOF
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
 
   cp -v $MINT_HOME/Projects/dotfiles/terminal/Xresources $MINT_HOME/.Xresources
+  # this needs to be run in a X11 environmement!
   xrdb "$MINT_HOME"/.Xresources
 EOF
 
