@@ -21,7 +21,6 @@ e2fsprogs
 efibootmgr
 engrampa
 fakeroot
-ffmpeg-compat-57
 file
 file-roller
 findutils
@@ -32,7 +31,6 @@ gcc
 gedit
 gettext
 git
-glxinfo
 gnome-calculator
 grep
 groff
@@ -47,7 +45,6 @@ jre-openjdk
 libtool
 lightdm
 lightdm-gtk-greeter
-lightdm-slick-greeter
 linux
 linux-firmware
 linux-headers
@@ -55,9 +52,6 @@ m4
 make
 man-db
 man-pages
-mint-themes
-mint-x-icons
-mint-y-icons
 most
 mtools
 neofetch
@@ -71,7 +65,6 @@ pacman
 pandoc
 patch
 pdfgrep
-pix
 pkgconf
 powerline
 powerline-fonts
@@ -81,8 +74,6 @@ rsync
 rxvt-unicode
 s-nail
 sed
-slack-desktop
-spotify
 sqlitebrowser
 sudo
 sysfsutils
@@ -111,5 +102,4 @@ which
 xorg-server
 xorg-xrdb
 xreader
-yay
 zsh
