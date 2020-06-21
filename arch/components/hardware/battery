@@ -8,7 +8,8 @@ function err_(){
 }
 
 function battery(){
-  lscpi | grep -i nvme && pacman -Sy --noconfirm nvme-cli tlp || pacman -Sy --noconfirm tlp
+  pacman -Sy --noconfirm pciutils
+  lspci | grep -i nvme && pacman -Sy --noconfirm nvme-cli tlp || pacman -Sy --noconfirm tlp
   sudo systemctl enable tlp.service tlp-sleep.service
   echo "[+] Enabling TLP Services"
 }

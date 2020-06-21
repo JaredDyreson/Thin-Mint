@@ -4,7 +4,7 @@ source turtle
 source user_configuration
 
 function application_installer(){
-  pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox gedit discord
+  pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox gedit discord gnome-calculator
   install spotify ffmpeg-compat-57 shutter mintstick pix slack
 
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
