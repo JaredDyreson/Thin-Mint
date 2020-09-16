@@ -114,6 +114,7 @@ tk
 tlp
 tree
 ttf-dejavu
+umbrello
 unzip
 usbutils
 virtualbox
@@ -122,11 +123,13 @@ vlc
 wget
 which
 wkhtmltopdf
+xclip
 xdotool
 xorg-server
 xorg-xdpyinfo
 xorg-xrdb
 xreader
+yad
 zathura
 zathura-pdf-mupdf
 zsh
