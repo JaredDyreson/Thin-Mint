@@ -1,0 +1,6 @@
+error: target not found: ifuse
+warning: usbmuxd-1.1.1-1 is up to date -- reinstalling
+warning: libplist-2.2.0-1 is up to date -- reinstalling
+Cloning into 'libirecovery'...
+sudo: ./autogen.sh: command not found
+make: *** No targets specified and no makefile found.  Stop.

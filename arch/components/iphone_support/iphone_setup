@@ -6,12 +6,13 @@
 exec 1> >(tee "iphone_setup_stdout.log")
 exec 2> >(tee "iphone_setup_stderr.log")
 
-[[ "$(whoami)" != "root" ]] && not_root_
-
 function not_root_(){
   >&2 echo "[-] You need to run this script as root"
   exit
 }
+
+[[ "$(whoami)" != "root" ]] && not_root_
+
 
 function install_libirecovery(){
   git clone https://github.com/libimobiledevice/libirecovery.git
