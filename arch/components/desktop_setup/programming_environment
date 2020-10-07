@@ -7,7 +7,7 @@ source user_configuration
 
 function programming_env(){
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-    pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc pdfgrep wget
+    pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc pdfgrep wget mariadb
     cd /tmp
     git clone https://github.com/jeaye/stdman.git
     cd stdman
@@ -16,5 +16,7 @@ function programming_env(){
     git clone https://github.com/JaredDyreson/scripts.git "$MINT_HOME"/scripts
     git clone https://github.com/JaredDyreson/starbucks_automa_production.git "$MINT_HOME"/Projects/starbucks_automa
     pip3.8 install --upgrade google_auth_oauthlib google-api-python-client termcolor selenium
+    mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+    sytemctl enable mariadb.service
 EOF
 }
