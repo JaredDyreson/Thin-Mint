@@ -1,16 +1,16 @@
-drawio-desktop
-ffmpeg-compat-57
-glxinfo
-lightdm-slick-greeter
-mint-themes
-mint-x-icons
-mint-y-icons
-pix
-shutter
-slack-desktop
-spotify
-staruml
-trimage
-yay
-yed
-zoom
+drawio-desktop 13.6.2-1
+ffmpeg-compat-57 3.4.2-3
+glxinfo 8.4.0-1
+lightdm-slick-greeter 1.4.0-1
+mint-themes 1.8.6-1
+mint-x-icons 1.5.5-1
+mint-y-icons 1.4.3-1
+pix 2.4.11-1
+shutter 0.94.3-1
+slack-desktop 4.4.3-1
+spotify 1:1.1.10.546-4
+staruml 3.2.2-1
+trimage 1.0.6-2
+yay 10.0.1-1
+yed 1:3.20-1
+zoom 5.2.446620.0816-1
