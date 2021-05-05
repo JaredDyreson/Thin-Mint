@@ -13,26 +13,60 @@ function not_root_(){
 
 [[ "$(whoami)" != "root" ]] && not_root_
 
-
-function install_libirecovery(){
-  git clone https://github.com/libimobiledevice/libirecovery.git
-  sudo ./autogen.sh --prefix=/usr
-  sudo make && sudo make install
-}
-function install_libimobiledevice(){
-  git clone https://github.com/libimobiledevice/libimobiledevice.git
-  sudo ./autogen.sh --prefix=/usr
-  sudo make && sudo make install
+function clone_repos() {
+    git clone https://github.com/libimobiledevice/libplist
+    git clone https://github.com/libimobiledevice/libusbmuxd
+    git clone https://github.com/libimobiledevice/libimobiledevice
+    git clone https://github.com/libimobiledevice/usbmuxd
 }
 
-function install_idevicerestore(){
-  git clone https://github.com/libimobiledevice/idevicerestore.git
-  sudo ./autogen.sh --prefix=/usr
-  sudo make && sudo make install
+function libplist() {
+    cd libplist
+    ./autogen.sh
+    make && sudo make install
+    sudo ldconfig
+    cd ..
 }
 
-sudo pacman -Sy --noconfirm ifuse usbmuxd libplist libzip
-install_libirecovery && install_libimobiledevice && install_idevicerestore
+function libusbmuxd() {
+    cd libusbmuxd
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./autogen.sh
+    make && sudo make install
+    sudo ldconfig
+    cd ..
+}
+
+function libimobiledevice() {
+    cd libimobiledevice
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./autogen.sh --enable-debug
+    make && sudo make install
+    cd ..
+}
+
+function usbmuxd() {
+    cd usbmuxd
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./autogen.sh --prefix=/usr --sysconfdir=/etc --localstatedir=/var --runstatedir=/run
+    make && sudo make install
+    sudo killall usbmuxd
+}
+
+function clean_up() {
+    rm -fr libplist/ libusbmuxd/ libimobiledevice/ usbmuxd/
+}
+
+function all() {
+    clone_repos
+    libplist
+    libusbmuxd
+    libimobiledevice
+    usbmuxd
+    clean_up
+}
+
+sudo pacman -Sy --noconfirm ifuse libzip
+
+all
+
 mkdir ~/iPhone
 
 echo "[+] Please consult the README for further details"
