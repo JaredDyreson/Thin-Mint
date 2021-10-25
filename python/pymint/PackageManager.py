@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.9
 
+import dataclasses
 import pathlib
 import shutil
 import re
@@ -7,20 +8,89 @@ import re
 from CommandParser import file_matcher, command_runner
 
 
+@dataclasses.dataclass
+class PackageInstance:
+    architecture: str
+    is_installable: bool
+    name: str
+    version: str
+
+
 class PackageManager:
-    def __init__(self, path: str):
+    def __init__(self, path: str, managed_object=None, secondary_manager=None):
         if not(isinstance(path, str)):
             raise ValueError
+        """
+        path: absolute path to the binary used
+        managed_object: objects that should be controlled using a PackageManager
+                        For example: Tuffix/Keyword.py
+        secondary_manager: if the target system has another package manager to handle building packages from source
+                           please use this. For example: Arch Linux
+        """
 
         self.path = path
+        self.managed_object = managed_object
+        self.secondary_manager = secondary_manager
 
     def install(self, package: str):
+        """
+        Install a package from the sancitioned
+        repositories on your system
+        """
+        if not(isinstance(package, str)):
+            raise ValueError(
+                f'expected `str`, obtained {type(package).__name__}')
+
+    def install_bulk(self, packages: list[str]):
+        if not(isinstance(packages, list) and
+               all([isinstance(_, str) for _ in packages])):
+            raise ValueError(
+                f'expected list[str], obtained {type(packages).__name__}')
+
+        for pkg in packages:
+            self.install(pkg)
+
+    def install_from_file(self, path: pathlib.Path):
+        """
+        Install package from a local file
+        """
+        if not((istype := isinstance(path, pathlib.Path)) and
+               (is_present := path.is_file())):
+            raise ValueError(f'istype: {istype} and is_present: {is_present}')
+
+    def update_cache(self) -> None:
+        """
+        Rebuild the cache of packages you can install
+        """
+
         raise NotImplementedError
 
-    def update_cache(self):
+    def build_installed_cache(self) -> None:
+        """
+        Get a dictionary of PackageInstance objects
+        """
         raise NotImplementedError
 
-    def list_installed(self):
+    def list_installed(self, foreign: bool = False):
+        """
+        List the packages installed on the system
+            foreign: packages built using another package manager such as `yay` or `yaourt`
+        """
+        raise NotImplementedError
+
+    def install_source(self, string: str):
+        """
+        Install a repository on the target machine
+        """
+
+        raise NotImplementedError
+
+    def install_gpg_key(self, path: str):
+        """
+        Install gpg key on machine
+        Example: apt-key add [PATH]
+        Targets Debian machines mostly
+        """
         raise NotImplementedError
 
 
