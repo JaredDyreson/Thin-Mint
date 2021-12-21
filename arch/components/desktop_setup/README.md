@@ -22,3 +22,13 @@ File is `user_terminal_conf`
 - [ ] User configuration 
 - [ ] User applications
 - [ ] Themes
+
+
+# Autocomplete Environment
+
+```vim
+:CocInstall coc-python
+:CocCommand python.setInterpreter
+:CocInstall coc-json coc-tsserver
+:CocInstall coc-tsserver coc-html coc-css
+```
