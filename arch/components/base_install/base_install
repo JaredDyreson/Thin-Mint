@@ -2,33 +2,43 @@
 
 # installer script for Arch Linux (1/4)
 # task: setup partitions, internet, and install base packages 
-# AUTHOR: Jared Dyreson, CSUF 2021
+# AUTHOR: Jared Dyreson
+
 # NOTE: this has been tested and does indeed work!
 
-exec 1> >(tee "stdout.log")
-exec 2> >(tee "stderr.log")
+LOG_DIR="./thin_mint_logs"
 
-# base disk
+[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
+
+exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
+exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
+
+# base disk, amount of memory installed, and swap size
 
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
-SIZE_OF_SWAP="$(echo "$(($MEMORY_INSTALLED * 2))")"
 
-function partition(){
-  sed -i "s/\[SWAP_SIZE\]/$1/;s/\[ROOT_SIZE\]/$2/" fdisk_script
-  sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' fdisk_script | fdisk "${TGTDEV}"
+SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")"
+ROOT_SIZE=100
+
+function partition() {
+    local swap="$1"
+    local root="$2"
+
+    sed -i "s/\[SWAP_SIZE\]/$swap/;s/\[ROOT_SIZE\]/$root/" fdisk_script
+    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' fdisk_script | fdisk "${TGTDEV}"
 }
 
-function wifi_menu_configuration(){
-  wirelss_interface="$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "wlp*")"
-  systemctl enable netctl-auto@"$wirelss_interface".service
-  wifi-menu -o
+function wifi_menu_configuration() {
+    WIRELSS_INTERFACE="$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "wlp*")"
+    systemctl enable netctl-auto@"$WIRELSS_INTERFACE".service
+    wifi-menu -o
 }
 
 function unmount_all_partitions(){
-  umount /mnt/boot
-  umount /mnt/home
-  umount /mnt/
+    umount /mnt/boot
+    umount /mnt/home
+    umount /mnt/
 }
 
 timedatectl set-ntp true
@@ -38,35 +48,33 @@ timedatectl set-ntp true
 
 # sub partitions
 
-efi=""$TGTDEV"1"
-swap=""$TGTDEV"2"
-root=""$TGTDEV"3"
-home_dir=""$TGTDEV"4"
+EFI=""$TGTDEV"1"
+SWAP=""$TGTDEV"2"
+ROOT=""$TGTDEV"3"
+HOME=""$TGTDEV"4"
 
 # drop all partitions but data is still intact
 
 dd if=/dev/zero of="$TGTDEV" bs=512 count=1
 
-# action of partitioning
+# partitioning the drives
 
-partition "$SIZE_OF_SWAP" 50
-
-##### BREAKPOINT SET HERE ############
+partition "$SWAP_SIZE" "$ROOT_SIZE"
 
 # make the EFI partition, swap (enable as well), root and user partitions
 
-mkfs.vfat -F32 "$efi"
-mkswap "$swap"
-swapon "$swap"
-mkfs.ext4 "$root"
-mkfs.ext4 "$home_dir"
+mkfs.vfat -F32 "$EFI"
+mkswap "$SWAP"
+swapon "$SWAP"
+mkfs.ext4 "$ROOT"
+mkfs.ext4 "$HOME"
 
 # mount and make new partitions
 
-mount --verbose "$root" /mnt
+mount --verbose "$ROOT" /mnt
 mkdir /mnt/{boot,home}
-mount --verbose "$efi" /mnt/boot
-mount --verbose "$home_dir" /mnt/home
+mount --verbose "$EFI" /mnt/boot
+mount --verbose "$HOME" /mnt/home
 
 # internet and check if the script is running inside a VM
 
@@ -74,7 +82,28 @@ mount --verbose "$home_dir" /mnt/home
 
 # install the bare minimum packages
 
-pacstrap /mnt base base-devel linux linux-firmware sysfsutils usbutils e2fsprogs device-mapper cryptsetup vim man-db man-pages inetutils s-nail intel-ucode networkmanager
+declare -a essential_packages=(
+    "base"
+    "base-devel"
+    "cryptsetup"
+    "device-mapper"
+    "e2fsprogs"
+    "inetutils"
+    "intel-ucode"
+    "linux"
+    "linux-firmware"
+    "man-db"
+    "man-pages"
+    "networkmanager"
+    "s-nail"
+    "sysfsutils"
+    "usbutils"
+    "vim"
+)
+
+for package in "${essential_packages[@]}"; do
+    pacstrap /mnt "$package"
+done
 
 # setup fstab so we know where we can boot from
 
