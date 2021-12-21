@@ -19,14 +19,14 @@ TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1
 MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
 
 SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")"
-ROOT_SIZE=100
+ROOT_SIZE=40 # FIXME: change to 100 when completed
 
 function partition() {
-    local swap="$1"
-    local root="$2"
+    local SWAP="$1"
+    local ROOT="$2"
 
-    sed -i "s/\[SWAP_SIZE\]/$swap/;s/\[ROOT_SIZE\]/$root/" fdisk_script
-    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' fdisk_script | fdisk "${TGTDEV}"
+    sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
+    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration() {
@@ -35,7 +35,7 @@ function wifi_menu_configuration() {
     wifi-menu -o
 }
 
-function unmount_all_partitions(){
+function unmount_all_partitions() {
     umount /mnt/boot
     umount /mnt/home
     umount /mnt/

@@ -2,10 +2,20 @@
 
 # secondary component to the base installer  (2/4)
 # task: run setup inside of the arch-chroot environment
-# AUTHOR: Jared Dyreson, CSUF 2021
+# AUTHOR: Jared Dyreson
 
-exec 1> >(tee "chroot_stdout.log")
-exec 2> >(tee "chroot_stderr.log")
+LOG_DIR="./thin_mint_logs"
+
+[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
+
+exec 1> >(tee "$LOG_DIR/chroot_stdout.log")
+exec 2> >(tee "$LOG_DIR/chroot_stderr.log")
+
+function hostname_configuration() {
+    local HOST="$1"
+
+    sed "s/\[HOSTNAME\]/$HOST/" host > /etc/hosts
+}
 
 # timezone
 
@@ -23,14 +33,12 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # what is our machine's name to the world
 
-hostname="jared-xps"
-echo "$hostname" > /etc/hostname
+HOSTNAME="jared-xps"
+echo "$HOSTNAME" > /etc/hostname
 
 # make sure this name is reflected in our network configuration
 
-echo -e "127.0.0.1\t\tlocalhost" >> /etc/hosts
-echo -e "::1\t\tlocalhost" >> /etc/hosts
-echo -e "127.0.0.1\t\t"$hostname".localdomain" >> /etc/hosts
+hostname_configuration "$HOSTNAME"
 
 # internet persistence
 
@@ -38,7 +46,20 @@ systemctl enable NetworkManager
 
 # installing the bootloader
 
-pacman -Sy --noconfirm grub efibootmgr dosfstools os-prober mtools
+declare -a bootloader_components=(
+    "dosfstools"
+    "efibootmgr"
+    "grub"
+    "mtools"
+    "os-prober"
+)
+
+# update the cache and upgrade all components thus far
+pacman -Syu
+
+for component in "${bootloader_components[@]}"; do
+    pacman -S --noconfirm "$component"
+done
 
 # EFI bootloader
 
@@ -49,10 +70,12 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 mkinitcpio -p linux
 
-# just incase if you find yourself getting dropped into a UEFI shell for some reason, this should clear it up
-# SOURCE : https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox
+: <<'END_COMMENT'
+Just incase if you find yourself getting dropped into a UEFI shell for some reason, this should clear it up
 
-echo "bcfg boot add 1 fs0:/EFI/grub/grubx64.efi \"Added via script\"" >> /boot/startup.sh
-echo "exit" >> /boot/startup.sh
+SOURCE : https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox
+END_COMMENT
+
+cp startup.nsh /boot
 mkdir /boot/EFI/BOOT
 cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
