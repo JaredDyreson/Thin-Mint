@@ -4,7 +4,7 @@
 # task: run setup inside of the arch-chroot environment
 # AUTHOR: Jared Dyreson
 
-LOG_DIR="./thin_mint_logs"
+LOG_DIR="/root/thin_mint_logs"
 
 [[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
 

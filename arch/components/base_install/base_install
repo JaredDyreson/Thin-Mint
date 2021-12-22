@@ -4,9 +4,7 @@
 # task: setup partitions, internet, and install base packages 
 # AUTHOR: Jared Dyreson
 
-# NOTE: this has been tested and does indeed work!
-
-LOG_DIR="./thin_mint_logs"
+LOG_DIR="/root/thin_mint_logs"
 
 [[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
 
@@ -110,3 +108,7 @@ done
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # we need to lead into the chroot environment from here
+
+cp chroot_env /mnt
+
+arch-chroot /mnt chroot_env
