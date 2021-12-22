@@ -111,4 +111,4 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 cp chroot_env /mnt
 
-arch-chroot /mnt chroot_env
+arch-chroot /mnt ./chroot_env
