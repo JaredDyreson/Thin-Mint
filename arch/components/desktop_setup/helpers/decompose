@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# get the body of a function
+# AUTHOR: Jared Dyreson
+
+function decompose() {
+    # This takes a function and extracts the body 
+
+    local function_="$1"
+
+    declare -f "$function_" | sed '1,1d;$ d;s/^[[:space:]]*//'
+}

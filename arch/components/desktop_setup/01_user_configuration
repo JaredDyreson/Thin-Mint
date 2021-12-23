@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+# Configure user profile
+
+# Setup logging
+
+LOG_DIR="/root/thin_mint_logs"
+
+[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
+
+exec 1> >(tee "$LOG_DIR/user_configuration_stdout.log")
+exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
+
+# constant name and can be changed
+# MINT_PASS : password specified by password_manager
+
+MINT_USER="jared"
+MINT_HOME="/home/$MINT_USER"
+
+## "Exceptions" ##
+
+function perm_err_() {
+    echo "[ERROR] Run as root, stop."
+    exit 1
+}
+
+function no_user_specified_() {
+    echo "[ERROR] No user specified, stop"
+    exit 1
+}
+
+function user_exists_() {
+    echo "[ERROR] $MINT_USER is already a user, stop"
+}
+
+function wrong_os_err_() {
+    echo "[ERROR] Only supports Arch Linux, stop"
+    exit 1
+}
+
+## Functions ##
+
+function make_root() {
+    # Create allow our user to be apart of the sudoers group
+
+    local M_USER="$1"
+
+    [[ -z "$@" ]] && no_user_specified_
+    echo "$M_USER ALL=(ALL) ALL"  | tee -a /etc/sudoers
+}
+
+function password_manager() {
+	PASSONE=""
+	PASSTWO="empty_password_please_fill"
+	while [[ -z "$PASSONE" || "$PASSONE" != "$PASSTWO" ]]; do
+		PASSONE=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
+		clear
+		PASSTWO=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
+		clear
+	done
+
+  echo "$MINT_USER:$PASSONE" | chpasswd "$MINT_USER"
+  echo "root:$PASSONE" | chpasswd root
+  export MINT_PASS="$PASSONE"
+}
+
+function create_user() {
+    [[ -z "${MINT_USER+x}" ]] && no_user_specified_
+    [[ "$(grep "^$MINT_USER" /etc/passwd)" ]] && user_exists_
+
+    useradd -m -g users -G wheel,storage,power -s /bin/zsh "$MINT_USER"
+    password_manager
+
+    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    mkdir -p $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Videos}
+    git clone https://github.com/JaredDyreson/dotfiles $MINT_HOME/Projects/dotfiles
+    git clone https://github.com/JaredDyreson/university $MINT_HOME/Projects/university
+    echo "$MINT_PASS"
+EOF
+    make_root "$MINT_USER"
+}
+
+function initial_configuration() {
+  [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
+  pacman -Sy --noconfirm sudo git dialog python zsh
+  if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
+    useradd -s /bin/bash builduser -m
+    passwd -d builduser
+    make_root builduser
+  else
+    echo "[INFO] BUILDUSER EXISTS"
+  fi
+  create_user
+
+  sudo -u "builduser" bash << EOF
+    git clone https://aur.archlinux.org/yay.git /home/builduser/yay
+    cd /home/builduser/yay
+    makepkg -si --noconfirm
+    cd ..
+    rm -rf yay
+EOF
+
+}

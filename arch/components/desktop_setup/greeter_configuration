@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
-source turtle
+function greeter_conf() {
+    declare -a packages=(
+        "lightdm"
+        "lightdm-gtk-greeter"
+    )
 
-## Available functions ##
+    pacman -Syu
 
-# - build : use makepkg to build the package from PKGBUILD
-# - install : use pacman to install package manually after compilation and building
+    for package in "${packages[@]}"; do
+        pacman -S --noconfirm "$package"
+    done
 
-function greeter_conf(){
-  install lightdm-slick-greeter
-  pacman -Sy --noconfirm xorg-server lightdm lightdm-gtk-greeter cinnamon noto-fonts
-  sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
-  systemctl enable lightdm.service
-  cp -av "$MINT_HOME"/Projects/dotfiles/desktop_env/slick-greeter.conf /etc/lightdm/
-  cp -av --no-preserve=mode "$MINT_HOME"/Projects/dotfiles/wallpaper/* /etc/lightdm/
+    sed -i 's/#greeter-session=.*/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
+    systemctl enable lightdm.service
+
+    cp -av assets/slick-greeter.conf /etc/lightdm/
+    cp -av --no-preserve=mode ../../../wallpapers/VenomWallpaper.jpg /etc/lightdm/
 }
 

@@ -76,6 +76,5 @@ Just incase if you find yourself getting dropped into a UEFI shell for some reas
 SOURCE : https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox
 END_COMMENT
 
-cp assets/startup.nsh /boot
 mkdir /boot/EFI/BOOT
 cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI

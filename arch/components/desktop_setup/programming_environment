@@ -2,21 +2,65 @@
 
 source turtle
 source user_configuration
+source decompose
 
 [[ "$EUID" -ne 0 ]] && exit
 
-function programming_env(){
+function install_languages() {
+    # Install language specific components
+
+    declare -a components=(
+        "clang"
+        "rustup"
+        "most"
+        "jre-open-jdk"
+        "jdk-openjdk"
+        "openjdk-doc"
+        "python"
+        "python-pip"
+        "pdfgrep"
+        "wget"
+    )
+
+    for component in "${components[@]}"; do
+        pacman -S --noconfirm "$component"
+    done
+
+    rustup default stable
+}
+
+function install_typsetting_environment() {
+    # Get LaTeX installed with all it's dependencies
+
+    declare -a components=(
+        "pandoc"
+        "textlive-full"
+    )
+}
+
+function install_python_modules() {
+    # Install important Python modules
+
+    declare -a pip_modules=(
+        "google-api-python-client"
+        "google_auth_oauthlib"
+        "selenium"
+        "termcolor"
+    )
+
+    for module in "${pip_modules[@]}"; do
+        pip install --upgrade "$module"
+    done
+}
+
+function programming_env() {
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
     pacman -Sy --noconfirm clang most jre-openjdk jdk-openjdk openjdk-doc python-pip texlive-most pandoc pdfgrep wget mariadb
-    cd /tmp
-    git clone https://github.com/jeaye/stdman.git
-    cd stdman
-    ./configure && make install
+    yay -Sy --noconfirm stdman
     mandb
     git clone https://github.com/JaredDyreson/scripts.git "$MINT_HOME"/scripts
     git clone https://github.com/JaredDyreson/starbucks_automa_production.git "$MINT_HOME"/Projects/starbucks_automa
     pip3.8 install --upgrade google_auth_oauthlib google-api-python-client termcolor selenium
-    mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-    sytemctl enable mariadb.service
+    rustup default stable 
 EOF
 }

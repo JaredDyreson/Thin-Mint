@@ -109,6 +109,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # we need to lead into the chroot environment from here
 
-cp chroot_env /mnt
+cp -v chroot_env /mnt
+cp -v assets/startup.nsh /mnt/boot
 
 arch-chroot /mnt ./chroot_env
