@@ -4,6 +4,10 @@
 
 source argparse
 
+export LOG_DIR="/root/thin_mint_logs"
+
+[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
+
 # Example Usage #
 
 # main --username "jared" --password "password" --noconfirm --all --configuration

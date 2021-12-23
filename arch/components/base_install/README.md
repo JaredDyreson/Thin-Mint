@@ -9,6 +9,11 @@ The base disk is the first disk detected by using `lsblk`, for the XPS, this is 
 3. ROOT (100 GB)
 4. HOME (Rest of disk)
 
+We can pass in the following environment variables to alter the size of each partition:
+
+- `ROOT_PARTITION_SIZE`
+- `SWAP_SIZE`
+
 # Clearing of partitions
 
 We are using `dd` to delete the entire partition table and new partitions will be made in their place.

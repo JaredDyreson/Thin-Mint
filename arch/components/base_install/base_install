@@ -4,10 +4,6 @@
 # task: setup partitions, internet, and install base packages 
 # AUTHOR: Jared Dyreson
 
-LOG_DIR="/root/thin_mint_logs"
-
-[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
-
 exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
 exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
 
@@ -16,10 +12,13 @@ exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
 TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
 MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
 
-SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")"
-ROOT_SIZE=40 # FIXME: change to 100 when completed
+# set the default size to twice the amount of RAM
+[[ ! -z "${SWAP_SIZE+x}" ]] && SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")" 
+[[ ! -z "${ROOT_PARTITION_SIZE+x}" ]] && ROOT_PARTITION_SIZE=40 # set to the default size of 40 GBs
 
 function partition() {
+    # Give each partition their amount of space
+
     local SWAP="$1"
     local ROOT="$2"
 
@@ -28,6 +27,8 @@ function partition() {
 }
 
 function wifi_menu_configuration() {
+    # Configure WiFi
+
     WIRELSS_INTERFACE="$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "wlp*")"
     systemctl enable netctl-auto@"$WIRELSS_INTERFACE".service
     wifi-menu -o
@@ -57,7 +58,7 @@ dd if=/dev/zero of="$TGTDEV" bs=512 count=1
 
 # partitioning the drives
 
-partition "$SWAP_SIZE" "$ROOT_SIZE"
+partition "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
 
 # make the EFI partition, swap (enable as well), root and user partitions
 
