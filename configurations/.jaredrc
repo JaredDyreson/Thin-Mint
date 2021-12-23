@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Please change the password once you're done using this script 
+
+export USER_PLAIN="jared"
+export HOSTNAME="jaredxps"
+export PASSWORD_PLAIN="password"
+
+export CP="/usr/bin/cp"

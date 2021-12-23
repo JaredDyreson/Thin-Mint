@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# This is the configuration file for Chris Nutter
+# AUTHOR: Chris Nutter
+
 echo "[INFO] Loading chrisrc...."
 
 function hello_world() {
@@ -8,3 +11,6 @@ function hello_world() {
 
 export CP="cpg"
 export -f hello_world
+
+export USER_PLAIN="chris"
+export PASSWORD_PLAIN="password"
