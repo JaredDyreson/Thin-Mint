@@ -14,7 +14,7 @@ We can pass in the following environment variables to alter the size of each par
 - `ROOT_PARTITION_SIZE`
 - `SWAP_SIZE`
 
-Please see [here](configurations/README.md) for more information about all the possible environment variables to set.
+Please see [here](https://github.com/JaredDyreson/Thin-Mint/tree/devbranch/configurations#readme) for more information about all the possible environment variables to set.
 
 # Clearing of partitions
 
