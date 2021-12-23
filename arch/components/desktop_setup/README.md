@@ -4,8 +4,8 @@ This portion will take the longest to perfect
 
 ## Steps
 
-- Initial Configuration
-- Light Display Greeter 
+- Initial Configuration (01)
+- Light Display Greeter (02)
 - Desktop Environment
 - User applications
 - Programming environment

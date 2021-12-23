@@ -11,7 +11,7 @@ LOG_DIR="/root/thin_mint_logs"
 exec 1> >(tee "$LOG_DIR/user_configuration_stdout.log")
 exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
 
-# constant name and can be changed
+# constant name and can be changed (maybe have this be a dialog box instead?)
 # MINT_PASS : password specified by password_manager
 
 MINT_USER="jared"
@@ -50,18 +50,21 @@ function make_root() {
 }
 
 function password_manager() {
-	PASSONE=""
-	PASSTWO="empty_password_please_fill"
-	while [[ -z "$PASSONE" || "$PASSONE" != "$PASSTWO" ]]; do
-		PASSONE=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
-		clear
-		PASSTWO=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
-		clear
-	done
+    # Obtain the root password for the default user
+    
+    PASSONE=""
+    PASSTWO="empty_password_please_fill"
 
-  echo "$MINT_USER:$PASSONE" | chpasswd "$MINT_USER"
-  echo "root:$PASSONE" | chpasswd root
-  export MINT_PASS="$PASSONE"
+    while [[ -z "$PASSONE" || "$PASSONE" != "$PASSTWO" ]]; do
+        PASSONE=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
+        clear
+        PASSTWO=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
+        clear
+    done
+
+    echo "$MINT_USER:$PASSONE" | chpasswd "$MINT_USER"
+    echo "root:$PASSONE" | chpasswd root
+    export MINT_PASS="$PASSONE" # this will be used throughout the lifetime of the script
 }
 
 function create_user() {
@@ -73,31 +76,33 @@ function create_user() {
 
     printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
     mkdir -p $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Videos}
-    git clone https://github.com/JaredDyreson/dotfiles $MINT_HOME/Projects/dotfiles
-    git clone https://github.com/JaredDyreson/university $MINT_HOME/Projects/university
-    echo "$MINT_PASS"
 EOF
+
     make_root "$MINT_USER"
 }
 
 function initial_configuration() {
-  [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
-  pacman -Sy --noconfirm sudo git dialog python zsh
-  if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
-    useradd -s /bin/bash builduser -m
-    passwd -d builduser
-    make_root builduser
-  else
-    echo "[INFO] BUILDUSER EXISTS"
-  fi
-  create_user
+    # Create a build user and regular user
 
-  sudo -u "builduser" bash << EOF
-    git clone https://aur.archlinux.org/yay.git /home/builduser/yay
-    cd /home/builduser/yay
-    makepkg -si --noconfirm
-    cd ..
-    rm -rf yay
+    [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
+    # NOTE: removed installation candidates here, moved them to the base_install
+
+    if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
+        useradd -s /bin/bash builduser -m
+        passwd -d builduser
+        make_root builduser
+    else
+        echo "[INFO] BUILDUSER EXISTS"
+    fi
+  
+    create_user
+
+    sudo -u "builduser" bash << EOF
+        git clone https://aur.archlinux.org/yay.git /home/builduser/yay
+        cd /home/builduser/yay
+        makepkg -si --noconfirm
+        cd ..
+        rm -rf yay
 EOF
 
 }

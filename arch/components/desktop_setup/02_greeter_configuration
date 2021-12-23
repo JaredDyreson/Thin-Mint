@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 function greeter_conf() {
+    # This will install and configure our display greeter
+    # FIXME: this component has been giving me lots of issues for not booting properly
+
     declare -a packages=(
         "lightdm"
         "lightdm-gtk-greeter"
@@ -18,4 +21,3 @@ function greeter_conf() {
     cp -av assets/slick-greeter.conf /etc/lightdm/
     cp -av --no-preserve=mode ../../../wallpapers/VenomWallpaper.jpg /etc/lightdm/
 }
-
