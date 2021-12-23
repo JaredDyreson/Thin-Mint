@@ -1,0 +1,67 @@
+#!/usr/bin/env zsh
+
+## Arg Parser ##
+# Source : https://stackoverflow.com/a/14203146 #
+
+function arg_parse() {
+    # Parse the command line arguments given from the terminal #
+
+    : <<'END_COMMENT'
+    This should contain documentation about the allow command line options
+        - read from configuration file to use `cpg` instead of `cp` (for Chris)
+        - run all components
+        - run select components (see Tuffix runner.py -> https://github.com/CSUF-Tuffix/Tuffix-2/blob/28c626207987ad626510f1c121dd63035b24a338/runner.py#L26)
+        - provide user name
+        - provide password
+        - run headless
+END_COMMENT
+
+    [[ ! -z "$OVERRIDE" ]] && (echo "[INFO] Bypassing argument parsing, OVERRIDE parameter given"; return)
+
+    while [[ $# -gt 0 ]]; do
+        KEY="$1"
+
+        case "$KEY" in
+        -c|--component)
+            export COMPONENT="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -a|--all)
+            # Install all components
+            export ALL="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        --configuration)
+            # We want to load an `rc` like file to load environment variables
+
+            export CONFIGURATION="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -p|--password)
+            # set the password for the user to be run headless (not advised but an option)
+            export PASSWORD_PLAIN="$2"
+            shift
+            shift
+            ;;
+        -u|--username)
+            # set the user to be run headless (not advised but an option)
+            export USER_PLAIN="$2"
+            shift
+            shift
+            ;;
+        --noconfirm)
+            # Run the script headless, not wanting external input
+            export HEADLESS="True"
+            shift
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+        esac
+    done
+}

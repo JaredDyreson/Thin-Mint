@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+echo "[INFO] Loading chrisrc...."
+
+function hello_world() {
+    echo "[INFO] This is a test to the outside world!"
+}
+
+export CP="cpg"
+export -f hello_world
