@@ -14,6 +14,8 @@ We can pass in the following environment variables to alter the size of each par
 - `ROOT_PARTITION_SIZE`
 - `SWAP_SIZE`
 
+Please see [here](configurations/README.md) for more information about all the possible environment variables to set.
+
 # Clearing of partitions
 
 We are using `dd` to delete the entire partition table and new partitions will be made in their place.
