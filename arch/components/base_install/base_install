@@ -77,7 +77,7 @@ mount --verbose "$HOME" /mnt/home
 
 # internet and check if the script is running inside a VM
 
-[[ "$(grep "hypervisor" /proc/cpuinfo)" || "$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "enp*")" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
+[[ "$(grep "hypervisor" /proc/cpuinfo))" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
 
 # install the bare minimum packages
 
@@ -101,7 +101,6 @@ declare -a essential_packages=(
     "sudo"
     "sysfsutils"
     "usbutils"
-    "vim"
 )
 
 for package in "${essential_packages[@]}"; do
