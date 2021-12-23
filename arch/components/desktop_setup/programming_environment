@@ -10,16 +10,13 @@ function install_languages() {
     # Install language specific components
 
     declare -a components=(
-        "clang"
-        "rustup"
-        "most"
-        "jre-open-jdk"
-        "jdk-openjdk"
-        "openjdk-doc"
-        "python"
-        "python-pip"
-        "pdfgrep"
-        "wget"
+        "clang"         # c++/c
+        "rustup"        # Rust
+        "jre-open-jdk"  # Java
+        "jdk-openjdk"   # Java
+        "openjdk-doc"   # Java
+        "python"        # Python
+        "python-pip"    # Python
     )
 
     for component in "${components[@]}"; do

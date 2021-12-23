@@ -1,12 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 function cinnnmon_de() {
     # This is a floating window manager
 
+    USB_PATH="/run/media/$MINT_USER/"
+
     declare -a packages=(
-        "xorg-server"
         "cinnamon"
+        "file-roller"
         "noto-fonts"
+        "xorg-server"
     )
 
     pacman -Syu

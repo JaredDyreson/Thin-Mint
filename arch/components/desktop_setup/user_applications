@@ -3,13 +3,61 @@
 source turtle
 source user_configuration
 
-function application_installer(){
-  pacman -Sy --noconfirm vlc zenity firefox htop bluez blueman file-roller xreader virtualbox gedit discord gnome-calculator
-  install spotify ffmpeg-compat-57 shutter mintstick pix slack
+function usb_error() {
+    >&2 echo "[ERROR] You need to have the USB mounted @ $1"
+    exit
+}
 
-  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-    cp -arv --no-preserve=mode "$USB_BASE"/firefox_data/* "$MINT_HOME"/.mozilla/
-    chown -R "$MINT_USER":users "$MINT_HOME"/.mozilla
+function application_installer() {
+    # This will install all ncurses like applications along with graphical ones
+
+    local SHOULD_RUN_AUR="$1" # this process can slow down an installation
+
+    BUILD_DIR="/tmp/aur_build"
+    USB_DIR="/run/media/jared/USB/packages"
+    [[ ! -d "$BUILD_DIR" ]] && mkdir "$BUILD_DIR"
+
+
+    declare -a applications=(
+        "blueman"
+        "bluez"
+        "discord"
+        "firefox"
+        "flameshot"
+        "gimp"
+        "gnome-calculator"
+        "htop"
+        "most"
+        "pdfgrep"
+        "virtualbox"
+        "vlc"
+        "wget"
+        "xreader"
+        "zathura"
+    )
+
+    declare -a packages=(
+        "balena-etcher"
+        "drawio-desktop"
+        "pix"
+        "slack-desktop"
+        "spotify"
+    )
+
+    pacman -Syu
+    
+    [[ ! -d "$USB_DIR" ]] && usb_error $USB_DIR
+
+    for package in "${packages[@]}"; do
+        cp -v "$USB_DIR/$package" "$BUILD_DIR"
+        pacman -U "$BUILD_DIR"/"$package"
+    done
+
+    for application in "${applications[@]}"; do
+        pacman -S --noconfirm "$application"
+    done
+
+    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
     xdg-mime default xreader.desktop application/pdf   
 EOF
 

@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 
-source user_configuration
+function latex_install() {
 
-function latex_install(){
-  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-  pacman -Sy --noconfirm texlive-full pandoc
-EOF
+    declare -a packages=(
+        "pandoc"                    # converting between different file formats
+        "texlive-bibtexextra"       # bibliographies
+        "texlive-core"              # core distribution
+        "texlive-formatsextra"      # TeX formats
+        "texlive-latexextra"        # extra addons
+        "texlive-pictures"          # rendering pictures
+        "texlive-science"           # computer sience stuff
+    )
+
+    pacman -Syu
+
+    for package in "${packages[@]}"; do
+        pacman -S --noconfirm "$package"
+    done
+
 }

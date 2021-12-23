@@ -1,0 +1,50 @@
+! Links
+! https://github.com/Thadz/my-urxvt-dotfile/blob/master/.Xresources
+! https://github.com/lgaggini/dotfiles/blob/master/.Xresources
+URxvt*altSendsEscape: true
+
+URxvt.font: xft:bitstream vera sans mono:size=12
+
+URxvt*color1:           #363636
+URxvt*color2:           #ff0883
+URxvt*color3:           #83ff08
+URxvt*color4:           #ff8308
+URxvt*color5:           #0883ff
+URxvt*color6:           #8308ff
+URxvt*color7:           #08ff83
+URxvt*color8:           #b6b6b6
+URxvt*color9:           #424242
+URxvt*color10:          #ff1e8e
+URxvt*color11:          #8eff1e
+URxvt*color12:          #ff8e1e
+URxvt*color13:          #1e8eff
+URxvt*color14:          #8e1eff
+URxvt*color15:          #1eff8e
+URxvt*color16:          #c2c2c2
+
+urxvt*depth: 32
+URxvt.background: [95]#0d1926
+URxvt.foreground: #b4e1fd
+URxvt.cursorUnderline: true
+URxvt.cursorBlink: true
+
+! Copy and Paste
+
+URxvt.keysym.Shift-Control-V: eval:paste_clipboard
+URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
+!  urls
+
+URxvt*.perl-ext-common:         default,matcher,tabbedex,searchable-scrollback,clipboard,url-select,keyboard-select
+URxvt.url-select.launcher: /usr/bin/firefox
+URxvt.underlineURLs: true
+URxvt.urlButton: 1
+URxvt.keysym.M-u: perl:url-select:select_next
+
+URxvt.clipboard.autocopy: true
+URxvt.keysym.M-c: perl:clipboard:copy
+URxvt.keysym.M-v: perl:clipboard:paste
+
+URxvt.iso14755: false
+URxvt*geometry: 114x32+360+250 
+URxvt.scrollBar: false
+!URxvt.perl-ext-common: ...,tabbed,...

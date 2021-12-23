@@ -4,16 +4,16 @@ This portion will take the longest to perfect
 
 ## Steps
 
-- Initial Configuration (01)
-- Light Display Greeter (02)
-- Desktop Environment
-- User applications
-- Programming environment
-    * Window Manager
-    * Themes and Icons
-- Typsetting environment
-- Editor configuration
-    * Vim
+- Initial Configuration             (01)
+- Light Display Greeter             (02)
+- Desktop Environment               (03)
+    * Window Manager                (**3a**)
+    * Themes and Icons              (**3b**)
+- User applications                 (04)
+- Programming environment           (05)
+- Typsetting environment            (06)
+- Terminal configuration            (07)
+- Vim configuration                 (08)
     * Packages
 - User configurations
 

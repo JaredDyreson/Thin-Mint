@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+source 03a_Window_Manager
+
+# Pick either configuration

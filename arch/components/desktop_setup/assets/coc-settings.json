@@ -1,0 +1,9 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": ["--rcfile", "~/.pylintrc", "-d", "C0411"],
+    "python.linting.pylintUseMinimalCheckers": false,
+    "python.linting.pylintPath": "/usr/bin/pylint",
+    "python.condaPath": "conda",
+    "coc.preferences.formatOnSaveFiletypes": ["*.py"],
+    "python.pythonPath": "/usr/bin/python"
+}

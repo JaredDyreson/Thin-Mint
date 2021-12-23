@@ -4,35 +4,70 @@
 
 source user_configuration
 
-function terminal_configuration(){
-  # ZSH #
-  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | bash
+function terminal_configuration() {
+    pacman -Syu
+
+    # ZSH #
+
+    declare -a zsh_packages=(
+        "zsh-completions"
+        "zsh-syntax-highlighting"
+    )
+    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    yay -S --noconfirm oh-my-zsh-git
     cp -v $MINT_HOME/Projects/dotfiles/shell/zshrc $MINT_HOME/.zshrc
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $MINT_HOME/zsh-syntax-highlighting
-    
 EOF
+    for zsh_package in "${zsh_packages[@]}"; do
+        pacman -S --noconfirm "$zsh_package"
+    done
 
-  # VIM #
-  pacman -Sy --noconfirm gvim cmake
+    # VIM #
+
+    pacman -S --noconfirm gvim cmake
+    declare -a coc_extensions=(
+        "coc-clangd"
+        "coc-css"
+        "coc-html"
+        "coc-json"
+        "coc-python"
+        "coc-rust-analyzer"
+        "coc-tsserver"
+    )
+
   printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-    git clone https://github.com/VundleVim/Vundle.vim.git "$MINT_HOME"/.vim/bundle/Vundle.vim
-    # experimental (please check logs) #
-    cp -v $MINT_HOME/Projects/dotfiles/shell/vimrc $MINT_HOME/.vimrc
+    yay -S --noconfirm vim-plugin
+    cp -v assets/.vimrc $MINT_HOME
     vim +silent +PluginInstall +qall
+    for extension in "${coc_extensions[@]}"; do
+        vim +silent +"CocInstall $extension"
+    done
+
+    cp -v assets/coc-settings.json  $MINT_HOME/.vim
 EOF
 
-  # TERMINAL CONF #
-  pacman -Sy --noconfirm rxvt-unicode xorg-xrdb ttf-dejavu powerline powerline-fonts
-  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    # URXVT CONF #
 
-  cp -v $MINT_HOME/Projects/dotfiles/terminal/Xresources $MINT_HOME/.Xresources
-  # this needs to be run in a X11 environmement!
-  xrdb "$MINT_HOME"/.Xresources
+    declare -a terminal_packages=(
+        "powerline"
+        "powerline-font"
+        "rxvt-unicode"
+        "ttf-dejavu"
+        "xorg-xrdb"
+    )
+    for terminal_package in "${terminal_packages[@]}"; do
+        pacman -S --noconfirm "$terminal_package"
+    done
+
+    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+
+    cp -v assets/.Xresources $MINT_HOME
+    # this needs to be run in a X11 environmement!
+    xrdb "$MINT_HOME"/.Xresources
 EOF
 
-  # GIT CONF # 
-  printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
+    # GIT CONF # 
+
+    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
 
     git config --global user.name "Jared Dyreson"
     git config --global user.email "jared.dyreson@gmail.com"
