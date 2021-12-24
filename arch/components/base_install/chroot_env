@@ -4,6 +4,8 @@
 # task: run setup inside of the arch-chroot environment
 # AUTHOR: Jared Dyreson
 
+# This is inside the chroot environment
+
 [[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
 
 exec 1> >(tee "$LOG_DIR/chroot_stdout.log")
@@ -41,7 +43,7 @@ declare -a bootloader_components=(
 pacman -Syu
 
 for component in "${bootloader_components[@]}"; do
-    pacman -S --noconfirm "$component"
+    pacman -S --needed --noconfirm "$component"
 done
 
 # EFI bootloader

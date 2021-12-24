@@ -11,30 +11,28 @@ LOG_DIR="/root/thin_mint_logs"
 exec 1> >(tee "$LOG_DIR/user_configuration_stdout.log")
 exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
 
-# constant name and can be changed (maybe have this be a dialog box instead?)
-# MINT_PASS : password specified by password_manager
 
-MINT_USER="jared"
-MINT_HOME="/home/$MINT_USER"
+[[ ! -z "${USER_PLAIN+x}" ]] && USER_PLAIN="jared"
+MINT_HOME="/home/$USER_PLAIN"
 
 ## "Exceptions" ##
 
 function perm_err_() {
-    echo "[ERROR] Run as root, stop."
+    >&2 echo "[ERROR] Run as root, stop."
     exit 1
 }
 
 function no_user_specified_() {
-    echo "[ERROR] No user specified, stop"
+    >&2 echo "[ERROR] No user specified, stop"
     exit 1
 }
 
 function user_exists_() {
-    echo "[ERROR] $MINT_USER is already a user, stop"
+    >&2 echo "[WARNING] $USER_PLAIN is already a user, skipping this step"
 }
 
 function wrong_os_err_() {
-    echo "[ERROR] Only supports Arch Linux, stop"
+    >&2 echo "[ERROR] Only supports Arch Linux, stop"
     exit 1
 }
 
@@ -44,6 +42,8 @@ function make_root() {
     # Create allow our user to be apart of the sudoers group
 
     local M_USER="$1"
+
+    echo "[INFO] Creating user with name of: $M_USER"
 
     [[ -z "$@" ]] && no_user_specified_
     echo "$M_USER ALL=(ALL) ALL"  | tee -a /etc/sudoers
@@ -62,32 +62,33 @@ function password_manager() {
         clear
     done
 
-    echo "$MINT_USER:$PASSONE" | chpasswd "$MINT_USER"
+    echo "$USER_PLAIN:$PASSONE" | chpasswd "$USER_PLAIN"
     echo "root:$PASSONE" | chpasswd root
-    export MINT_PASS="$PASSONE" # this will be used throughout the lifetime of the script
+    export PASSWORD_PLAIN="$PASSONE" # this will be used throughout the lifetime of the script
 }
 
 function create_user() {
-    [[ -z "${MINT_USER+x}" ]] && no_user_specified_
-    [[ "$(grep "^$MINT_USER" /etc/passwd)" ]] && user_exists_
+    [[ -z "${USER_PLAIN+x}" ]] && no_user_specified_
 
-    useradd -m -g users -G wheel,storage,power -s /bin/zsh "$MINT_USER"
-    password_manager
+    [[ "$(grep "^$USER_PLAIN" /etc/passwd)" ]] && user_exists_ || useradd -m -g users -G wheel,storage,power -s /bin/zsh "$USER_PLAIN"
+    
+    [[ ! -z "${PASSWORD_PLAIN+x}" ]] && password_manager
 
-    printf "%s\n" "$MINT_PASS" | sudo --stdin -u "$MINT_USER" bash << EOF
-    mkdir -p $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/Wallpapers,Projects,Videos}
+    printf "%s\n" "$PASSWORD_PLAIN" | sudo --stdin -u "$USER_PLAIN" bash << EOF
+    mkdir -pv $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/{screenshots,Wallpapers},Projects,Videos}
 EOF
 
-    make_root "$MINT_USER"
+    make_root "$USER_PLAIN"
 }
 
 function initial_configuration() {
-    # Create a build user and regular user
+    # Create a build and regular user
 
     [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
     # NOTE: removed installation candidates here, moved them to the base_install
 
     if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
+        echo "[INFO] Creating builduser"
         useradd -s /bin/bash builduser -m
         passwd -d builduser
         make_root builduser
@@ -96,13 +97,14 @@ function initial_configuration() {
     fi
   
     create_user
+    # we changed this from building from source 
+    echo "[INFO] Installing yay"
 
     sudo -u "builduser" bash << EOF
-        git clone https://aur.archlinux.org/yay.git /home/builduser/yay
-        cd /home/builduser/yay
-        makepkg -si --noconfirm
-        cd ..
-        rm -rf yay
+    pacman -S --needed git base-devel
+    git clone https://aur.archlinux.org/yay-bin.git
+    cd yay-bin
+    makepkg -si
 EOF
 
 }

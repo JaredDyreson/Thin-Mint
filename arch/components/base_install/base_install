@@ -44,7 +44,7 @@ function unmount_all_partitions() {
 function hostname_configuration() {
     local HOST="$1"
 
-    sed "s/\[HOSTNAME\]/$HOST/" assets/host > /etc/hosts
+    sed "s/\[HOSTNAME\]/$HOST/" assets/host > /mnt/etc/hosts
 }
 
 timedatectl set-ntp true
@@ -93,6 +93,7 @@ mount --verbose "$HOME" /mnt/home
 declare -a essential_packages=(
     "base"
     "base-devel"
+    "bluez"
     "cryptsetup"
     "device-mapper"
     "dialog"

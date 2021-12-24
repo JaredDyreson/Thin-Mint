@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+function test_function() {
+    echo "$CONFIGURATION"
+    source "$CONFIGURATION"
+}
+
 ##  Main installation script ##
 
 source argparse
@@ -19,8 +24,4 @@ set -- "${POSITIONAL[@]}" # restore positional arguments
 
 # Before setting alias #
 
-[[ ! -z "${CONFIGURATION+x}" ]] && source "$CONFIGURATION"
-
-cd "arch/components/base_install"
-
-./base_install
+[[ ! -z "${CONFIGURATION+x}" ]] && test_function
