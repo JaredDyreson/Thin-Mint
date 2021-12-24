@@ -9,12 +9,6 @@
 exec 1> >(tee "$LOG_DIR/chroot_stdout.log")
 exec 2> >(tee "$LOG_DIR/chroot_stderr.log")
 
-function hostname_configuration() {
-    local HOST="$1"
-
-    sed "s/\[HOSTNAME\]/$HOST/" assets/host > /etc/hosts
-}
-
 # timezone
 
 ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
@@ -28,16 +22,6 @@ hwclock --systohc --utc
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
-
-# what is our machine's name to the world
-
-[[ ! -z "${HOSTNAME+x}" ]] && HOSTNAME=""$USER_PLAIN"-computer"
-
-echo "$HOSTNAME" > /etc/hostname
-
-# make sure this name is reflected in our network configuration
-
-hostname_configuration "$HOSTNAME"
 
 # internet persistence
 
