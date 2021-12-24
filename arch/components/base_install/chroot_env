@@ -4,10 +4,6 @@
 # task: run setup inside of the arch-chroot environment
 # AUTHOR: Jared Dyreson
 
-LOG_DIR="/root/thin_mint_logs"
-
-[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
-
 exec 1> >(tee "$LOG_DIR/chroot_stdout.log")
 exec 2> >(tee "$LOG_DIR/chroot_stderr.log")
 
@@ -33,7 +29,8 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # what is our machine's name to the world
 
-HOSTNAME="jared-xps"
+[[ ! -z "${HOSTNAME+x}" ]] && HOSTNAME=""$USER_PLAIN"-computer"
+
 echo "$HOSTNAME" > /etc/hostname
 
 # make sure this name is reflected in our network configuration
@@ -76,5 +73,5 @@ Just incase if you find yourself getting dropped into a UEFI shell for some reas
 SOURCE : https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox
 END_COMMENT
 
-mkdir /boot/EFI/BOOT
+mkdir -v /boot/EFI/BOOT
 cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
