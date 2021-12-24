@@ -57,6 +57,8 @@ HOME=""$TGTDEV"4"
 dd if=/dev/zero of="$TGTDEV" bs=512 count=1
 
 # partitioning the drives
+echo "[INFO] Swap is: $SWAP_SIZE"
+echo "[INFO] Root is: $ROOT_PARTITION_SIZE"
 
 partition "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
 
