@@ -132,7 +132,6 @@ hostname_configuration "$HOSTNAME"
 
 cp -v chroot_env /mnt
 cp -v assets/startup.nsh /mnt/boot
-cp -v assets/host /mnt/etc/hosts
 echo "$HOSTNAME" > /mnt/etc/hostname
 
 cat /mnt/etc/hosts
