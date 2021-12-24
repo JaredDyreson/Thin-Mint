@@ -27,6 +27,7 @@ function application_installer() {
         "gimp"
         "gnome-calculator"
         "htop"
+        "jq"
         "most"
         "pdfgrep"
         "virtualbox"
