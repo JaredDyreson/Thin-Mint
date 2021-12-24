@@ -12,7 +12,8 @@ exec 1> >(tee "$LOG_DIR/user_configuration_stdout.log")
 exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
 
 
-[[ ! -z "${USER_PLAIN+x}" ]] && USER_PLAIN="jared"
+[[ ! -z "${USER_PLAIN+x}" ]] && export USER_PLAIN="jared"
+[[ ! -z "${PASSWORD_PLAIN+x}" ]] && export PASSWORD_PLAIN="jared"
 MINT_HOME="/home/$USER_PLAIN"
 
 ## "Exceptions" ##
