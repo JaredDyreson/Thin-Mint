@@ -137,5 +137,4 @@ echo "$HOSTNAME" > /mnt/etc/hostname
 cat /mnt/etc/hosts
 cat /mnt/etc/hostname
 
-# arch-chroot /mnt ./chroot_env
-# ^ uncomment this when there are no errors
+arch-chroot /mnt ./chroot_env
