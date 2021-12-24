@@ -20,3 +20,7 @@ set -- "${POSITIONAL[@]}" # restore positional arguments
 # Before setting alias #
 
 [[ ! -z "${CONFIGURATION+x}" ]] && source "$CONFIGURATION"
+
+cd "arch/components/base_install"
+
+./base_install
