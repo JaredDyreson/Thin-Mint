@@ -4,6 +4,8 @@
 # task: run setup inside of the arch-chroot environment
 # AUTHOR: Jared Dyreson
 
+[[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
+
 exec 1> >(tee "$LOG_DIR/chroot_stdout.log")
 exec 2> >(tee "$LOG_DIR/chroot_stderr.log")
 
