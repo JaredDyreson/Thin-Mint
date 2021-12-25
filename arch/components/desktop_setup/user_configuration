@@ -73,7 +73,7 @@ function create_user() {
 
     [[ "$(grep "^$USER_PLAIN" /etc/passwd)" ]] && user_exists_ || useradd -m -g users -G wheel,storage,power -s /bin/zsh "$USER_PLAIN"
     
-    [[ ! -z "${PASSWORD_PLAIN+x}" ]] && password_manager
+    [[ -z "${PASSWORD_PLAIN+x}" ]] && password_manager
 
     printf "%s\n" "$PASSWORD_PLAIN" | sudo --stdin -u "$USER_PLAIN" bash << EOF
     mkdir -pv $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/{screenshots,Wallpapers},Projects,Videos}
@@ -102,10 +102,10 @@ function initial_configuration() {
     echo "[INFO] Installing yay"
 
     sudo -u "builduser" bash << EOF
-    pacman -S --needed git base-devel
-    git clone https://aur.archlinux.org/yay-bin.git
-    cd yay-bin
-    makepkg -si
+    sudo pacman -S --needed git base-devel
+    git clone https://aur.archlinux.org/yay-bin.git /home/builduser/yay
+    cd /home/builduser/yay
+    makepkg -si --noconfirm
 EOF
 
 }
