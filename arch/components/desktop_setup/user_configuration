@@ -47,7 +47,7 @@ function make_root() {
     echo "[INFO] Enabling user with name of: $M_USER to be apart of the sudoers group"
 
     [[ -z "$@" ]] && no_user_specified_
-    echo "$M_USER ALL=(ALL) ALL"  | tee -a /etc/sudoers
+    echo "$M_USER ALL=(ALL) ALL" >> /etc/sudoers
     echo "COMPLETE"
 }
 
@@ -89,14 +89,14 @@ function initial_configuration() {
     [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
     # NOTE: removed installation candidates here, moved them to the base_install
 
-    if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
-        echo "[INFO] Creating builduser"
-        useradd -s /bin/bash builduser -m
-        passwd -d builduser
-        make_root builduser
-    else
-        echo "[INFO] BUILDUSER EXISTS"
-    fi
+    #if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
+        #echo "[INFO] Creating builduser"
+        ##useradd -s /bin/bash builduser -m
+        ##passwd -d builduser
+        ##make_root builduser
+    #else
+        #echo "[INFO] BUILDUSER EXISTS"
+    #fi
     echo "[INFO] Before creating user" 
     create_user
     # we changed this from building from source 
@@ -104,8 +104,8 @@ function initial_configuration() {
 
     sudo -u "builduser" bash << EOF
     sudo pacman -S --needed git base-devel
-    git clone https://aur.archlinux.org/yay-bin.git /home/builduser/yay
-    cd /home/builduser/yay
+    git clone https://aur.archlinux.org/yay-bin.git /home/$USER_PLAIN/yay
+    cd /home/$USER_PLAIN/yay
     makepkg -si --noconfirm
 EOF
 
