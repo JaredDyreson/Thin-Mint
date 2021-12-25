@@ -21,7 +21,7 @@ set -- "${POSITIONAL[@]}"
 base_install_main                                                             # base_install.base_install_main          [NOTE: BEGIN]
 
 arch-chroot /mnt ./tmp/base_install/system_configuration                      # system_configuration.system_configuration_main
-arch-chroot /mnt ./tmp/desktop_setup/user_configuration                       # user_configuration.initial_configuration
+#arch-chroot /mnt ./tmp/desktop_setup/user_configuration                       # user_configuration.initial_configuration
 
 #arch-chroot /mnt ./tmp/desktop_setup/greeter_configuration                    # greeter_configuration.greeter_conf
 
@@ -30,5 +30,5 @@ arch-chroot /mnt ./tmp/desktop_setup/user_configuration                       # 
                         #|| arch-chroot /mnt ./tmp/desktop_setup/i3
 
 
-make_root "$PLAIN_USER"                                                       # user_configuration.make_root
-unmount_all_partitions                                                        # base_install.unmount_all_partitions     [NOTE: END]
+#make_root "$PLAIN_USER"                                                       # user_configuration.make_root
+#unmount_all_partitions                                                        # base_install.unmount_all_partitions     [NOTE: END]
