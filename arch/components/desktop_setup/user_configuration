@@ -12,9 +12,12 @@ exec 1> >(tee "$LOG_DIR/user_configuration_stdout.log")
 exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
 
 
-[[ ! -z "${USER_PLAIN+x}" ]] && export USER_PLAIN="jared"
-[[ ! -z "${PASSWORD_PLAIN+x}" ]] && export PASSWORD_PLAIN="password"
+[[ -z "${USER_PLAIN+x}" ]] && export USER_PLAIN="jared"
+[[ -z "${PASSWORD_PLAIN+x}" ]] && export PASSWORD_PLAIN="password"
 MINT_HOME="/home/$USER_PLAIN"
+
+echo "[DEBUG] Set username is: $USER_PLAIN"
+echo "[DEBUG] Set password is: $PASSWORD_PLAIN"
 
 ## "Exceptions" ##
 
@@ -44,11 +47,10 @@ function make_root() {
 
     local M_USER="$1"
 
-    echo "[INFO] Enabling user with name of: $M_USER to be apart of the sudoers group"
+    echo "[INFO] Enabling user with name of: \'$M_USER\' to be apart of the sudoers group"
 
     [[ -z "$@" ]] && no_user_specified_
-    echo "$M_USER ALL=(ALL) ALL" >> /etc/sudoers
-    echo "COMPLETE"
+    echo "$M_USER ALL=(ALL) ALL"  | tee -a /etc/sudoers
 }
 
 function password_manager() {
@@ -70,17 +72,22 @@ function password_manager() {
 }
 
 function create_user() {
-    [[ -z "${USER_PLAIN+x}" ]] && no_user_specified_ || echo "[INFO] Creating user of name: $USER_PLAIN"
+    [[ -z "${USER_PLAIN+x}" ]] && no_user_specified_ || echo "[INFO] Creating user with name: $USER_PLAIN"
 
-    [[ "$(grep "^$USER_PLAIN" /etc/passwd)" ]] && user_exists_ || useradd -m -g users -G wheel,storage,power -s /bin/zsh "$USER_PLAIN"
+    [[ "$(grep "^$USER_PLAIN" /etc/passwd)" ]] \
+                            && user_exists_ \
+                            || useradd -m -g users -G wheel,storage,power -s /bin/zsh "$USER_PLAIN"
     
     [[ -z "${PASSWORD_PLAIN+x}" ]] && password_manager
 
-    printf "%s\n" "$PASSWORD_PLAIN" | sudo --stdin -u "$USER_PLAIN" bash << EOF
     mkdir -pv $MINT_HOME/{Applications,Downloads,Documents,Music,Pictures/{screenshots,Wallpapers},Projects,Videos}
-EOF
+    chown -v "$USER_PLAIN" -R "$MIN_HOME"
 
-    make_root "$USER_PLAIN"
+    # removed weird sudo command here
+
+    # NOTE: if we delay this, we can get around not having a builduser, then at the end, we just make him root?
+    # TODO 
+    # make_root "$USER_PLAIN"
 }
 
 function initial_configuration() {
@@ -88,26 +95,16 @@ function initial_configuration() {
 
     [[ -f /var/lib/pacman/db.lck ]] && rm /var/lib/pacman/db.lck  
     # NOTE: removed installation candidates here, moved them to the base_install
+    # NOTE: also removed all instances `builduser`, this should now be depricated
 
-    #if [[ ! $(grep "^builduser" /etc/passwd) ]]; then
-        #echo "[INFO] Creating builduser"
-        ##useradd -s /bin/bash builduser -m
-        ##passwd -d builduser
-        ##make_root builduser
-    #else
-        #echo "[INFO] BUILDUSER EXISTS"
-    #fi
-    echo "[INFO] Before creating user" 
     create_user
-    # we changed this from building from source 
+
     echo "[INFO] Installing yay"
 
-    sudo -u "builduser" bash << EOF
-    sudo pacman -S --needed git base-devel
-    git clone https://aur.archlinux.org/yay-bin.git /home/$USER_PLAIN/yay
-    cd /home/$USER_PLAIN/yay
+    sudo -u "$USER_PLAIN" bash << EOF
+    git clone https://aur.archlinux.org/yay-bin.git tmp/yay
+    cd /tmp/yay
     makepkg -si --noconfirm
 EOF
 
 }
-initial_configuration

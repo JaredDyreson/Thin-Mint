@@ -6,5 +6,6 @@ export USER_PLAIN="jared"
 export HOSTNAME="jaredxps"
 export PASSWORD_PLAIN="password"
 export ROOT_PARTITION_SIZE=100  # in GBs
+export DE="cinnamon"
 
 export CP="/usr/bin/cp"

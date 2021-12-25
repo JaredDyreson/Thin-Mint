@@ -22,17 +22,6 @@ END_COMMENT
         KEY="$1"
 
         case "$KEY" in
-        -c|--component)
-            export COMPONENT="$2"
-            shift # past argument
-            shift # past value
-            ;;
-        -a|--all)
-            # Install all components
-            export ALL="$2"
-            shift # past argument
-            shift # past value
-            ;;
         --configuration)
             # We want to load an `rc` like file to load environment variables
 
@@ -49,12 +38,6 @@ END_COMMENT
         -u|--username)
             # set the user to be run headless (not advised but an option)
             export USER_PLAIN="$2"
-            shift
-            shift
-            ;;
-        --noconfirm)
-            # Run the script headless, not wanting external input
-            export HEADLESS="True"
             shift
             shift
             ;;

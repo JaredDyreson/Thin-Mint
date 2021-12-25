@@ -7,17 +7,25 @@
 exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
 exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
 
-# base disk, amount of memory installed, and swap size
+timedatectl set-ntp true
 
-TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
-MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
+function obtain_storage() {
+    # Find information about the system
 
-# set the default size to twice the amount of RAM
-#[[ ! -z "${SWAP_SIZE+x}" ]] && 
-SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")" 
-[[ ! -z "${ROOT_PARTITION_SIZE+x}" ]] && ROOT_PARTITION_SIZE=40 # set to the default size of 40 GBs
+    # base disk, amount of memory installed, and swap size
 
-function partition() {
+    export TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+    export MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
+
+    # set the default size to twice the amount of RAM
+    [[ -z "${SWAP_SIZE+x}" ]] && export SWAP_SIZE="$(echo "$(($MEMORY_INSTALLED * 2))")"
+
+    # set to the default size of 40 GBs
+    [[ -z "${ROOT_PARTITION_SIZE+x}" ]] && export ROOT_PARTITION_SIZE=40 
+}
+
+
+function fdisk_configuration() {
     # Give each partition their amount of space
 
     local SWAP="$1"
@@ -41,101 +49,91 @@ function unmount_all_partitions() {
     umount /mnt/
 }
 
-function hostname_configuration() {
-    local HOST="$1"
 
-    sed "s/\[HOSTNAME\]/$HOST/" assets/host > /mnt/etc/hosts
+function partition() {
+    local EFI=""$TGTDEV"1"
+    local SWAP=""$TGTDEV"2"
+    local ROOT=""$TGTDEV"3"
+    local HOME=""$TGTDEV"4"
+
+    # drop all partitions but data is still intact
+
+    dd if=/dev/zero of="$TGTDEV" bs=512 count=1
+
+    # partitioning the drives
+    partition "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
+
+    # make the EFI partition, swap (enable as well), root and user partitions
+
+    mkfs.vfat -F32          "$EFI"
+    mkswap                  "$SWAP"
+    swapon                  "$SWAP"
+    mkfs.ext4               "$ROOT"
+    mkfs.ext4               "$HOME"
+
+    # mount and make new partitions
+
+    mount --verbose "$ROOT" /mnt
+    mkdir --verbose /mnt/{boot,home}
+    mount --verbose "$EFI" /mnt/boot
+    mount --verbose "$HOME" /mnt/home
 }
 
-timedatectl set-ntp true
+function install_pacstrap() {
+    # Install the bare minimum packages
 
-# Partition names
+    declare -a essential_packages=(
+        "base"
+        "base-devel"
+        "bluez"
+        "cryptsetup"
+        "device-mapper"
+        "dialog"
+        "e2fsprogs"
+        "git"
+        "inetutils"
+        "intel-ucode"
+        "linux"
+        "linux-firmware"
+        "man-db"
+        "man-pages"
+        "networkmanager"
+        "python"
+        "s-nail"
+        "sudo"
+        "sysfsutils"
+        "usbutils"
+    )
 
+    for package in "${essential_packages[@]}"; do
+        pacstrap /mnt "$package"
+    done
 
-# sub partitions
+}
 
-EFI=""$TGTDEV"1"
-SWAP=""$TGTDEV"2"
-ROOT=""$TGTDEV"3"
-HOME=""$TGTDEV"4"
+function copy_dependencies() {
+    # We need to shuttle over our dependencies to /mnt , which will be our new root
+    mkdir --verbose /mnt/tmp
 
-# drop all partitions but data is still intact
+    cp --verbose ../ /mnt/tmp
 
-dd if=/dev/zero of="$TGTDEV" bs=512 count=1
+    cp -v assets/startup.nsh /mnt/boot
+}
 
-# partitioning the drives
-echo "[INFO] Swap is: $SWAP_SIZE"
-echo "[INFO] Root is: $ROOT_PARTITION_SIZE"
+function base_install_main() {
+    obtain_storage
+    fdisk_configuration
+    
+    # internet and check if the script is running inside a VM
 
-partition "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
+    [[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
+                                                && echo "[+] Using builtin internet" \
+                                                || wifi_menu_configuration
+    partition
+    install_pacstrap
+    copy_dependencies
 
-# make the EFI partition, swap (enable as well), root and user partitions
+    # setup fstab so we know where we can boot from
 
-mkfs.vfat -F32 "$EFI"
-mkswap "$SWAP"
-swapon "$SWAP"
-mkfs.ext4 "$ROOT"
-mkfs.ext4 "$HOME"
-
-# mount and make new partitions
-
-mount --verbose "$ROOT" /mnt
-mkdir /mnt/{boot,home}
-mount --verbose "$EFI" /mnt/boot
-mount --verbose "$HOME" /mnt/home
-
-# internet and check if the script is running inside a VM
-
-[[ "$(grep "hypervisor" /proc/cpuinfo))" ]] && echo "[+] Using builtin internet" || wifi_menu_configuration
-
-# install the bare minimum packages
-
-declare -a essential_packages=(
-    "base"
-    "base-devel"
-    "bluez"
-    "cryptsetup"
-    "device-mapper"
-    "dialog"
-    "e2fsprogs"
-    "git"
-    "inetutils"
-    "intel-ucode"
-    "linux"
-    "linux-firmware"
-    "man-db"
-    "man-pages"
-    "networkmanager"
-    "python"
-    "s-nail"
-    "sudo"
-    "sysfsutils"
-    "usbutils"
-)
-
-for package in "${essential_packages[@]}"; do
-    pacstrap /mnt "$package"
-done
-
-# setup fstab so we know where we can boot from
-
-genfstab -U /mnt >> /mnt/etc/fstab
-
-# we need to lead into the chroot environment from here
-
-# make sure this name is reflected in our network configuration
-
-# what is our machine's name to the world
-
-[[ ! -z "${HOSTNAME+x}" ]] && HOSTNAME=""$USER_PLAIN"-computer"
-
-hostname_configuration "$HOSTNAME"
-
-cp -v chroot_env /mnt
-cp -v assets/startup.nsh /mnt/boot
-echo "$HOSTNAME" > /mnt/etc/hostname
-
-cat /mnt/etc/hosts
-cat /mnt/etc/hostname
-
-arch-chroot /mnt ./chroot_env
+    genfstab -U /mnt >> /mnt/etc/fstab
+}

@@ -13,6 +13,7 @@ We can pass in the following environment variables to alter the size of each par
 
 - `ROOT_PARTITION_SIZE`
 - `SWAP_SIZE`
+- `HOSTNAME`
 
 Please see [here](https://github.com/JaredDyreson/Thin-Mint/tree/devbranch/configurations#readme) for more information about all the possible environment variables to set.
 
@@ -26,3 +27,7 @@ We are using `dd` to delete the entire partition table and new partitions will b
 bcfg boot add 1 fs0:/EFI/grub/grubx64.efi "Added via script"
 exit
 ```
+
+Just in case if you find yourself getting dropped into a UEFI shell for some reason, this should clear it up.
+
+Source can be found [here](https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox)

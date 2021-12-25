@@ -2,48 +2,15 @@
 
 # Main for all the modules installed
 
+# NOTE: DONE
 source user_configuration
-source user_terminal_conf
-source theme_installer
 source greeter_configuration
-source user_latexconf
-source programming_environment
 
-[[ -z "$MINT_PASS" ]] && export MINT_PASS="pass"
+initial_configuration # create the base user, along with their file structure
 
-[[ ! "$(grep -i "arch" /etc/os-release)" ]] && wrong_os_err_
-[[ "$EUID" -ne 0 ]] && perm_err_
-
-exec 1> >(tee "desktop_stdout.log")
-exec 2> >(tee "desktop_stderr.log")
-
-# main list of functions IN CORRECT ORDER
-
-# Create structure for proper installation
-
-initial_configuration
-
-# Create our regular user
-create_user
-
-# Install vim and configure all command line tools for our use
-terminal_configuration
-
-# Configure the launch screen for our installation
 greeter_conf
 
-# Install proper themes and configure Desktop environment settings
-# Also install icons used from Linux Mint
+# remove all mentions of this variable
 
-theme_manager
-
-# Install programming languages I use on daily basis
-#programming_env
-
-# Install LaTeX, this should probably be put at the end of the script or not even apart of it because of how lengthy it is
-
-# latex_install
-
-unset MINT_PASS
-userdel -rf builduser
-
+unset PASSWORD_PLAIN
+make_root "$PLAIN_USER"

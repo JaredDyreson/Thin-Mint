@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-function test_function() {
-    echo "$CONFIGURATION"
-    source "$CONFIGURATION"
-}
-
 ##  Main installation script ##
 
 source argparse
+source "arch/components/base_install/base_install"
 
 export LOG_DIR="/root/thin_mint_logs"
 
@@ -15,13 +11,24 @@ export LOG_DIR="/root/thin_mint_logs"
 
 # Example Usage #
 
-# main --username "jared" --password "password" --noconfirm --all --configuration
+# main --username "jared" --password "password" --configuration configurations/.jaredrc
 
 arg_parse "$@"
-# NOTE: ./main --username "jared" --password "password"
 
-set -- "${POSITIONAL[@]}" # restore positional arguments
+# restore positional arguments
+set -- "${POSITIONAL[@]}"
 
-# Before setting alias #
+base_install_main                                                             # base_install.base_install_main          [NOTE: BEGIN]
 
-[[ ! -z "${CONFIGURATION+x}" ]] && test_function
+arch-chroot /mnt ./tmp/base_install/system_configuration                      # system_configuration.system_configuration_main
+arch-chroot /mnt ./tmp/desktop_setup/user_configuration                       # user_configuration.initial_configuration
+
+#arch-chroot /mnt ./tmp/desktop_setup/greeter_configuration                    # greeter_configuration.greeter_conf
+
+#[[ "$DE" == "cinnamon" ]] \
+                        #&& arch-chroot /mnt ./tmp/desktop_setup/cinnamon \
+                        #|| arch-chroot /mnt ./tmp/desktop_setup/i3
+
+
+make_root "$PLAIN_USER"                                                       # user_configuration.make_root
+unmount_all_partitions                                                        # base_install.unmount_all_partitions     [NOTE: END]

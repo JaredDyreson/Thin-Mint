@@ -16,12 +16,3 @@ This portion will take the longest to perfect
 - Vim configuration                 (08)
     * Packages
 - User configurations
-
-# Autocomplete Environment
-
-```vim
-:CocInstall coc-python
-:CocCommand python.setInterpreter
-:CocInstall coc-json coc-tsserver
-:CocInstall coc-tsserver coc-html coc-css
-```
