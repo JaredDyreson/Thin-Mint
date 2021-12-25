@@ -13,7 +13,7 @@ exec 2> >(tee "$LOG_DIR/user_configuration_stderr.log")
 
 
 [[ ! -z "${USER_PLAIN+x}" ]] && export USER_PLAIN="jared"
-[[ ! -z "${PASSWORD_PLAIN+x}" ]] && export PASSWORD_PLAIN="jared"
+[[ ! -z "${PASSWORD_PLAIN+x}" ]] && export PASSWORD_PLAIN="password"
 MINT_HOME="/home/$USER_PLAIN"
 
 ## "Exceptions" ##
@@ -44,10 +44,11 @@ function make_root() {
 
     local M_USER="$1"
 
-    echo "[INFO] Creating user with name of: $M_USER"
+    echo "[INFO] Enabling user with name of: $M_USER to be apart of the sudoers group"
 
     [[ -z "$@" ]] && no_user_specified_
     echo "$M_USER ALL=(ALL) ALL"  | tee -a /etc/sudoers
+    echo "COMPLETE"
 }
 
 function password_manager() {
@@ -69,7 +70,7 @@ function password_manager() {
 }
 
 function create_user() {
-    [[ -z "${USER_PLAIN+x}" ]] && no_user_specified_
+    [[ -z "${USER_PLAIN+x}" ]] && no_user_specified_ || echo "[INFO] Creating user of name: $USER_PLAIN"
 
     [[ "$(grep "^$USER_PLAIN" /etc/passwd)" ]] && user_exists_ || useradd -m -g users -G wheel,storage,power -s /bin/zsh "$USER_PLAIN"
     
@@ -96,7 +97,7 @@ function initial_configuration() {
     else
         echo "[INFO] BUILDUSER EXISTS"
     fi
-  
+    echo "[INFO] Before creating user" 
     create_user
     # we changed this from building from source 
     echo "[INFO] Installing yay"
@@ -109,3 +110,4 @@ function initial_configuration() {
 EOF
 
 }
+initial_configuration
