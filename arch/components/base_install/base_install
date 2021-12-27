@@ -14,7 +14,7 @@ function obtain_storage() {
 
     # base disk, amount of memory installed, and swap size
 
-        export TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
+    export TGTDEV="$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tail -n 1 | awk '{print $1}')"
     export MEMORY_INSTALLED="$(awk '/MemTotal/ {$2=$2/(1024^2); print int($2+0.5)}' /proc/meminfo)"
 
     # set the default size to twice the amount of RAM
@@ -122,12 +122,12 @@ function copy_dependencies() {
 
 function base_install_main() {
     obtain_storage
-    fdisk_configuration
+    fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
     # internet and check if the script is running inside a VM
 
     [[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
-                                                && echo "[+] Using builtin internet" \
+                                                && echo "[INFO] Using builtin internet" \
                                                 || wifi_menu_configuration
     partition
     install_pacstrap
