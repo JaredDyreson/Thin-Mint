@@ -32,7 +32,7 @@ function fdisk_configuration() {
     local ROOT="$2"
 
     sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
-    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
+    #sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration() {
@@ -126,14 +126,14 @@ function base_install_main() {
     
     # internet and check if the script is running inside a VM
 
-    [[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
-                                                && echo "[INFO] Using builtin internet" \
-                                                || wifi_menu_configuration
-    partition
-    install_pacstrap
-    copy_dependencies
+    #[[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
+                                                #&& echo "[INFO] Using builtin internet" \
+                                                #|| wifi_menu_configuration
+    #partition
+    #install_pacstrap
+    #copy_dependencies
 
     # setup fstab so we know where we can boot from
 
-    genfstab -U /mnt >> /mnt/etc/fstab
+    #genfstab -U /mnt >> /mnt/etc/fstab
 }
