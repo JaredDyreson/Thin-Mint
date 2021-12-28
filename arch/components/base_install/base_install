@@ -50,7 +50,6 @@ function fdisk_configuration() {
     [[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
 
     sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
-    exit
     sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
