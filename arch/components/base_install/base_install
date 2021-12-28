@@ -153,38 +153,35 @@ function install_pacstrap() {
 
 function copy_dependencies() {
     # We need to shuttle over our dependencies to /mnt , which will be our new root
-    mkdir --verbose /mnt/tmp
-
-    cp --verbose ../ /mnt/tmp
+    cp -arv ../ /mnt/tmp
 
     cp -v assets/startup.nsh /mnt/boot
+}
+
+function debug_statement() {
+    cat << DEBUG
+    ## Information about the current installation script ##
+
+    [TARGET DRIVE]: $TGTDEV
+    [ROOT SIZE]: $ROOT_PARTITION_SIZE
+    [SWAP SIZE]: $SWAP_SIZE
+    [NETWORK INTERFACE]: $INTERFACE
+    [VIRTUAL MACHINE]: $HYPERVISOR (blank means not in virtual machine)
+
+    [USER]: $USER_PLAIN
+    [PASSWORD]: $PASSWORD_PLAIN
+DEBUG
+
 }
 
 function base_install_main() {
     obtain_storage
     # check_internet 5 # FIXME : this seems to be broken using in a VM
 
-    #cat << DEBUG
-    ### Information about the current installation script ##
-
-    #[TARGET DRIVE]: $TGTDEV
-    #[ROOT SIZE]: $ROOT_PARTITION_SIZE
-    #[SWAP SIZE]: $SWAP_SIZE
-    #[NETWORK INTERFACE]: $INTERFACE
-    #[VIRTUAL MACHINE]: $HYPERVISOR (blank means not in virtual machine)
-
-    #[USER]: $USER_PLAIN
-    #[PASSWORD]: $PASSWORD_PLAIN
-#DEBUG
     WAYPOINT="$PWD"
     cd "arch/components/base_install"
     fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
-    # internet and check if the script is running inside a VM
-
-    #[[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
-                                                #&& echo "[INFO] Using builtin internet" \
-                                                #|| wifi_menu_configuration
     partition
     install_pacstrap
     copy_dependencies
