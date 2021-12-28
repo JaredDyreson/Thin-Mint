@@ -40,9 +40,9 @@ function internet() {
 
     [[ -z "${HOSTNAME+x}" ]] && HOSTNAME=""$USER_PLAIN"-computer"
 
-    sed "s/\[HOSTNAME\]/$HOSTNAME/" assets/host > /mnt/etc/hosts
+    sed "s/\[HOSTNAME\]/$HOSTNAME/" assets/host > etc/hosts
 
-    echo "$HOSTNAME" > /mnt/etc/hostname
+    echo "$HOSTNAME" > etc/hostname
     systemctl enable NetworkManager
 }
 
@@ -82,7 +82,7 @@ function compile_kernel() {
 
 function system_configuration_main() {
     CWD="$PWD"
-    cd /mnt/components/base_install
+    cd components/base_install
 
     enable_english_locals
     set_hardware_time
