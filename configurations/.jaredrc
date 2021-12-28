@@ -10,7 +10,7 @@ export PASSWORD_PLAIN="password"
 
 # Partition information
 
-export ROOT_PARTITION_SIZE=100  # in GBs
+export ROOT_PARTITION_SIZE=40  # in GBs (should be 100)
 
 # Desktop  Environment
 export DE="cinnamon"
