@@ -2,10 +2,19 @@
 
 # Please change the password once you're done using this script 
 
+# User information
+
 export USER_PLAIN="jared"
 export HOSTNAME="jaredxps"
 export PASSWORD_PLAIN="password"
+
+# Partition information
+
 export ROOT_PARTITION_SIZE=100  # in GBs
+
+# Desktop  Environment
 export DE="cinnamon"
+
+# Interchangable commands
 
 export CP="/usr/bin/cp"

@@ -5,7 +5,7 @@
 source argparse
 source "arch/components/base_install/base_install"
 
-export LOG_DIR="/root/thin_mint_logs"
+export LOG_DIR="/tmp/thin_mint_logs"
 
 [[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
 
@@ -16,11 +16,13 @@ export LOG_DIR="/root/thin_mint_logs"
 arg_parse "$@"
 
 # restore positional arguments
+
+[[ ! -z "${CONFIGURATION+x}" ]] && source "$CONFIGURATION"
 set -- "${POSITIONAL[@]}"
 
 base_install_main                                                             # base_install.base_install_main          [NOTE: BEGIN]
 
-arch-chroot /mnt ./tmp/base_install/system_configuration                      # system_configuration.system_configuration_main
+#arch-chroot /mnt ./tmp/base_install/system_configuration                      # system_configuration.system_configuration_main
 #arch-chroot /mnt ./tmp/desktop_setup/user_configuration                       # user_configuration.initial_configuration
 
 #arch-chroot /mnt ./tmp/desktop_setup/greeter_configuration                    # greeter_configuration.greeter_conf

@@ -4,10 +4,21 @@
 # task: setup partitions, internet, and install base packages 
 # AUTHOR: Jared Dyreson
 
-exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
-exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
+# FIXME: Please uncomment when done
 
-timedatectl set-ntp true
+#exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
+#exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
+
+#timedatectl set-ntp true
+
+
+## "Exceptions" ##
+
+function internet_down_() {
+    2&> echo "[ERROR] Currently unable to ping Cloudflare, please try again"
+    exit 1
+}
+
 
 function obtain_storage() {
     # Find information about the system
@@ -32,15 +43,39 @@ function fdisk_configuration() {
     local ROOT="$2"
 
     sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
-    #sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
+    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration() {
     # Configure WiFi
 
-    WIRELSS_INTERFACE="$(ip link | awk '/mtu/ {print $2}' | cut -d: -f1 | grep "wlp*")"
-    systemctl enable netctl-auto@"$WIRELSS_INTERFACE".service
-    wifi-menu -o
+    local IF="$1" # aliased to IF -> INTERFACE
+
+    #systemctl enable netctl-auto@"$IF".service
+    #wifi-menu -o
+    export INTERFACE="$1"
+}
+
+function check_internet() {
+    # Check if the device is connected to ethernet or wireless
+    # Source: https://wiki.archlinux.org/title/Network_configuration/Ethernet#Device_driver
+    
+    local COUNT="$1"
+    export INTERFACE="$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')"
+    export WIRELESS="$(iw dev | awk '/Interface (.*)/ {print $2}')"
+
+    [[ "$(grep "hypervisor" /proc/cpuinfo))" ]] && (export HYPERVISOR="True"; return)
+    
+    # Check if default interface is up, if not, check for wireless one
+    # If all these fail, then halt the installation
+
+    [[ -z "$INTERFACE" && -z "$WIRELESS" ]] \
+                            &&  internet_down_ \
+                            || wifi_menu_configuration "$WIRELESS"
+
+    # Check if we can ping Cloudflare and if we can, we have internet access
+    [[ "$(ping -I "$INTERFACE" -c $COUNT 1.1.1.1)" ]] \
+                                || internet_down_
 }
 
 function unmount_all_partitions() {
@@ -122,6 +157,20 @@ function copy_dependencies() {
 
 function base_install_main() {
     obtain_storage
+    check_internet 5
+
+    #cat << DEBUG
+    ### Information about the current installation script ##
+
+    #[TARGET DRIVE]: $TGTDEV
+    #[ROOT SIZE]: $ROOT_PARTITION_SIZE
+    #[SWAP SIZE]: $SWAP_SIZE
+    #[NETWORK INTERFACE]: $INTERFACE
+    #[VIRTUAL MACHINE]: $HYPERVISOR (blank means not in virtual machine)
+
+    #[USER]: $USER_PLAIN
+    #[PASSWORD]: $PASSWORD_PLAIN
+#DEBUG
     fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
     # internet and check if the script is running inside a VM
@@ -129,11 +178,11 @@ function base_install_main() {
     #[[ "$(grep "hypervisor" /proc/cpuinfo))" ]] \
                                                 #&& echo "[INFO] Using builtin internet" \
                                                 #|| wifi_menu_configuration
-    #partition
-    #install_pacstrap
-    #copy_dependencies
+    partition
+    install_pacstrap
+    copy_dependencies
 
     # setup fstab so we know where we can boot from
 
-    #genfstab -U /mnt >> /mnt/etc/fstab
+    genfstab -U /mnt >> /mnt/etc/fstab
 }
