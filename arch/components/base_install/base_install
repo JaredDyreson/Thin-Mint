@@ -171,6 +171,8 @@ function base_install_main() {
     #[USER]: $USER_PLAIN
     #[PASSWORD]: $PASSWORD_PLAIN
 #DEBUG
+    WAYPOINT="$PWD"
+    cd "arch/components/base_install"
     fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
     # internet and check if the script is running inside a VM
@@ -185,4 +187,5 @@ function base_install_main() {
     # setup fstab so we know where we can boot from
 
     genfstab -U /mnt >> /mnt/etc/fstab
+    cd "$WAYPOINT"
 }
