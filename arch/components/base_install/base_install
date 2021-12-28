@@ -6,10 +6,10 @@
 
 # FIXME: Please uncomment when done
 
-#exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
-#exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
+exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
+exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
 
-#timedatectl set-ntp true
+timedatectl set-ntp true
 
 
 ## "Exceptions" ##
@@ -104,7 +104,7 @@ function partition() {
 
     # make the EFI partition, swap (enable as well), root and user partitions
 
-    mkfs.vfat -F32          "$EFI"
+    mkfs.fat -F32           "$EFI"
     mkswap                  "$SWAP"
     swapon                  "$SWAP"
     mkfs.ext4               "$ROOT"
