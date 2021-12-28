@@ -106,5 +106,6 @@ function initial_configuration() {
     cd /tmp/yay
     makepkg -si --noconfirm
 EOF
-
 }
+
+initial_configuration

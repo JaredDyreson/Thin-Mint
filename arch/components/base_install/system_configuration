@@ -81,9 +81,14 @@ function compile_kernel() {
 }
 
 function system_configuration_main() {
+    CWD="$PWD"
+    cd /mnt/components/base_install
+
     enable_english_locals
     set_hardware_time
     internet
     bootloader
     compile_kernel
+    cd "$CWD"
 }
+system_configuration_main
