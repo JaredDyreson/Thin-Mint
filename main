@@ -20,7 +20,7 @@ arg_parse "$@"
 [[ ! -z "${CONFIGURATION+x}" ]] && source "$CONFIGURATION"
 set -- "${POSITIONAL[@]}"
 
-# base_install_main                                                                      # base_install.base_install_main          [NOTE: BEGIN]
+base_install_main                                                                      # base_install.base_install_main          [NOTE: BEGIN]
 
 arch-chroot /mnt ./components/base_install/system_configuration                                     # system_configuration.system_configuration_main
 #arch-chroot /mnt ./components/desktop_setup/user_configuration                                 # user_configuration.initial_configuration
