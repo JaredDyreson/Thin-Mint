@@ -152,7 +152,9 @@ function install_pacstrap() {
 
 function copy_dependencies() {
     # We need to shuttle over our dependencies to /mnt , which will be our new root
-    cp -arv ../ /mnt/tmp
+    mkdir --verbose /mnt/components
+
+    cp -arv ../ /mnt/components
 
     cp -v assets/startup.nsh /mnt/boot
 }
