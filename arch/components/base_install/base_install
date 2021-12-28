@@ -19,6 +19,11 @@ function internet_down_() {
     exit 1
 }
 
+function asset_not_found() {
+    2&> echo  "[ERROR] Could not load asset at path: $1"
+    exit 2
+}
+
 
 function obtain_storage() {
     # Find information about the system
@@ -41,6 +46,8 @@ function fdisk_configuration() {
 
     local SWAP="$1"
     local ROOT="$2"
+
+    [[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
 
     sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
     sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
@@ -157,7 +164,7 @@ function copy_dependencies() {
 
 function base_install_main() {
     obtain_storage
-    check_internet 5
+    # check_internet 5 # FIXME : this seems to be broken using in a VM
 
     #cat << DEBUG
     ### Information about the current installation script ##
