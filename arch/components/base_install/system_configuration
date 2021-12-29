@@ -52,7 +52,7 @@ function bootloader() {
     declare -a bootloader_components=(
         "dosfstools"
         "efibootmgr"
-        "grub"
+        "grub-efi-x86_64"
         "mtools"
         "os-prober"
     )
