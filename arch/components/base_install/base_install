@@ -108,17 +108,17 @@ function partition() {
 
     # make the EFI partition, swap (enable as well), root and user partitions
 
-    mkfs.vfat -F32           "$EFI"
-    mkswap                   "$SWAP"
-    swapon                   "$SWAP"
-    mkfs.ext4                "$ROOT"
-    mkfs.ext4                "$HOME"
+    mkfs.fat  -F 32 -n EFIBOOT          "$EFI"
+    mkswap                              "$SWAP"
+    swapon                              "$SWAP"
+    mkfs.ext4                           "$ROOT"
+    mkfs.ext4                           "$HOME"
 
     # mount and make new partitions
 
-    mkdir -pv /mnt/{boot/efi,home}
 
     mount --verbose "$ROOT" /mnt
+    mkdir -pv /mnt/{boot/efi,home}
     mount --verbose "$EFI" /mnt/boot/efi
     mount --verbose "$HOME" /mnt/home
 }
