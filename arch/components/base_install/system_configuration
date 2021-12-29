@@ -49,18 +49,18 @@ function internet() {
 function bootloader() {
     # Installing the bootloader
 
-    declare -a bootloader_components=(
-        "efibootmgr"
-        "grub-efi-x86_64"
-        "os-prober"
-    )
+    #declare -a bootloader_components=(
+        #"efibootmgr"
+        #"grub-efi-x86_64"
+        #"os-prober"
+    #)
 
-    # update the cache and upgrade all components thus far
-    pacman -Syu
+    ## update the cache and upgrade all components thus far
+    #pacman -Syu
 
-    for component in "${bootloader_components[@]}"; do
-        pacman -S --needed --noconfirm "$component"
-    done
+    #for component in "${bootloader_components[@]}"; do
+        #pacman -S --needed --noconfirm "$component"
+    #done
 
     # EFI bootloader
 
