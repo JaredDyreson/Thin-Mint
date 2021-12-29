@@ -189,7 +189,6 @@ function base_install_main() {
     fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
     partition
-    genfstab -pU /mnt >> /mnt/etc/fstab
 
     install_pacstrap
     copy_dependencies
@@ -197,6 +196,8 @@ function base_install_main() {
     # setup fstab so we know where we can boot from
 
     cd "$WAYPOINT"
+
+    genfstab -pU /mnt >> /mnt/etc/fstab
 
     echo "[INFO] END BASE_INSTALL"
 }
