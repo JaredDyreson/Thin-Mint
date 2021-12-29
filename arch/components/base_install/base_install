@@ -104,17 +104,17 @@ function partition() {
 
     # make the EFI partition, swap (enable as well), root and user partitions
 
-    mkfs.fat -F32           "$EFI"
-    mkswap                  "$SWAP"
-    swapon                  "$SWAP"
-    mkfs.ext4               "$ROOT"
-    mkfs.ext4               "$HOME"
+    mkfs.vfat -F32           "$EFI"
+    mkswap                   "$SWAP"
+    swapon                   "$SWAP"
+    mkfs.ext4                "$ROOT"
+    mkfs.ext4                "$HOME"
 
     # mount and make new partitions
 
     mount --verbose "$ROOT" /mnt
-    mkdir --verbose /mnt/{boot,home}
-    mount --verbose "$EFI" /mnt/boot
+    mkdir -pv /mnt/{boot/efi,home}
+    mount --verbose "$EFI" /mnt/boot/efi
     mount --verbose "$HOME" /mnt/home
 }
 
@@ -145,7 +145,8 @@ function install_pacstrap() {
     )
 
     for package in "${essential_packages[@]}"; do
-        pacstrap /mnt "$package"
+        # FIXME: this might break because of the new `--needed` flag
+        pacstrap --needed /mnt "$package" 
     done
 
 }
@@ -189,6 +190,6 @@ function base_install_main() {
 
     # setup fstab so we know where we can boot from
 
-    genfstab -U /mnt >> /mnt/etc/fstab
+    genfstab -pU /mnt >> /mnt/etc/fstab
     cd "$WAYPOINT"
 }

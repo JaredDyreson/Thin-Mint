@@ -66,11 +66,11 @@ function bootloader() {
 
     # EFI bootloader
 
-    grub-install --target=x86_64-efi --bootloader-id=grub_uefi --efi-directory=/boot --recheck
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    mkdir -v /boot/EFI/BOOT
-    cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
+    # mkdir -v /boot/EFI/BOOT
+    # cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
 }
 
 function compile_kernel() {
