@@ -11,6 +11,7 @@ export PASSWORD_PLAIN="password"
 # Partition information
 
 export ROOT_PARTITION_SIZE=40  # in GBs (should be 100)
+export SWAP_SIZE=3 # only allocating three gigabytes
 
 # Desktop  Environment
 export DE="cinnamon"

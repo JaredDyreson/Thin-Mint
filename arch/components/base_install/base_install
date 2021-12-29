@@ -48,11 +48,13 @@ function fdisk_configuration() {
 
     local SWAP="$1"
     local ROOT="$2"
+    # TODO: we have now switched to parted because it is more readable
+    parted --align=optimal -s /dev/sda 'mklabel gpt     mkpart primary 1MiB 1GiB       mkpart primary 1GiB 6GiB        mkpart primary 6GiB 100%     t 1 boot      unit GiB    p'
 
-    [[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
+    #[[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
 
-    sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
-    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
+    #sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
+    #sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration() {
@@ -114,8 +116,9 @@ function partition() {
 
     # mount and make new partitions
 
-    mount --verbose "$ROOT" /mnt
     mkdir -pv /mnt/{boot/efi,home}
+
+    mount --verbose "$ROOT" /mnt
     mount --verbose "$EFI" /mnt/boot/efi
     mount --verbose "$HOME" /mnt/home
 }
@@ -125,7 +128,7 @@ function install_pacstrap() {
 
     declare -a essential_packages=(
         "base"
-        "base-devel"
+        # "base-devel" # please uncomment when this is done
         "bluez"
         "cryptsetup"
         "device-mapper"
@@ -140,7 +143,6 @@ function install_pacstrap() {
         "man-pages"
         "networkmanager"
         "python"
-        "s-nail"
         "sudo"
         "sysfsutils"
         "usbutils"
@@ -187,12 +189,13 @@ function base_install_main() {
     fdisk_configuration "$SWAP_SIZE" "$ROOT_PARTITION_SIZE"
     
     partition
+    genfstab -pU /mnt >> /mnt/etc/fstab
+
     install_pacstrap
     copy_dependencies
 
     # setup fstab so we know where we can boot from
 
-    genfstab -pU /mnt >> /mnt/etc/fstab
     cd "$WAYPOINT"
 
     echo "[INFO] END BASE_INSTALL"

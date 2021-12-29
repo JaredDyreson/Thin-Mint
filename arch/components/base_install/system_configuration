@@ -50,10 +50,8 @@ function bootloader() {
     # Installing the bootloader
 
     declare -a bootloader_components=(
-        "dosfstools"
         "efibootmgr"
         "grub-efi-x86_64"
-        "mtools"
         "os-prober"
     )
 
@@ -91,4 +89,4 @@ function system_configuration_main() {
     compile_kernel
     cd "$CWD"
 }
-system_configuration_main
+bootloader
