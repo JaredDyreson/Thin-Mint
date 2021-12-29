@@ -9,6 +9,8 @@
 exec 1> >(tee "$LOG_DIR/base_install_stdout.log")
 exec 2> >(tee "$LOG_DIR/base_install_stderr.log")
 
+echo "[INFO] BEGIN BASE_INSTALL"
+
 timedatectl set-ntp true
 
 
@@ -192,4 +194,6 @@ function base_install_main() {
 
     genfstab -pU /mnt >> /mnt/etc/fstab
     cd "$WAYPOINT"
+
+    echo "[INFO] END BASE_INSTALL"
 }

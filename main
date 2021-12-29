@@ -9,6 +9,11 @@ export LOG_DIR="/tmp/thin_mint_logs"
 
 [[ ! -d "$LOG_DIR" ]] && mkdir "$LOG_DIR"
 
+# I think all stdout and stderr is being routed through here?
+
+exec 1> >(tee "$LOG_DIR/main_stdout.log")
+exec 2> >(tee "$LOG_DIR/main_stderr.log")
+
 # Example Usage #
 
 # main --username "jared" --password "password" --configuration configurations/.jaredrc
@@ -20,7 +25,7 @@ arg_parse "$@"
 [[ ! -z "${CONFIGURATION+x}" ]] && source "$CONFIGURATION"
 set -- "${POSITIONAL[@]}"
 
-# base_install_main                                                                      # base_install.base_install_main          [NOTE: BEGIN]
+base_install_main                                                                      # base_install.base_install_main          [NOTE: BEGIN]
 
 arch-chroot /mnt ./components/base_install/system_configuration                                     # system_configuration.system_configuration_main
 #arch-chroot /mnt ./components/desktop_setup/user_configuration                                 # user_configuration.initial_configuration
