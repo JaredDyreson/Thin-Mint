@@ -128,15 +128,13 @@ function install_pacstrap() {
 
     declare -a essential_packages=(
         "base"
-        # "base-devel" # please uncomment when this is done
         "bluez"
         "cryptsetup"
         "device-mapper"
         "dialog"
-        "efibootmgr"
         "e2fsprogs"
+        "efibootmgr"
         "git"
-        "grub-efi-x86_64"
         "inetutils"
         "intel-ucode"
         "linux"
@@ -145,9 +143,11 @@ function install_pacstrap() {
         "man-pages"
         "networkmanager"
         "python"
+        "refind"
         "sudo"
         "sysfsutils"
         "usbutils"
+        # "base-devel" # please uncomment when this is done
     )
 
     for package in "${essential_packages[@]}"; do
