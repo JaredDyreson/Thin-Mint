@@ -148,7 +148,7 @@ function install_pacstrap() {
 
     for package in "${essential_packages[@]}"; do
         # FIXME: this might break because of the new `--needed` flag
-        pacstrap --needed /mnt "$package" 
+        pacstrap /mnt "$package" 
     done
 
 }
