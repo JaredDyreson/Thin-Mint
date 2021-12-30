@@ -96,10 +96,9 @@ function unmount_all_partitions() {
 
 function partition() {
     local EFI=""$TGTDEV"1"
-    local BOOT=""$TGTDEV"2"
-    local SWAP=""$TGTDEV"3"
-    local ROOT=""$TGTDEV"4"
-    local HOME=""$TGTDEV"5"
+    local SWAP=""$TGTDEV"2"
+    local ROOT=""$TGTDEV"3"
+    local HOME=""$TGTDEV"4"
 
     # drop all partitions but data is still intact
 
@@ -108,7 +107,6 @@ function partition() {
     # make the EFI partition, swap (enable as well), root and user partitions
 
     mkfs.fat  -F 32 -n EFIBOOT          "$EFI"
-    mkfs.ext2                           "$BOOT"
     mkswap                              "$SWAP"
     swapon                              "$SWAP"
     mkfs.ext4                           "$ROOT"
@@ -119,10 +117,7 @@ function partition() {
 
     mount --verbose "$ROOT" /mnt
     mkdir --verbose /mnt/boot
-    mount --verbose "$BOOT" /mnt/boot
-    mkdir --verbose /mnt/boot/efi
-    mount --verbose "$EFI" /mnt/boot/efi
-    # mount --verbose "$HOME" /mnt/home (please uncomment this if we need to install things to the user's partition?)
+    mount --verbose "$EFI" /mnt/boot
 }
 
 function install_pacstrap() {
@@ -136,9 +131,7 @@ function install_pacstrap() {
         "device-mapper"
         "dialog"
         "e2fsprogs"
-        "efibootmgr"
         "git"
-        "grub-efi-x86_64"
         "inetutils"
         "intel-ucode"
         "linux"

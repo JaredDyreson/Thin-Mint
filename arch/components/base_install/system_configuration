@@ -49,26 +49,15 @@ function internet() {
 function bootloader() {
     # Installing the bootloader
 
-    #declare -a bootloader_components=(
-        #"efibootmgr"
-        #"grub-efi-x86_64"
-        #"os-prober"
-    #)
-
-    ## update the cache and upgrade all components thus far
-    #pacman -Syu
-
-    #for component in "${bootloader_components[@]}"; do
-        #pacman -S --needed --noconfirm "$component"
-    #done
+    pacman -S --needed --noconfirm grub efibootmgr
 
     # EFI bootloader
 
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
+    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    # mkdir -v /boot/EFI/BOOT
-    # cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI
+    mkdir -v /boot/EFI/boot
+    cp -arv /boot/EFI/arch/grubx64.efi /boot/EFI/boot/bootx64.efi
 }
 
 function compile_kernel() {
