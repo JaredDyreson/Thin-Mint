@@ -119,9 +119,9 @@ function partition() {
 
     mount --verbose "$ROOT" /mnt
     mkdir --verbose /mnt/boot
-    mount --verbose "$EFI" /mnt/boot
+    mount --verbose "$BOOT" /mnt/boot
     mkdir --verbose /mnt/boot/efi
-    mount --verbose "$BOOT" /mnt/boot/efi
+    mount --verbose "$EFI" /mnt/boot/efi
     # mount --verbose "$HOME" /mnt/home (please uncomment this if we need to install things to the user's partition?)
 }
 
