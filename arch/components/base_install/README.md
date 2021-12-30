@@ -1,5 +1,9 @@
 # Base Installation
 
+# Clearing of partitions
+
+We are using `dd` to delete the entire partition table and new partitions will be made in their place.
+
 # Drive Mapping
 
 The base disk is the first disk detected by using `lsblk`, for the XPS, this is going to be `nvmen1`
@@ -15,19 +19,8 @@ We can pass in the following environment variables to alter the size of each par
 - `SWAP_SIZE`
 - `HOSTNAME`
 
+# Bootloader 
+
+There is a [solution here](https://askubuntu.com/a/216745/1364786) that seems to use `refind` instead of `grub` because there was some issues during the installation.
+
 Please see [here](https://github.com/JaredDyreson/Thin-Mint/tree/devbranch/configurations#readme) for more information about all the possible environment variables to set.
-
-# Clearing of partitions
-
-We are using `dd` to delete the entire partition table and new partitions will be made in their place.
-
-# Booting into UEFI Shell
-
-```nsh
-bcfg boot add 1 fs0:/EFI/grub/grubx64.efi "Added via script"
-exit
-```
-
-Just in case if you find yourself getting dropped into a UEFI shell for some reason, this should clear it up.
-
-Source can be found [here](https://www.linuxbabe.com/virtualbox/install-arch-linux-uefi-hardware-virtualbox)

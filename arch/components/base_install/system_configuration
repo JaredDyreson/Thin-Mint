@@ -63,10 +63,9 @@ function bootloader() {
     #done
 
     # EFI bootloader
-    refind-intstall 
 
-    #grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
-    #grub-mkconfig -o /boot/grub/grub.cfg
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
+    grub-mkconfig -o /boot/grub/grub.cfg
 
     # mkdir -v /boot/EFI/BOOT
     # cp -arv /boot/EFI/grub/grubx64.efi /boot/EFI/BOOT/BOOTX86.EFI

@@ -2,20 +2,24 @@ g
 n
 1
  
-+512M
++100M
 t
 1
 
 n
 2
 
-+[SWAP_SIZE]G
++250M
 n
 3
- 
-+[ROOT_SIZE]G
+
++[SWAP_SIZE]G
 n
 4
+
++[ROOT_SIZE]G
+n
+5
 
 
 w

@@ -48,13 +48,11 @@ function fdisk_configuration() {
 
     local SWAP="$1"
     local ROOT="$2"
-    # TODO: we have now switched to parted because it is more readable
-    parted --align=optimal -s /dev/sda 'mklabel gpt     mkpart primary 1MiB 1GiB       mkpart primary 1GiB 6GiB       mkpart primary 6GiB 56GiB       mkpart primary 56GiB 100%       t 1 boot      unit GiB    p'
 
-    #[[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
+    [[ ! -f "assets/fdisk_script" ]] && asset_not_found asset/fdisk_script
 
-    #sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
-    #sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
+    sed -i "s/\[SWAP_SIZE\]/$SWAP/;s/\[ROOT_SIZE\]/$ROOT/" assets/fdisk_script
+    sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' assets/fdisk_script | fdisk "${TGTDEV}"
 }
 
 function wifi_menu_configuration() {
@@ -98,9 +96,10 @@ function unmount_all_partitions() {
 
 function partition() {
     local EFI=""$TGTDEV"1"
-    local SWAP=""$TGTDEV"2"
-    local ROOT=""$TGTDEV"3"
-    local HOME=""$TGTDEV"4"
+    local BOOT=""$TGTDEV"2"
+    local SWAP=""$TGTDEV"3"
+    local ROOT=""$TGTDEV"4"
+    local HOME=""$TGTDEV"5"
 
     # drop all partitions but data is still intact
 
@@ -109,6 +108,7 @@ function partition() {
     # make the EFI partition, swap (enable as well), root and user partitions
 
     mkfs.fat  -F 32 -n EFIBOOT          "$EFI"
+    mkfs.ext2                           "$BOOT"
     mkswap                              "$SWAP"
     swapon                              "$SWAP"
     mkfs.ext4                           "$ROOT"
@@ -118,9 +118,11 @@ function partition() {
 
 
     mount --verbose "$ROOT" /mnt
-    mkdir -pv /mnt/{boot/efi,home}
-    mount --verbose "$EFI" /mnt/boot/efi
-    mount --verbose "$HOME" /mnt/home
+    mkdir --verbose /mnt/boot
+    mount --verbose "$EFI" /mnt/boot
+    mkdir --verbose /mnt/boot/efi
+    mount --verbose "$BOOT" /mnt/boot/efi
+    # mount --verbose "$HOME" /mnt/home (please uncomment this if we need to install things to the user's partition?)
 }
 
 function install_pacstrap() {
@@ -128,6 +130,7 @@ function install_pacstrap() {
 
     declare -a essential_packages=(
         "base"
+        "base-devel"
         "bluez"
         "cryptsetup"
         "device-mapper"
@@ -135,6 +138,7 @@ function install_pacstrap() {
         "e2fsprogs"
         "efibootmgr"
         "git"
+        "grub-efi-x86_64"
         "inetutils"
         "intel-ucode"
         "linux"
@@ -147,13 +151,9 @@ function install_pacstrap() {
         "sudo"
         "sysfsutils"
         "usbutils"
-        # "base-devel" # please uncomment when this is done
     )
 
-    for package in "${essential_packages[@]}"; do
-        # FIXME: this might break because of the new `--needed` flag
-        pacstrap /mnt "$package" 
-    done
+    pacstrap /mnt "${essential_packages[@]}"
 
 }
 
