@@ -27,7 +27,7 @@ set -- "${POSITIONAL[@]}"
 
 base_install_main                                                                      # base_install.base_install_main          [NOTE: BEGIN]
 
-arch-chroot /mnt ./components/base_install/system_configuration                                     # system_configuration.system_configuration_main
+# arch-chroot /mnt ./components/base_install/system_configuration                                     # system_configuration.system_configuration_main
 #arch-chroot /mnt ./components/desktop_setup/user_configuration                                 # user_configuration.initial_configuration
 
 #arch-chroot /mnt ./tmp/desktop_setup/greeter_configuration                              # greeter_configuration.greeter_conf

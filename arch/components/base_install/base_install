@@ -98,7 +98,6 @@ function partition() {
     local EFI=""$TGTDEV"1"
     local SWAP=""$TGTDEV"2"
     local ROOT=""$TGTDEV"3"
-    local HOME=""$TGTDEV"4"
 
     # drop all partitions but data is still intact
 
@@ -110,7 +109,6 @@ function partition() {
     mkswap                              "$SWAP"
     swapon                              "$SWAP"
     mkfs.ext4                           "$ROOT"
-    mkfs.ext4                           "$HOME"
 
     # mount and make new partitions
 
@@ -126,28 +124,30 @@ function install_pacstrap() {
     declare -a essential_packages=(
         "base"
         "base-devel"
-        "bluez"
-        "cryptsetup"
-        "device-mapper"
-        "dialog"
-        "e2fsprogs"
-        "git"
-        "inetutils"
-        "intel-ucode"
-        "linux"
-        "linux-firmware"
-        "man-db"
-        "man-pages"
-        "networkmanager"
-        "python"
-        "refind"
-        "sudo"
-        "sysfsutils"
-        "usbutils"
     )
+
+        #"bluez"
+        #"cryptsetup"
+        #"device-mapper"
+        #"dialog"
+        #"e2fsprogs"
+        #"git"
+        #"inetutils"
+        #"intel-ucode"
+        #"linux"
+        #"linux-firmware"
+        #"man-db"
+        #"man-pages"
+        #"networkmanager"
+        #"python"
+        #"refind"
+        #"sudo"
+        #"sysfsutils"
+        #"usbutils"
 
     pacstrap /mnt "${essential_packages[@]}"
 
+    genfstab -U /mnt >> /mnt/etc/fstab
 }
 
 function copy_dependencies() {
@@ -192,7 +192,6 @@ function base_install_main() {
 
     cd "$WAYPOINT"
 
-    genfstab -pU /mnt >> /mnt/etc/fstab
 
     echo "[INFO] END BASE_INSTALL"
 }
